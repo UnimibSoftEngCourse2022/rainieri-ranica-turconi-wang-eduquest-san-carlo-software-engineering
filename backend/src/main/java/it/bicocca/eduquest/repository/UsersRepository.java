@@ -7,5 +7,5 @@ import it.bicocca.eduquest.domain.users.User;
 
 @Repository
 public interface UsersRepository extends JpaRepository<User, Long> {
-    // Qui Spring creerà automaticamente i metodi per salvare, cercare e cancellare gli utenti.
+    //Automatic creation of method for save, create and delete users by Spring
 }
