@@ -1,6 +1,6 @@
 package it.bicocca.eduquest.services;
 
-import it.bicocca.eduquest.domain.User;
+import it.bicocca.eduquest.domain.users.User;
 import it.bicocca.eduquest.dto.UserDTO;
 import it.bicocca.eduquest.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;

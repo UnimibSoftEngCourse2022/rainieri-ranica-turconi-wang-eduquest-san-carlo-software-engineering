@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.domain;
+package it.bicocca.eduquest.domain.users;
 
 import jakarta.persistence.*;
 
