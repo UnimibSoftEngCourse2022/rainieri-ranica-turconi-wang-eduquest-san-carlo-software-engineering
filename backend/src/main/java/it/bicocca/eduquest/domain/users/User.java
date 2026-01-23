@@ -4,24 +4,26 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users") 
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id // Primary key in the DB table
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // The DB generates automatically crescent numbers
+    protected Long id;
+    
+    protected String name;
+    protected String surname;
+    protected String email;
+    protected String password;
+    
+    @Enumerated(EnumType.STRING)
+    protected Role role;
 
-    private String name;
-    private String surname;
-    private String email;
-    private String password;
+    // --- CONSTRUCTORS ---
 
-    // --- COSTRUTTORI ---
-
-    // Costruttore vuoto
     public User() {
     }
 
-    // Costruttore con parametri 
     public User(String name, String surname, String email, String password) {
         this.name = name;
         this.surname = surname;
@@ -29,7 +31,7 @@ public class User {
         this.password = password;
     }
 
-    // --- GETTER E SETTER ---
+    // --- GETTER AND SETTER ---
 
     public Long getId() {
         return id;
@@ -70,4 +72,13 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+    
 }
