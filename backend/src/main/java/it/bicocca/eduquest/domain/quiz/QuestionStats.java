@@ -1,5 +1,8 @@
 package it.bicocca.eduquest.domain.quiz;
 
-public class QuestionStats {
+import jakarta.persistence.Embeddable;
 
+@Embeddable
+public class QuestionStats {
+	private double averageSuccess;
 }
