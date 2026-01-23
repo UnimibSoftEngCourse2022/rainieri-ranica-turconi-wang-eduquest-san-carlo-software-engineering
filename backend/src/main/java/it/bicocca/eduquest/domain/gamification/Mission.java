@@ -17,7 +17,7 @@ public abstract class Mission {
     @JoinColumn(name = "badge_id", referencedColumnName = "id")
     protected Badge badge;
 
-    public Mission() {}
+    protected Mission() {}
 
 	public Long getId() {
 		return id;

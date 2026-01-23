@@ -1,7 +1,7 @@
 package it.bicocca.eduquest.domain.gamification;
 
 import it.bicocca.eduquest.domain.users.User;
-// import it.bicocca.eduquest.domain.quiz.Quiz; // Da decommentare quando abbiamo la classe quiz
+import it.bicocca.eduquest.domain.quiz.Quiz; 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -22,12 +22,10 @@ public class Challenge {
     @ManyToOne
     @JoinColumn(name = "opponent_id")
     private User opponent;   
-
-    /* Da decommentare quando abbiamo la classe quiz
+   
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-    */
 
     public Challenge() {}
 
