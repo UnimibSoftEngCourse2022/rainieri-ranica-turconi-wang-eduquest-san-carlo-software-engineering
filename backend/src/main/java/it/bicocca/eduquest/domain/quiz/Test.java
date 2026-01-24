@@ -7,8 +7,13 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tests")
-@PrimaryKeyJoinColumn(name = "test_id")
-public class Test extends Quiz {
+public class Test {
+	@Id
+	private long id;
+
+	@ManyToOne
+	@JoinColumn(name = "quiz_id")
+	private Quiz quiz;
 	private Duration duration;
 	private int maxTries;
 	
@@ -16,8 +21,9 @@ public class Test extends Quiz {
 		super();
 	}
 	
-	public Test(long id, String title, String description, Difficulty difficulty, Teacher author, Duration duration, int maxTries) {
-		super(id, title, description, difficulty, author);
+	public Test(long id, Quiz quiz, Duration duration, int maxTries) {
+		this.id = id;
+		this.quiz = quiz;
 		this.duration = duration;
 		this.maxTries = maxTries;
 	}
@@ -37,5 +43,12 @@ public class Test extends Quiz {
 	public void setMaxTries(int maxTries) {
 		this.maxTries = maxTries;
 	}
-	
+
+	public Quiz getQuiz() {
+		return quiz;
+	}
+
+	public void setQuiz(Quiz quiz) {
+		this.quiz = quiz;
+	}
 }

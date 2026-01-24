@@ -19,4 +19,10 @@ public class QuizController {
 	public List<QuizDTO> getAllQuizzes() {
 		return quizService.getAllQuizzes();
 	}
+	
+	@PostMapping
+	public QuizDTO addQuiz(QuizDTO quiz) {
+		System.out.println("chi legge è frocio\n");
+		return quizService.addQuiz(quiz);
+	}
 }

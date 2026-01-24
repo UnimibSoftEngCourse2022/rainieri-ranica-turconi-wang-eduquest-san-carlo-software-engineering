@@ -2,7 +2,6 @@ package it.bicocca.eduquest.domain.quiz;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Duration;
 
 import it.bicocca.eduquest.domain.users.Teacher;
 import jakarta.persistence.*;
@@ -20,7 +19,9 @@ public class Quiz {
 	private String description;
 	
 	@Enumerated(EnumType.STRING)
-	private Difficulty difficulty;
+	private Difficulty difficulty = Difficulty.UNDEFINED;
+	
+	private long maxScore;
 	
 	@ManyToOne
     @JoinColumn(name = "teacher_id") // Coloumn name in the DB
@@ -32,19 +33,15 @@ public class Quiz {
 	@Embedded
 	private QuizStats stats;
 	
-	private Duration duration;
-	private int maxTries;
-	
 	public Quiz() {
 		super();
 		this.stats = new QuizStats();
 	}
 
-	public Quiz(long id, String title, String description, Difficulty difficulty, Teacher author) {
+	public Quiz(long id, String title, String description, long maxScore, Teacher author) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
-		this.difficulty = difficulty;
 		this.author = author;
 		this.stats = new QuizStats();
 	}
@@ -73,6 +70,22 @@ public class Quiz {
 		this.description = description;
 	}
 
+	public long getMaxScore() {
+		return maxScore;
+	}
+
+	public void setMaxScore(long maxScore) {
+		this.maxScore = maxScore;
+	}
+
+	public QuizStats getStats() {
+		return stats;
+	}
+
+	public void setStats(QuizStats stats) {
+		this.stats = stats;
+	}
+
 	public Difficulty getDifficulty() {
 		return difficulty;
 	}
@@ -97,19 +110,4 @@ public class Quiz {
 		this.questions = questions;
 	}
 
-	public Duration getDuration() {
-		return duration;
-	}
-
-	public void setDuration(Duration duration) {
-		this.duration = duration;
-	}
-
-	public int getMaxTries() {
-		return maxTries;
-	}
-
-	public void setMaxTries(int maxTries) {
-		this.maxTries = maxTries;
-	}
 }
