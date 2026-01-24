@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.services;
+package it.bicocca.eduquest.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -38,7 +38,7 @@ public class JwtUtils {
         }
     }
 
-    // Extra method for getting user from email
+    // Extra method for getting user email from token
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)

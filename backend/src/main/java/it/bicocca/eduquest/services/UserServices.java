@@ -5,6 +5,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.dto.user.*;
 import it.bicocca.eduquest.repository.UsersRepository;
+import it.bicocca.eduquest.security.JwtUtils;
+
 import java.util.Optional;
 
 @Service
