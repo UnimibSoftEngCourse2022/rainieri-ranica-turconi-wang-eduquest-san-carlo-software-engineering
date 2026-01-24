@@ -1,8 +1,9 @@
 package it.bicocca.eduquest.controller; 
 
 import org.springframework.web.bind.annotation.*;
+
 import org.springframework.http.ResponseEntity;
-import it.bicocca.eduquest.dto.*;
+import it.bicocca.eduquest.dto.user.*;
 import it.bicocca.eduquest.services.UserServices;
 
 @RestController

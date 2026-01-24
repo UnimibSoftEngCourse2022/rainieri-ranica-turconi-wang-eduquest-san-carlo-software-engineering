@@ -2,6 +2,7 @@ package it.bicocca.eduquest.domain.quiz;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Duration;
 
 import it.bicocca.eduquest.domain.users.Teacher;
 import jakarta.persistence.*;
@@ -30,6 +31,9 @@ public class Quiz {
 
 	@Embedded
 	private QuizStats stats;
+	
+	private Duration duration;
+	private int maxTries;
 	
 	public Quiz() {
 		super();
@@ -91,5 +95,21 @@ public class Quiz {
 
 	public void setQuestions(List<Question> questions) {
 		this.questions = questions;
+	}
+
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public int getMaxTries() {
+		return maxTries;
+	}
+
+	public void setMaxTries(int maxTries) {
+		this.maxTries = maxTries;
 	}
 }

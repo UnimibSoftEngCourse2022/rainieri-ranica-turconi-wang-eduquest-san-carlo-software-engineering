@@ -3,7 +3,7 @@ package it.bicocca.eduquest.services;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder; 
 import it.bicocca.eduquest.domain.users.*;
-import it.bicocca.eduquest.dto.*;
+import it.bicocca.eduquest.dto.user.*;
 import it.bicocca.eduquest.repository.UsersRepository;
 import java.util.Optional;
 

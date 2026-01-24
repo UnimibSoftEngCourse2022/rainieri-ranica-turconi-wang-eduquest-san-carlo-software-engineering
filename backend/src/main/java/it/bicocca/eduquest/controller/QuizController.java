@@ -1,7 +1,7 @@
 package it.bicocca.eduquest.controller;
 
 import org.springframework.web.bind.annotation.*;
-import it.bicocca.eduquest.domain.quiz.Quiz;
+import it.bicocca.eduquest.dto.quiz.*;
 import it.bicocca.eduquest.services.QuizServices;
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class QuizController {
 	}
 	
 	@GetMapping
-	public List<Quiz> getAllQuizzes() {
+	public List<QuizDTO> getAllQuizzes() {
 		return quizService.getAllQuizzes();
 	}
 }

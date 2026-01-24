@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.dto.QuizDTO;
+package it.bicocca.eduquest.dto.quiz;
 
 import it.bicocca.eduquest.domain.quiz.Difficulty;
 import java.util.List;

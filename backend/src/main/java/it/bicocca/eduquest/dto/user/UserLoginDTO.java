@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.dto;
+package it.bicocca.eduquest.dto.user;
 
 public class UserLoginDTO {
     private String email;

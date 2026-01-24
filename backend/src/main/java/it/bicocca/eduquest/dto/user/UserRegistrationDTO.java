@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.dto;
+package it.bicocca.eduquest.dto.user;
 
 import it.bicocca.eduquest.domain.users.Role;
 
