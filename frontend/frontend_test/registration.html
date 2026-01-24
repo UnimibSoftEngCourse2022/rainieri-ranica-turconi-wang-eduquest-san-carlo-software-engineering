@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrazione EduQuest</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; }
+        .box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #218838; }
+        #messaggio { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2 style="text-align:center">Nuovo Utente 👤</h2>
+        
+        <input type="text" id="firstName" placeholder="Nome" required>
+        <input type="text" id="lastName" placeholder="Cognome" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+
+        <button onclick="registraUtente()">REGISTRATI</button>
+
+        <div id="messaggio"></div>
+    </div>
+
+    <script>
+        function registraUtente() {
+            // 1. Prendo i dati dalle caselle
+            const utente = {
+                firstName: document.getElementById("firstName").value,
+                lastName: document.getElementById("lastName").value,
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            };
+
+            // 2. Invio al Backend (Java)
+            fetch('http://localhost:8080/api/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(utente)
+            })
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error("Errore chiamata");
+            })
+            .then(data => {
+                document.getElementById("messaggio").innerText = "✅ Utente creato con ID: " + data.id;
+                document.getElementById("messaggio").style.color = "green";
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById("messaggio").innerText = "❌ Errore! (Server spento o bug)";
+                document.getElementById("messaggio").style.color = "red";
+            });
+        }
+    </script>
+
+</body>
+</html>
