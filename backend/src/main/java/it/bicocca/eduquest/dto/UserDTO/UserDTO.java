@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.dto;
+package it.bicocca.eduquest.dto.UserDTO;
 
 public class UserDTO {
     private String name;
