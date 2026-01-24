@@ -30,17 +30,17 @@ public class QuizServices {
 				QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), QuestionType.OPENED, new ArrayList<String>(), new ArrayList<ClosedQuestionOptionDTO>());	
 				questionsDTO.add(questionDTO);			
 			}
-			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), quiz.getMaxScore(), questionsDTO);
+			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO);
 			quizzesDTO.add(quizDTO);
 		}
 		
 		return quizzesDTO;
 	}
 	
-	public QuizDTO addQuiz(QuizDTO quizDTO) {
+	public QuizDTO addQuiz(QuizAddDTO quizAddDTO) {
 		long id = -1;
 
-		User user = usersRepository.findById(quizDTO.getTeacherAuthorId()).orElseThrow(() -> new RuntimeException("Cannot find teacher (martinfowler.com)"));
+		User user = usersRepository.findById(quizAddDTO.getTeacherAuthorId()).orElseThrow(() -> new RuntimeException("Cannot find teacher (martinfowler.com)"));
 		
 		if (!(user instanceof Teacher)) {
 			// FIXME handle errors with exceptions
@@ -48,8 +48,10 @@ public class QuizServices {
 		}
 		
 		Teacher author = (Teacher) user;
-		Quiz quiz = new Quiz(id, quizDTO.getTitle(), quizDTO.getDescription(), quizDTO.getMaxScore(), author);
+		Quiz quiz = new Quiz(id, quizAddDTO.getTitle(), quizAddDTO.getDescription(), author);
 		quizRepository.save(quiz);
+		
+		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), new ArrayList<QuestionDTO>());
 		
 		return quizDTO;
 	}

@@ -21,8 +21,7 @@ public class QuizController {
 	}
 	
 	@PostMapping
-	public QuizDTO addQuiz(QuizDTO quiz) {
-		System.out.println("chi legge è frocio\n");
+	public QuizDTO addQuiz(QuizAddDTO quiz) {
 		return quizService.addQuiz(quiz);
 	}
 }

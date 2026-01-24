@@ -1,23 +1,19 @@
 package it.bicocca.eduquest.dto.quiz;
-
+ 
 import java.util.List;
 
-import it.bicocca.eduquest.dto.user.UserLoginDTO;
-import it.bicocca.eduquest.dto.quiz.QuestionDTO;
+import it.bicocca.eduquest.domain.quiz.Difficulty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class QuizDTO {
-	private long id;
+public class QuizAddDTO {
 	private final String title;
 	private final String description;
 	private final long teacherAuthorId;
-	private final List<QuestionDTO> questions;
 	
-	public QuizDTO(long id, String title, String description, long teacherAuthorId, List<QuestionDTO> questions) {
-		this.id = id;
+	public QuizAddDTO(String title, String description, long teacherAuthorId) {
 		this.title = title;
 		this.description = description;
 		this.teacherAuthorId = teacherAuthorId;
-		this.questions = questions;
 	}
 
 	public String getTitle() {
@@ -30,9 +26,5 @@ public class QuizDTO {
 	
 	public long getTeacherAuthorId() {
 		return teacherAuthorId;
-	}
-	
-	public List<QuestionDTO> getQuestions() {
-		return questions;
 	}
 }

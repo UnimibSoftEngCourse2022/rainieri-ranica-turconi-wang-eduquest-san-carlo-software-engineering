@@ -13,7 +13,7 @@ public class Quiz {
 	
 	@Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private long id;
 	
 	private String title;
 	private String description;
@@ -38,7 +38,7 @@ public class Quiz {
 		this.stats = new QuizStats();
 	}
 
-	public Quiz(long id, String title, String description, long maxScore, Teacher author) {
+	public Quiz(long id, String title, String description, Teacher author) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
