@@ -4,35 +4,48 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "students")
-@PrimaryKeyJoinColumn(name = "user_id")
+@PrimaryKeyJoinColumn(name = "user_id") 
 public class Student extends User {
-	private double score;
+    
+    private double score;
 
-	@Embedded // Link to StudentStats
+    @Embedded 
     private StudentStats stats;
-	
-	public Student() {
-		super();
-		this.role = Role.STUDENT;
-		this.stats = new StudentStats();
-	}
+    
+    public Student() {
+        super();
+        this.role = Role.STUDENT;
+        this.stats = new StudentStats(); // inizialize stats to null
+    }
 
-	public Student(String name, String surname, String email, String password, double score) {
-		super(name, surname, email, password);
-		this.score = score;
-		this.role = Role.STUDENT;
-		this.stats = new StudentStats();
-	}	
-	
-	public double getScore() {
-		return score;
-	}
+    public Student(String name, String surname, String email, String password) {
+        super(name, surname, email, password);
+        this.score = 0.0;
+        this.role = Role.STUDENT;
+        this.stats = new StudentStats();
+    }   
+    
+    // getter e setter
 
-	public void setScore(double score) {
-		this.score = score;
-	}
-	
-	public void updateTotalScore(double score) {
-		this.score += score;
-	}
+    public double getScore() {
+        return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public StudentStats getStats() {
+        return stats;
+    }
+
+    public void setStats(StudentStats stats) {
+        this.stats = stats;
+    }
+    
+    // business logic
+    
+    public void updateTotalScore(double points) {
+        this.score += points;
+    }
 }

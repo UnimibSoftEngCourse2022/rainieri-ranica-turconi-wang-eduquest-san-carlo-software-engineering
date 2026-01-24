@@ -1,27 +1,59 @@
 package it.bicocca.eduquest.services;
 
 import org.springframework.stereotype.Service;
-import it.bicocca.eduquest.domain.users.User;
+import org.springframework.security.crypto.password.PasswordEncoder; 
+import it.bicocca.eduquest.domain.users.*;
+import it.bicocca.eduquest.dto.*;
 import it.bicocca.eduquest.repository.UsersRepository;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServices {
 
     private final UsersRepository usersRepository;
+    private final PasswordEncoder passwordEncoder; 
+    private final JwtUtils jwtUtils; 
 
-    public UserServices(UsersRepository usersRepository) {
+    // Adding passwordEncoder and jwtUtils  
+    public UserServices(UsersRepository usersRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
         this.usersRepository = usersRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtils = jwtUtils;
     }
 
-    public User registerUser(User newUser) {
-        if (usersRepository.existsByEmail(newUser.getEmail())) {
+    // registration
+    public User registerUser(UserRegistrationDTO dto) {
+        if (usersRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered!");
         }
+
+        // role
+        User newUser;
+        if (dto.getRole() == Role.TEACHER) {
+            newUser = new Teacher(dto.getName(), dto.getSurname(), dto.getEmail(), dto.getPassword());
+        } else {
+            newUser = new Student(dto.getName(), dto.getSurname(), dto.getEmail(), dto.getPassword());
+        }
+
+        // password crypting
+        newUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+
         return usersRepository.save(newUser);
     }
     
-    public List<User> getAllUsers() {
-        return usersRepository.findAll();
+    // login
+    public UserLoginResponseDTO loginUser(UserLoginDTO dto) {
+        User user = usersRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Password errata");
+        }
+
+        // Token JwtUtils
+        String token = jwtUtils.generateToken(user.getEmail());
+        
+        return new UserLoginResponseDTO(token);
     }
+    
 }
+

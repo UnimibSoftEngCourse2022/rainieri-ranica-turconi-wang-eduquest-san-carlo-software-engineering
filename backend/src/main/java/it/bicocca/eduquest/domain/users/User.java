@@ -13,13 +13,14 @@ public class User {
     
     protected String name;
     protected String surname;
+    @Column (unique = true, nullable = false)
     protected String email;
     protected String password;
     
     @Enumerated(EnumType.STRING)
     protected Role role;
 
-    // --- CONSTRUCTORS ---
+    // constructor
 
     public User() {
     }
@@ -31,7 +32,7 @@ public class User {
         this.password = password;
     }
 
-    // --- GETTER AND SETTER ---
+    //getter and setter
 
     public Long getId() {
         return id;

@@ -1,31 +1,37 @@
-package it.bicocca.eduquest.controller;
+package it.bicocca.eduquest.controller; 
 
 import org.springframework.web.bind.annotation.*;
-import it.bicocca.eduquest.domain.users.User;
+import org.springframework.http.ResponseEntity;
+import it.bicocca.eduquest.dto.*;
 import it.bicocca.eduquest.services.UserServices;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/users") // Base URL for user-related operations
+@RequestMapping("/auth") // http://localhost:8080/auth
 public class UserController {
 
-    private final UserServices userService;
+    private final UserServices userServices;
 
-    // Constructor Injection
-    public UserController(UserServices userService) {
-        this.userService = userService;
+    public UserController(UserServices userServices) {
+        this.userServices = userServices;
     }
 
-    // register a new user
+    // Registration
     @PostMapping("/register")
-    public User registerUser(@RequestBody User newUser) {
-        // We use the instance 'userService', not the class name
-        return userService.registerUser(newUser);
+    public ResponseEntity<?> register(@RequestBody UserRegistrationDTO dto) {
+        try {
+            return ResponseEntity.ok(userServices.registerUser(dto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    // Endpoint to GET ALL users
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    // 2. login
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserLoginDTO dto) {
+        try {
+            return ResponseEntity.ok(userServices.loginUser(dto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(e.getMessage()); // 401 = Non autorizzato
+        }
     }
 }
