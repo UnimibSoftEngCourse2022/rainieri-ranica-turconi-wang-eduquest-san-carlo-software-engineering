@@ -54,7 +54,7 @@ public class UserServices {
         // Token JwtUtils
         String token = jwtUtils.generateToken(user.getId());
         
-        return new UserLoginResponseDTO(token);
+        return new UserLoginResponseDTO(token, user.getId(), user.getRole());
     }
     
 }

@@ -10,10 +10,10 @@ const LOGIN_ERROR_DIV =
 const handleLoginSubmit = async (event) => {
   event.preventDefault();
 
-  email = document.getElementById(EMAIL_INPUT_TAG_ID).value;
-  password = document.getElementById(PASSWORD_INPUT_TAG_ID).value;
+  const email = document.getElementById(EMAIL_INPUT_TAG_ID).value;
+  const password = document.getElementById(PASSWORD_INPUT_TAG_ID).value;
 
-  requestBody = { email: email, password: password };
+  const requestBody = { email: email, password: password };
   const response = await fetch(LOGIN_ENDPOINT_URL, {
     method: "POST",
     headers: {
@@ -23,7 +23,11 @@ const handleLoginSubmit = async (event) => {
     body: JSON.stringify(requestBody),
   });
 
-  if (response.status == 403) {
+  if (response.ok) {
+    const data = await response.json();
+    const jwtToken = data.token;
+    window.localStorage.setItem("token", jwtToken);
+  } else {
     document.getElementById(LOGIN_RESULT_TAG_ID).innerHTML = LOGIN_ERROR_DIV;
   }
 };
