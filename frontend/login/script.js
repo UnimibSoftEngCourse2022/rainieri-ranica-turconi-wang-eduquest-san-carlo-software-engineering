@@ -7,6 +7,9 @@ const LOGIN_ENDPOINT_URL = "http://localhost:8080/auth/login";
 const LOGIN_ERROR_DIV =
   "<div class='alert alert-danger' role='alert'>Email or password are wrong</div>";
 
+const STUDENT_ROLE = "STUDENT";
+const TEACHER_ROLE = "TEACHER";
+
 const handleLoginSubmit = async (event) => {
   event.preventDefault();
 
@@ -27,6 +30,13 @@ const handleLoginSubmit = async (event) => {
     const data = await response.json();
     const jwtToken = data.token;
     window.localStorage.setItem("token", jwtToken);
+
+    if (data.role == STUDENT_ROLE) {
+      destination = "../user-dashboard/";
+    } else if (data.role == TEACHER_ROLE) {
+      destination = "../teacher-dashboard/";
+    }
+    window.location = destination;
   } else {
     document.getElementById(LOGIN_RESULT_TAG_ID).innerHTML = LOGIN_ERROR_DIV;
   }
