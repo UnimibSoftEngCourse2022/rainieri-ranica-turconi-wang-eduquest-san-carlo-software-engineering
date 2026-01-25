@@ -1,5 +1,7 @@
 package it.bicocca.eduquest.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import it.bicocca.eduquest.dto.quiz.*;
 import it.bicocca.eduquest.services.QuizServices;
@@ -21,7 +23,14 @@ public class QuizController {
 	}
 	
 	@PostMapping
-	public QuizDTO addQuiz(QuizAddDTO quiz) {
-		return quizService.addQuiz(quiz);
+	public ResponseEntity<?> addQuiz(@RequestBody QuizAddDTO quiz, Authentication authentication) {
+		String userIdString = authentication.getName();
+		long userId = Long.valueOf(userIdString).longValue();
+		
+		try {
+			return ResponseEntity.ok(quizService.addQuiz(quiz, userId));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(401).body(e.getMessage());
+		}
 	}
 }

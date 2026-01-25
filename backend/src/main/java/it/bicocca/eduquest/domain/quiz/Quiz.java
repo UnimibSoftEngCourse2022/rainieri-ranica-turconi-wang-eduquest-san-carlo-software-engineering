@@ -46,6 +46,13 @@ public class Quiz {
 		this.stats = new QuizStats();
 	}
 
+	public Quiz(String title, String description, Teacher author) {
+		this.title = title;
+		this.description = description;
+		this.author = author;
+		this.stats = new QuizStats();
+	}
+	
 	public Long getId() {
 		return id;
 	}

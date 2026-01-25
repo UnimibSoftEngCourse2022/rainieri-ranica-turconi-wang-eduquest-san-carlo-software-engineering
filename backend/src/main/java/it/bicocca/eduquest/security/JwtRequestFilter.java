@@ -25,21 +25,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		final String authorizationHeader = request.getHeader("Authorization");
 		
 		String jwt = null;
-		String user_email = null;
+		long user_id = -1;
 		
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			jwt = authorizationHeader.substring(7);
 			try {
 				if (jwtUtils.validateToken(jwt)) {
-					user_email = jwtUtils.getEmailFromToken(jwt);
+					user_id = jwtUtils.getUserIdFromToken(jwt);
 				}
 			} catch (Exception e) {
 				logger.error("Invalid token: " + e.getMessage());
 			}
 		}
 		
-		if (user_email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user_email, null, new ArrayList<>());
+		if (user_id != -1 && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user_id, null, new ArrayList<>());
 			authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 			SecurityContextHolder.getContext().setAuthentication(authToken);
 		}

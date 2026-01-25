@@ -34,7 +34,7 @@ public class UserServices {
         if (dto.getRole() == Role.TEACHER) {
             newUser = new Teacher(dto.getName(), dto.getSurname(), dto.getEmail(), dto.getPassword());
         } else {
-            newUser = new Student(dto.getName(), dto.getSurname(), dto.getEmail(), dto.getPassword());
+        	newUser = new Student(dto.getName(), dto.getSurname(), dto.getEmail(), dto.getPassword());
         }
 
         // password crypting
@@ -52,7 +52,7 @@ public class UserServices {
         }
 
         // Token JwtUtils
-        String token = jwtUtils.generateToken(user.getEmail());
+        String token = jwtUtils.generateToken(user.getId());
         
         return new UserLoginResponseDTO(token);
     }

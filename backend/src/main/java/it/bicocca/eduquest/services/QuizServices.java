@@ -7,6 +7,7 @@ import it.bicocca.eduquest.domain.quiz.*;
 import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.dto.quiz.*;
 import it.bicocca.eduquest.repository.UsersRepository;
+import it.bicocca.eduquest.security.JwtUtils;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -37,18 +38,21 @@ public class QuizServices {
 		return quizzesDTO;
 	}
 	
-	public QuizDTO addQuiz(QuizAddDTO quizAddDTO) {
-		long id = -1;
-
-		User user = usersRepository.findById(quizAddDTO.getTeacherAuthorId()).orElseThrow(() -> new RuntimeException("Cannot find teacher (martinfowler.com)"));
+	public QuizDTO addQuiz(QuizAddDTO quizAddDTO, long userIdFromRequest) {
+		User user = usersRepository.findById(quizAddDTO.getTeacherAuthorId()).orElseThrow(() -> new RuntimeException("Cannot find a teacher with the given ID"));
 		
 		if (!(user instanceof Teacher)) {
-			// FIXME handle errors with exceptions
-			return null;
+			throw new RuntimeException("Given ID is associated to a Student, not a Teacher");
+		}
+		
+		if (user.getId() != userIdFromRequest) {
+			throw new RuntimeException("User with ID '" + userIdFromRequest + "' is trying to create a quiz for user with ID '" + user.getId() + "'.");
 		}
 		
 		Teacher author = (Teacher) user;
-		Quiz quiz = new Quiz(id, quizAddDTO.getTitle(), quizAddDTO.getDescription(), author);
+		
+		
+		Quiz quiz = new Quiz(quizAddDTO.getTitle(), quizAddDTO.getDescription(), author);
 		quizRepository.save(quiz);
 		
 		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), new ArrayList<QuestionDTO>());

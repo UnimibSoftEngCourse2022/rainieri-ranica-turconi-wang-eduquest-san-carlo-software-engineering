@@ -20,6 +20,10 @@ public class QuizDTO {
 		this.questions = questions;
 	}
 
+	public long getId() {
+		return this.id;
+	}
+	
 	public String getTitle() {
 		return title;
 	}

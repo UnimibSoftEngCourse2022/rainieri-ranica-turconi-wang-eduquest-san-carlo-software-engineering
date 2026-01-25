@@ -19,9 +19,9 @@ public class JwtUtils {
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
     // Token generation
-    public String generateToken(String email) {
+    public String generateToken(long userId) {
         return Jwts.builder()
-                .setSubject(email) // Salviamo l'email dentro il token
+                .setSubject(String.valueOf(userId)) // Salviamo l'email dentro il token
                 .setIssuedAt(new Date()) // Data creazione
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Data scadenza
                 .signWith(key, SignatureAlgorithm.HS256) // Firma con la chiave segreta
@@ -39,12 +39,13 @@ public class JwtUtils {
     }
 
     // Extra method for getting user email from token
-    public String getEmailFromToken(String token) {
-        return Jwts.parserBuilder()
+    public long getUserIdFromToken(String token) {
+        String userIdStr = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+        return Long.valueOf(userIdStr).longValue();
     }
 }
