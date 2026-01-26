@@ -57,5 +57,15 @@ public class UserServices {
         return new UserLoginResponseDTO(token, user.getId(), user.getRole());
     }
     
+    public UserInfoDTO getUserInfo(long id) {
+    	User user = usersRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    	UserInfoDTO userInfo = new UserInfoDTO(user.getName(), user.getSurname(), user.getEmail(), user.getRole());
+    	return userInfo;
+    }
+    
+    public UserInfoDTO getUserInfoFromJwt(String jwt) {
+    	long userId = jwtUtils.getUserIdFromToken(jwt);
+    	return getUserInfo(userId);
+    }
 }
 

@@ -2,6 +2,7 @@ package it.bicocca.eduquest.controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import it.bicocca.eduquest.dto.user.*;
 import it.bicocca.eduquest.services.UserServices;
@@ -34,5 +35,24 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage()); // 401 = Non autorizzato
         }
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserInfo(@PathVariable long id) {
+    	try {
+    		return ResponseEntity.ok(userServices.getUserInfo(id));
+    	} catch (RuntimeException e) {
+    		return ResponseEntity.status(401).body(e.getMessage());
+    	}
+    }
+    
+    @GetMapping("/me")
+    public ResponseEntity<?> getUserInfoFromJwt(Authentication authentication) {
+    	try {
+    		long userId = (long)authentication.getPrincipal();
+    		return ResponseEntity.ok(userServices.getUserInfo(userId));
+    	} catch (RuntimeException e) {
+    		return ResponseEntity.status(401).body(e.getMessage());
+    	}
     }
 }
