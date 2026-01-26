@@ -33,4 +33,31 @@ public class QuizController {
 			return ResponseEntity.status(401).body(e.getMessage());
 		}
 	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<?> editQuiz(@PathVariable("id") long quizId, @RequestBody QuizEditDTO quiz, Authentication authentication) {
+		String userIdString = authentication.getName();
+		long userId = Long.valueOf(userIdString).longValue();
+		
+		try {
+			return ResponseEntity.ok(quizService.editQuiz(quizId, quiz, userId));
+		} catch (IllegalArgumentException e){
+			return ResponseEntity.status(403).body(e.getMessage());
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(401).body(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/question")
+	public ResponseEntity<?> addQuestion(@RequestBody QuestionAddDTO question, Authentication authentication) {
+		String userIdString = authentication.getName();
+		long userId = Long.valueOf(userIdString).longValue();
+		
+		try {
+			return ResponseEntity.ok(quizService.addQuestion(question, userId));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(401).body(e.getMessage());
+		}
+	}
+	
 }

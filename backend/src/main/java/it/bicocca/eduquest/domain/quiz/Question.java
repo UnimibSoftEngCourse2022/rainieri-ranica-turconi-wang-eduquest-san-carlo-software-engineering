@@ -1,10 +1,13 @@
 package it.bicocca.eduquest.domain.quiz;
 
+import it.bicocca.eduquest.domain.users.*;
+import it.bicocca.eduquest.dto.quiz.*;
+
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore; // Importante per il frontend
 
 @Entity
-@Table(name = "questions") // <--- CORRETTO (prima era "quizzes", sbagliato!)
+@Table(name = "questions")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Question {
 	
@@ -14,6 +17,12 @@ public abstract class Question {
 	
 	protected String text;
 	protected String topic;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+	protected User author;
+	
+	protected QuestionType questionType;
 	
 	@Enumerated(EnumType.STRING)
 	protected Difficulty difficulty;
@@ -28,11 +37,30 @@ public abstract class Question {
     private Quiz quiz;
 	
 	protected Question() {
-		super();
 		this.stats = new QuestionStats();
 	}
 
-    // --- GETTER E SETTER DEL NUOVO CAMPO ---
+    public Question(Long id, String text, String topic, User author, QuestionType questionType, Difficulty difficulty, Quiz quiz) {
+		this.id = id;
+		this.text = text;
+		this.topic = topic;
+		this.author = author;
+		this.questionType = questionType;
+		this.difficulty = difficulty;
+		this.stats = new QuestionStats();
+		this.quiz = quiz;
+	}
+
+    public Question(String text, String topic, User author, QuestionType questionType, Difficulty difficulty) {
+		this.text = text;
+		this.topic = topic;
+		this.author = author;
+		this.questionType = questionType;
+		this.difficulty = difficulty;
+		this.stats = new QuestionStats();
+	}
+
+	// --- GETTER E SETTER DEL NUOVO CAMPO ---
     public Quiz getQuiz() {
         return quiz;
     }
@@ -42,7 +70,7 @@ public abstract class Question {
     }
 
 	// ... (tutti gli altri getter e setter che avevi già) ...
-    public Long getId() { return id; }
+    public long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
@@ -50,4 +78,21 @@ public abstract class Question {
     public void setTopic(String topic) { this.topic = topic; }
     public Difficulty getDifficulty() { return difficulty; }
     public void setDifficulty(Difficulty difficulty) { this.difficulty = difficulty; }
+
+	public User getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(User author) {
+		this.author = author;
+	}
+
+	public QuestionType getQuestionType() {
+		return questionType;
+	}
+
+	public void setQuestionType(QuestionType questionType) {
+		this.questionType = questionType;
+	}
+    
 }

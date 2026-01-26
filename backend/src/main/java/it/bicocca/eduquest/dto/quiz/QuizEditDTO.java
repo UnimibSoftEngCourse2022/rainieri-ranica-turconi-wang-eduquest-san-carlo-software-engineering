@@ -1,27 +1,22 @@
 package it.bicocca.eduquest.dto.quiz;
- 
-import java.util.List;
 
-import it.bicocca.eduquest.domain.quiz.Difficulty;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class QuizAddDTO {
+public class QuizEditDTO {
 	private String title;
 	private String description;
-
-	public QuizAddDTO() {
-		
-	}
 	
-	public QuizAddDTO(String title, String description) {
+	public QuizEditDTO() {
+
+	}
+
+	public QuizEditDTO(String title, String description) {
 		this.title = title;
 		this.description = description;
 	}
-	
+
 	public String getTitle() {
 		return title;
 	}
-	
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -29,7 +24,7 @@ public class QuizAddDTO {
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public void setDescription(String description) {
 		this.description = description;
 	}

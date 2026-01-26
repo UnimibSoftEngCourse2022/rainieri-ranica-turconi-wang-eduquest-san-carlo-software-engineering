@@ -23,4 +23,33 @@ public class QuestionDTO {
 		this.validAnswersOpenQuestion = validAnswersOpenQuestion;
 		this.closedQuestionOptions = closedQuestionOptions;
 	}
+
+	public long getId() {
+		return id;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public Difficulty getDifficulty() {
+		return difficulty;
+	}
+
+	public String getTopic() {
+		return topic;
+	}
+
+	public QuestionType getQuestionType() {
+		return questionType;
+	}
+
+	public List<String> getValidAnswersOpenQuestion() {
+		return validAnswersOpenQuestion;
+	}
+
+	public List<ClosedQuestionOptionDTO> getClosedQuestionOptions() {
+		return closedQuestionOptions;
+	}
+	
 }
