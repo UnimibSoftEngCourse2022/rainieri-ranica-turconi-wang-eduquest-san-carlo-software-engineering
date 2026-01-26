@@ -28,6 +28,11 @@ public class ClosedQuestionOption {
 		this.closedQuestion = closedQuestion;
 	}
 
+	public ClosedQuestionOption(String text, boolean isTrue) {
+		this.text = text;
+		this.isTrue = isTrue;
+	}
+
 	public long getId() {
 		return id;
 	}

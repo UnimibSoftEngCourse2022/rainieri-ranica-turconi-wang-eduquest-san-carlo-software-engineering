@@ -27,6 +27,10 @@ public class OpenQuestionAcceptedAnswer {
 		this.openQuestion = openQuestion;
 	}
 
+	public OpenQuestionAcceptedAnswer(String text) {
+		this.text = text;
+	}
+
 	public long getId() {
 		return id;
 	}

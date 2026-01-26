@@ -1,5 +1,7 @@
 package it.bicocca.eduquest.dto.quiz;
 
+import java.util.List;
+
 import it.bicocca.eduquest.domain.quiz.Difficulty;
 
 public class QuestionAddDTO {
@@ -8,16 +10,22 @@ public class QuestionAddDTO {
 	
 	private Difficulty difficulty;
 	private QuestionType questionType;
+	
+	private List<String> validAnswersOpenQuestion;
+	private List<ClosedQuestionOptionDTO> closedQuestionOptions;
 
 	public QuestionAddDTO() {
-
+		
 	}
 
-	public QuestionAddDTO(String text, Difficulty difficulty, String topic, QuestionType questionType) {
+	public QuestionAddDTO(String text, String topic, Difficulty difficulty, QuestionType questionType,
+			List<String> validAnswersOpenQuestion, List<ClosedQuestionOptionDTO> closedQuestionOptions) {
 		this.text = text;
-		this.difficulty = difficulty;
 		this.topic = topic;
+		this.difficulty = difficulty;
 		this.questionType = questionType;
+		this.validAnswersOpenQuestion = validAnswersOpenQuestion;
+		this.closedQuestionOptions = closedQuestionOptions;
 	}
 
 	public String getText() {
@@ -50,6 +58,22 @@ public class QuestionAddDTO {
 
 	public void setQuestionType(QuestionType questionType) {
 		this.questionType = questionType;
+	}
+
+	public List<String> getValidAnswersOpenQuestion() {
+		return validAnswersOpenQuestion;
+	}
+
+	public void setValidAnswersOpenQuestion(List<String> validAnswersOpenQuestion) {
+		this.validAnswersOpenQuestion = validAnswersOpenQuestion;
+	}
+
+	public List<ClosedQuestionOptionDTO> getClosedQuestionOptions() {
+		return closedQuestionOptions;
+	}
+
+	public void setClosedQuestionOptions(List<ClosedQuestionOptionDTO> closedQuestionOptions) {
+		this.closedQuestionOptions = closedQuestionOptions;
 	}
 	
 }

@@ -8,4 +8,15 @@ public class ClosedQuestionOptionDTO {
 		this.text = text;
 		this.isTrue = isTrue;
 	}
+
+	public String getText() {
+		return text;
+	}
+
+	public boolean isTrue() {
+		return isTrue;
+	}
+	
 }
+
+

@@ -85,11 +85,29 @@ public class QuizServices {
 		User author = user;
 		Question question;
 		QuestionDTO questionDTO;
+		OpenQuestionAcceptedAnswer openQuestionAnswer;
+		ClosedQuestionOption closedQuestionOption;
+		List<String> openQuestionAnswerList = new ArrayList<String>();
+		List<ClosedQuestionOptionDTO> closedQuestionOptionList = new ArrayList<ClosedQuestionOptionDTO>();
 		
 		if (questionAddDTO.getQuestionType() == QuestionType.OPENED) {
 			question = new OpenQuestion(questionAddDTO.getText(), questionAddDTO.getTopic(), author, questionAddDTO.getDifficulty());
+			if (questionAddDTO.getValidAnswersOpenQuestion() != null) {
+				for (String text : questionAddDTO.getValidAnswersOpenQuestion()) {
+					openQuestionAnswer = new OpenQuestionAcceptedAnswer(text);
+					((OpenQuestion) question).addAnswer(openQuestionAnswer);
+					openQuestionAnswerList.add(text);
+				}
+			}
 		} else if (questionAddDTO.getQuestionType() == QuestionType.CLOSED) {
 			question = new ClosedQuestion(questionAddDTO.getText(), questionAddDTO.getTopic(), author, questionAddDTO.getDifficulty());
+			if (questionAddDTO.getClosedQuestionOptions() != null) {
+				for (ClosedQuestionOptionDTO closedQuestionOptionDTO  : questionAddDTO.getClosedQuestionOptions()) {
+					closedQuestionOption = new ClosedQuestionOption(closedQuestionOptionDTO.getText(), closedQuestionOptionDTO.isTrue());
+					((ClosedQuestion) question).addOption(closedQuestionOption);
+					closedQuestionOptionList.add(closedQuestionOptionDTO);
+				}
+			}
 		} else { 
 			throw new IllegalArgumentException("Tipo di domanda non supportato"); 
 		}
@@ -97,14 +115,9 @@ public class QuizServices {
 		questionsRepository.save(question);
 		
 		if (question instanceof OpenQuestion) {
-			questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), new ArrayList<String>(), null);
-			if (questionDTO.getValidAnswersOpenQuestion() != null) {
-				for (String text : questionDTO.getValidAnswersOpenQuestion()) {
-					// TODO
-				}
-			}
+			questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), openQuestionAnswerList, null);
 		} else {
-			questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, new ArrayList<ClosedQuestionOptionDTO>());
+			questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, closedQuestionOptionList);
 		}
 		
 		return questionDTO;
