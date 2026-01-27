@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import it.bicocca.eduquest.dto.user.*;
 import it.bicocca.eduquest.services.UserServices;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth") // http://localhost:8080/auth
@@ -27,7 +28,7 @@ public class UserController {
         }
     }
 
-    // 2. login
+    // login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginDTO dto) {
         try {
@@ -54,5 +55,20 @@ public class UserController {
     	} catch (RuntimeException e) {
     		return ResponseEntity.status(401).body(e.getMessage());
     	}
+    }
+    
+    // see all users
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllInfos(Authentication authentication) {
+    	if (authentication == null || !authentication.isAuthenticated()) {
+    		return ResponseEntity.status(401).body("Accesso negato devi essere autenticato");
+    	}
+    	try {
+    		List<UserInfoDTO> users = userServices.getAllUsers();
+    		return ResponseEntity.ok(users);
+    	} catch (RuntimeException e){
+    		return ResponseEntity.status(401).body(e.getMessage());
+    	}
+    		
     }
 }

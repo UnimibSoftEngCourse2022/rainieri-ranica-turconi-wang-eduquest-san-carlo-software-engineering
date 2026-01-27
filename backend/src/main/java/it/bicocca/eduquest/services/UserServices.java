@@ -7,7 +7,7 @@ import it.bicocca.eduquest.dto.user.*;
 import it.bicocca.eduquest.repository.UsersRepository;
 import it.bicocca.eduquest.security.JwtUtils;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class UserServices {
@@ -24,7 +24,7 @@ public class UserServices {
     }
 
     // registration
-    public User registerUser(UserRegistrationDTO dto) {
+    public UserInfoDTO registerUser(UserRegistrationDTO dto) {
         if (usersRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered!");
         }
@@ -40,13 +40,23 @@ public class UserServices {
         // password crypting
         newUser.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-        return usersRepository.save(newUser);
+        User savedUser = usersRepository.save(newUser);
+        
+        return new UserInfoDTO(
+        		savedUser.getId(),
+        		savedUser.getName(),
+        		savedUser.getSurname(),
+        		savedUser.getEmail(),
+        		savedUser.getRole()
+        		// add UserStats
+        	);
     }
     
     // login
     public UserLoginResponseDTO loginUser(UserLoginDTO dto) {
         User user = usersRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new RuntimeException("Password errata");
         }
@@ -58,14 +68,35 @@ public class UserServices {
     }
     
     public UserInfoDTO getUserInfo(long id) {
-    	User user = usersRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-    	UserInfoDTO userInfo = new UserInfoDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getRole());
-    	return userInfo;
+    	User user = usersRepository.findById(id)
+    			.orElseThrow(() -> new RuntimeException("User not found"));
+    	
+    	return new UserInfoDTO(
+        		user.getId(),
+        		user.getName(),
+        		user.getSurname(),
+        		user.getEmail(),
+        		user.getRole()
+        		// add UserStats
+        	);
     }
     
     public UserInfoDTO getUserInfoFromJwt(String jwt) {
     	long userId = jwtUtils.getUserIdFromToken(jwt);
     	return getUserInfo(userId);
     }
+
+	public List<UserInfoDTO> getAllUsers() {
+		return usersRepository.findAll()
+				.stream()
+				.map(user -> new UserInfoDTO(
+								user.getId(),
+								user.getName(),
+								user.getSurname(),
+								user.getEmail(),
+								user.getRole()
+								))
+				.toList();
+	}
 }
 
