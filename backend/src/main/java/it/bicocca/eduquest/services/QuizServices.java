@@ -40,14 +40,9 @@ public class QuizServices {
 	public List<QuizDTO> getAllQuizzes() {
 		List<Quiz> quizzes = quizRepository.findAll();
 		
-		// TODO duplicated code of method above
 		List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
 		for (Quiz quiz : quizzes) {
-			List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
-			for (Question question : quiz.getQuestions()) {
-				QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), QuestionType.OPENED, new ArrayList<String>(), new ArrayList<ClosedQuestionOptionDTO>());	
-				questionsDTO.add(questionDTO);			
-			}
+			List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO);
 			quizzesDTO.add(quizDTO);
 		}
@@ -60,14 +55,7 @@ public class QuizServices {
 		
 		List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
 		for (Quiz quiz : quizzes) {
-			if (quiz.getAuthor().getId() != authorId) {
-				continue;
-			}
-			List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
-			for (Question question : quiz.getQuestions()) {
-				QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), QuestionType.OPENED, new ArrayList<String>(), new ArrayList<ClosedQuestionOptionDTO>());	
-				questionsDTO.add(questionDTO);			
-			}
+			List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO);
 			quizzesDTO.add(quizDTO);
 		}
@@ -192,6 +180,35 @@ public class QuizServices {
 		return quizDTO;
 	}
 	
+	public QuizDTO getQuizForStudent(long quizId, long userIdFromRequest) {
+		User user = usersRepository.findById(userIdFromRequest).orElseThrow(() -> new RuntimeException("Cannot find a student with the given ID"));
+		if (!(user instanceof Student)) {
+			throw new RuntimeException("Given ID is associated to a Teacher, not a Student");
+		}
+		
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Cannot find a quiz with the given ID"));
+		
+		List<QuestionDTO> fullQuestions = convertQuestionsToDTOs(quiz.getQuestions());
+		
+		List<QuestionDTO> studentQuestions = new ArrayList<>();
+		
+		for (QuestionDTO qDTO : fullQuestions) {
+			if (qDTO.getQuestionType() == QuestionType.OPENED) {
+	            studentQuestions.add(new QuestionDTO(qDTO.getId(), qDTO.getText(), qDTO.getDifficulty(), qDTO.getTopic(), qDTO.getQuestionType(), null, null));   
+	        } else {
+	            List<ClosedQuestionOptionDTO> safeOptions = new ArrayList<>();
+	            for (ClosedQuestionOptionDTO oDTO : qDTO.getClosedQuestionOptions()) {
+	                safeOptions.add(new ClosedQuestionOptionDTO(oDTO.getText(), false)); 
+	            }
+	            studentQuestions.add(new QuestionDTO(qDTO.getId(), qDTO.getText(), qDTO.getDifficulty(), qDTO.getTopic(), qDTO.getQuestionType(), null, safeOptions));
+	        }
+		}
+		
+		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), studentQuestions);
+		
+		return quizDTO;
+	}
+	
 	private List<QuestionDTO> convertQuestionsToDTOs (List<Question> questions) {
 		List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
 		QuestionDTO qDTO;
@@ -216,5 +233,5 @@ public class QuizServices {
 		}
 		return questionsDTO;
 	}
-		
+	
 }

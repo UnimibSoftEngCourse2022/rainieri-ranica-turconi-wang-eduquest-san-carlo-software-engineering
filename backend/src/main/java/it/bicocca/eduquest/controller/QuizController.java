@@ -18,7 +18,6 @@ public class QuizController {
 	}
 
 	// TODO getAllQuizzes()
-	// TODO 
 	
 	@GetMapping
 	public ResponseEntity<?> getQuizzesByAuthorId(@RequestParam(required = false) Long authorId) {
@@ -97,6 +96,17 @@ public class QuizController {
 		long userId = Long.valueOf(userIdString).longValue();
 		try {
 			return ResponseEntity.ok(quizService.removeQuestionFromQuiz(quizId, questionId, userId));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(403).body(e.getMessage());	
+		}
+	}
+	
+	@GetMapping("/{quizId}/quiz-for-student")
+	public ResponseEntity<?> getQuizForStudent(@PathVariable("quizId") long quizId, Authentication authentication) {
+		String userIdString = authentication.getName();
+		long userId = Long.valueOf(userIdString).longValue();
+		try {
+			return ResponseEntity.ok(quizService.getQuizForStudent(quizId, userId));
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(403).body(e.getMessage());	
 		}

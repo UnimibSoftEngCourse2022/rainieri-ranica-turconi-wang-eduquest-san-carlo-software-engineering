@@ -6,5 +6,5 @@ import it.bicocca.eduquest.domain.quiz.Quiz;
 import java.util.List;
 
 public interface QuizRepository extends JpaRepository<Quiz, Long>{
-	
+	List<Quiz> findByAuthorId(long authorId);
 }
