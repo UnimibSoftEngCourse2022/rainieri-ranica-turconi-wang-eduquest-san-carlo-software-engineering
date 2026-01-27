@@ -182,5 +182,17 @@ public class QuizServices {
 		
 		return quizDTO; 
 	}
+	
+	public QuizDTO removeQuestionToQuiz(long quizId, long questionId, long userIdFromRequest) {
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Cannot find a quiz with the given ID"));
+		
+		Question question = questionsRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Cannot find a question with the given ID"));
+		
+		if (!quiz.getAuthor().getId().equals(userIdFromRequest)) {
+			throw new RuntimeException("You cannot edit quiz from another author!");
+		}
+		
+		return null;
+	}
 		
 }
