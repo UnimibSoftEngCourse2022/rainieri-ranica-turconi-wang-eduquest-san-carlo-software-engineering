@@ -63,14 +63,9 @@ public class QuizServices {
 	
 	public QuizDTO addQuiz(QuizAddDTO quizAddDTO, long userIdFromRequest) {
 		User user = usersRepository.findById(userIdFromRequest).orElseThrow(() -> new RuntimeException("Cannot find a teacher with the given ID"));
-		// modificato quizAddDTO.getTeacherAuthorId() con userIdFromRequest
 		if (!(user instanceof Teacher)) {
 			throw new RuntimeException("Given ID is associated to a Student, not a Teacher");
 		}
-		
-		/* if (user.getId() != userIdFromRequest) {
-			throw new RuntimeException("User with ID '" + userIdFromRequest + "' is trying to create a quiz for user with ID '" + user.getId() + "'.");
-		} */ // si tratterebbe di una ripetizione 
 		
 		Teacher author = (Teacher) user;
 		
@@ -156,9 +151,37 @@ public class QuizServices {
 		
 		quizRepository.save(quiz);
 		
+		List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
+		
+		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), userIdFromRequest, questionsDTO);
+		
+		return quizDTO; 
+	}
+	
+	public QuizDTO removeQuestionFromQuiz(long quizId, long questionId, long userIdFromRequest) {
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Cannot find a quiz with the given ID"));
+		
+		Question question = questionsRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Cannot find a question with the given ID"));
+		
+		if (!quiz.getAuthor().getId().equals(userIdFromRequest)) {
+			throw new RuntimeException("You cannot edit quiz from another author!");
+		}
+		
+		quiz.removeQuestion(question);
+		
+		quizRepository.save(quiz);
+		
+		List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
+		
+		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), userIdFromRequest, questionsDTO);
+		
+		return quizDTO;
+	}
+	
+	private List<QuestionDTO> convertQuestionsToDTOs (List<Question> questions) {
 		List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
 		QuestionDTO qDTO;
-		for (Question q : quiz.getQuestions()) {
+		for (Question q : questions) {
 			if (q instanceof OpenQuestion) {
 				List<String> openAnswerTextString = new ArrayList<String>();
 				List<OpenQuestionAcceptedAnswer> openAnswerList = ((OpenQuestion)q).getValidAnswers();
@@ -177,22 +200,7 @@ public class QuizServices {
 			}
 			questionsDTO.add(qDTO);
 		}
-		
-		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), userIdFromRequest, questionsDTO);
-		
-		return quizDTO; 
-	}
-	
-	public QuizDTO removeQuestionToQuiz(long quizId, long questionId, long userIdFromRequest) {
-		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Cannot find a quiz with the given ID"));
-		
-		Question question = questionsRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Cannot find a question with the given ID"));
-		
-		if (!quiz.getAuthor().getId().equals(userIdFromRequest)) {
-			throw new RuntimeException("You cannot edit quiz from another author!");
-		}
-		
-		return null;
+		return questionsDTO;
 	}
 		
 }

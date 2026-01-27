@@ -4,7 +4,7 @@ import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.dto.quiz.*;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore; // Importante per il frontend
+import com.fasterxml.jackson.annotation.JsonIgnore; // Necessary for the frontend
 
 @Entity
 @Table(name = "questions")
