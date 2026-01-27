@@ -17,6 +17,9 @@ public class QuizController {
 		this.quizService = quizService;
 	}
 
+	// TODO getAllQuizzes()
+	// TODO 
+	
 	@GetMapping
 	public ResponseEntity<?> getQuizzesByAuthorId(@RequestParam(required = false) Long authorId) {
 		try {
