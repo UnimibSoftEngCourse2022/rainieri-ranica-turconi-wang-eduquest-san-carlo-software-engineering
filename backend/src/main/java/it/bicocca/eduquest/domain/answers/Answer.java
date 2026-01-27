@@ -1,34 +1,66 @@
 package it.bicocca.eduquest.domain.answers;
 
 import jakarta.persistence.*;
+import it.bicocca.eduquest.domain.quiz.Question;
 
 @Entity
+@Table(name = "answers")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
-
-    @ManyToOne
+    protected long id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id")
+    protected Question question;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attempt_id")
     protected QuizAttempt quizAttempt;
+    
+    protected boolean isCorrect;
 
-    public Answer() {}
+    protected Answer() {
+    	
+    }
+    
+    public Answer(QuizAttempt quizAttempt, Question question) {
+        this.quizAttempt = quizAttempt;
+        this.question = question;
+    }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public QuizAttempt getQuizAttempt() {
         return quizAttempt;
     }
 
-    public void setQuizAttempt(QuizAttempt quizAttempt) {
-        this.quizAttempt = quizAttempt;
-    }
+	public Question getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(Question question) {
+		this.question = question;
+	}
+
+	public boolean isCorrect() {
+		return isCorrect;
+	}
+
+	public void setQuizAttempt(QuizAttempt quizAttempt) {
+		this.quizAttempt = quizAttempt;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public void setCorrect(boolean isCorrect) {
+		this.isCorrect = isCorrect;
+	}
+	
 }

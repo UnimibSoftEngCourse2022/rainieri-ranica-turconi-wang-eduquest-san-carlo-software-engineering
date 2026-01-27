@@ -21,7 +21,7 @@ public class Quiz {
 	@Enumerated(EnumType.STRING)
 	private Difficulty difficulty = Difficulty.UNDEFINED;
 	
-	private long maxScore;
+	private int maxScore;
 	
 	@ManyToOne
     @JoinColumn(name = "teacher_id") // Coloumn name in the DB
@@ -83,7 +83,7 @@ public class Quiz {
 		return maxScore;
 	}
 
-	public void setMaxScore(long maxScore) {
+	public void setMaxScore(int maxScore) {
 		this.maxScore = maxScore;
 	}
 
