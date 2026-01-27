@@ -116,5 +116,10 @@ public class Quiz {
 	public void setQuestions(List<Question> questions) {
 		this.questions = questions;
 	}
+	
+	public void addQuestion(Question question) {
+		this.questions.add(question);
+		question.setQuiz(this);
+	}
 
 }

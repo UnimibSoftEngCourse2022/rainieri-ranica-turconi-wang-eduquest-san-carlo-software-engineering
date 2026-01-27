@@ -13,6 +13,10 @@ public class ClosedQuestion extends Question {
 	@OneToMany(mappedBy = "closedQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClosedQuestionOption> options = new ArrayList<>();
 	
+	public ClosedQuestion() {
+		
+	}
+
 	public ClosedQuestion(String text, String topic, User author, Difficulty difficulty) {
 		super(text, topic, author, QuestionType.CLOSED, difficulty);
 	}

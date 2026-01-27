@@ -129,7 +129,7 @@ public class QuizServices {
 				}
 			}
 		} else { 
-			throw new IllegalArgumentException("Tipo di domanda non supportato"); 
+			throw new IllegalArgumentException("Not supported question type."); 
 		}
 		
 		questionsRepository.save(question);
@@ -141,6 +141,46 @@ public class QuizServices {
 		}
 		
 		return questionDTO;
+	}
+	
+	public QuizDTO addQuestionToQuiz (long quizId, long questionId, long userIdFromRequest) {
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Cannot find a quiz with the given ID"));
+		
+		Question question = questionsRepository.findById(questionId).orElseThrow(() -> new RuntimeException("Cannot find a question with the given ID"));
+		
+		if (!quiz.getAuthor().getId().equals(userIdFromRequest)) {
+			throw new RuntimeException("You cannot edit quiz from another author!");
+		}
+		
+		quiz.addQuestion(question);
+		
+		quizRepository.save(quiz);
+		
+		List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
+		QuestionDTO qDTO;
+		for (Question q : quiz.getQuestions()) {
+			if (q instanceof OpenQuestion) {
+				List<String> openAnswerTextString = new ArrayList<String>();
+				List<OpenQuestionAcceptedAnswer> openAnswerList = ((OpenQuestion)q).getValidAnswers();
+				for (OpenQuestionAcceptedAnswer a : openAnswerList) {
+					openAnswerTextString.add(a.getText());
+				}
+				qDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), openAnswerTextString, null);
+			} else {
+				List<ClosedQuestionOptionDTO> optionDTOList = new ArrayList<ClosedQuestionOptionDTO>();
+				List<ClosedQuestionOption> optionList = ((ClosedQuestion)q).getOptions();
+				for (ClosedQuestionOption o : optionList) {
+					ClosedQuestionOptionDTO optionDTO = new ClosedQuestionOptionDTO(o.getText(), o.isTrue());
+					optionDTOList.add(optionDTO);
+				}
+				qDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), null, optionDTOList);
+			}
+			questionsDTO.add(qDTO);
+		}
+		
+		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), userIdFromRequest, questionsDTO);
+		
+		return quizDTO; 
 	}
 		
 }

@@ -13,6 +13,10 @@ public class OpenQuestion extends Question {
 	@OneToMany(mappedBy = "openQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OpenQuestionAcceptedAnswer> validAnswers = new ArrayList<>();
 	
+	public OpenQuestion() {
+		
+	}
+
 	public OpenQuestion(String text, String topic, User author, Difficulty difficulty) {
 		super(text, topic, author, QuestionType.OPENED, difficulty);
 	}

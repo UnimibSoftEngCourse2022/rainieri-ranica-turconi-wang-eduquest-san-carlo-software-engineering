@@ -68,4 +68,15 @@ public class QuizController {
 		}
 	}
 	
+	@PostMapping("/{quizId}/add-question/{questionId}")
+	public ResponseEntity<?> addQuestionToQuiz(@PathVariable Long quizId, @PathVariable Long questionId, Authentication authentication) {
+		String userIdString = authentication.getName();
+		long userId = Long.valueOf(userIdString).longValue();
+		try {
+			return ResponseEntity.ok(quizService.addQuestionToQuiz(quizId, questionId, userId));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(403).body(e.getMessage());	
+		}
+	}
+	
 }
