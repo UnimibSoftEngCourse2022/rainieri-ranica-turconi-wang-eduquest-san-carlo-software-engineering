@@ -1,7 +1,6 @@
 import { verifyUser } from "../js/auth.js";
 
 const LOGIN_PAGE = "/login/index.html";
-
 const STUDENT_ROLE = "STUDENT";
 const ALL_QUIZZES_ENDPOINT = "http://localhost:8080/api/quiz";
 
@@ -19,7 +18,25 @@ window.onload = async () => {
 
         const titleElement = document.getElementById("title");
         titleElement.innerHTML += " - Welcome " + userData.name;
-        
+
+        const showAddBtn = document.getElementById("show-add-question-btn");
+        if (showAddBtn) {
+            showAddBtn.addEventListener('click', () => {
+                document.getElementById('page').style.display = 'none';
+                document.getElementById('add-question-container').style.display = 'block';
+            });
+        }
+
+        const addQuestionComponent = document.querySelector('add-question');
+        if (addQuestionComponent) {
+            addQuestionComponent.addEventListener('operation-completed', () => {
+                document.getElementById('add-question-container').style.display = 'none';
+                document.getElementById('page').style.display = 'block';
+                
+                getAllQuizzes(); 
+            });
+        }
+
         await getAllQuizzes();
     } else {
         window.location.href = LOGIN_PAGE;
@@ -29,7 +46,6 @@ window.onload = async () => {
 const getAllQuizzes = async () => {
     const jwt = window.localStorage.getItem("token");
     const quizzesElement = document.getElementById("quizzes");
-    
     const endpoint = ALL_QUIZZES_ENDPOINT; 
 
     try {
@@ -80,6 +96,5 @@ const getQuizzesElement = (quizzes) => {
 
 window.startQuiz = (quizId) => {
     console.log("Starting quiz ID:", quizId);
-    // window.location.href = `../play-quiz/index.html?id=${quizId}`;
-    alert("Funzionalità Start Quiz: Reindirizzamento al quiz " + quizId);
+    alert("Start Quiz feature: Redirecting to quiz " + quizId);
 };

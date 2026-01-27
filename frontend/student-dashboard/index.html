@@ -16,18 +16,19 @@
         <div class="container my-5" id="page" style="display: none">
             <h1 id="title">Student dashboard</h1>
 
-            <div class="text-center">
-                </a>
-                <a href="../add-question/">
-                    <button type="button" class="btn btn-primary" id="create-quiz-button">
-                        Crea domanda
-                    </button>
-                </a>
+            <div class="text-center my-4">
+                <button type="button" class="btn btn-primary btn-lg" id="show-add-question-btn">
+                    Add question
+                </button>
             </div>
 
             <div class="container text-center my-5" id="quizzes">
-
+                <quizzes-viewer></quizzes-viewer>
             </div>
+        </div>
+
+        <div id="add-question-container" class="container my-5" style="display: none;">
+            <add-question></add-question>
         </div>
 
         <script
@@ -35,6 +36,9 @@
             integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
             crossorigin="anonymous"
         ></script>
+        
+        <script type="module" src="../components/add-question.js"></script>
+        
         <script type="module" src="script.js"></script>
     </body>
 </html>
