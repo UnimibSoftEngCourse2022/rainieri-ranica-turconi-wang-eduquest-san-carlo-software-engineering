@@ -29,37 +29,11 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="quiz-title-input" class="form-label">
-                                    Name
-                                </label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="quiz-title-input"
-                                />
-                            </div>
-                            <div class="mb-3">
-                                <label for="quiz-description-input" class="form-label">
-                                    Description
-                                </label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="quiz-description-input"
-                                />
-                            </div>
+                            <add-quiz></add-quiz>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" id="add-quiz-button">Add</button>
-                        </div>
-                        <div id="add-quiz-result" class="container"></div>
                         </div>
                     </div>
                 </div>
-                <a href="../edit-quiz/">
-                </a>
                 <a href="../add-question/">
                     <button
                         type="button"
@@ -70,7 +44,8 @@
                     </button>
                 </a>
 
-                <div class="container my-5">
+                <div class="container my-5" id="quizzes-container">
+                    <h1>Your quizzes</h1>
                     <quizzes-viewer></quizzes-viewer>
                 </div>
             </div>

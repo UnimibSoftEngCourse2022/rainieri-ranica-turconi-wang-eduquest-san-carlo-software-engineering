@@ -1,6 +1,7 @@
 import { verifyUser } from "../js/auth.js";
-import { Quiz } from "../components/quiz.js";
+import { Quiz } from "../components/quiz-item.js";
 import { QuizzesViewer } from "../components/quizzes-viewer.js";
+import { AddQuiz } from "../components/add-quiz.js";
 
 const LOGIN_PAGE = "/login/";
 
@@ -26,32 +27,3 @@ window.onload = async () => {
     window.location = LOGIN_PAGE;
   }
 };
-
-document.getElementById("add-quiz-button").addEventListener('click', async () => {
-  const jwt = window.localStorage.getItem("token");
-  const title = document.getElementById("quiz-title-input").value;
-  const description = document.getElementById("quiz-description-input").value;
-  
-  const requestBody = {
-    title, description
-  };
-  console.log(requestBody);
-  const response = await fetch(ADD_QUIZ_ENDPOINT, {
-    method: "POST",
-    headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + jwt
-    },
-    body: JSON.stringify(requestBody)
-  });
-
-  const addQuizResultElement = document.getElementById("add-quiz-result");
-  if (response.ok) {
-    const r = await response.json();
-    console.log(r);
-    addQuizResultElement.innerHTML = addQuizSuccessDiv;
-  } else {
-    addQuizResultElement.innerHTML = addQuizErrorDiv;
-  }
-})

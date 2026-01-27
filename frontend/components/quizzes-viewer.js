@@ -3,6 +3,15 @@ export class QuizzesViewer extends HTMLElement {
     const userId = this.getAttribute('userId')
     const role = this.getAttribute('role') || "STUDENT";
 
+    this.renderInitialStructure();
+    this.loadData();
+
+    document.addEventListener("quiz-created", () => {
+        this.loadData();
+    })
+  }
+
+  renderInitialStructure() {
     this.innerHTML = `
     <div class="container my-5 text-center">
         <div class="spinner-border" role="status">
@@ -10,12 +19,16 @@ export class QuizzesViewer extends HTMLElement {
         </div>
     </div>
     `;
+  }
 
+  async loadData() {
+    this.renderInitialStructure();
     try {
-        const quizzes = await this.getQuizzes(userId);
+        const quizzes = await this.getQuizzes(this.userId);
+        this.innerHTML = ''
         quizzes.forEach(quiz => {
             this.innerHTML += `
-            <quiz-item title=${quiz.title} description=${quiz.description} role="TEACHER"></quiz-item>
+            <quiz-item id=${quiz.id} title=${quiz.title} description=${quiz.description} role="TEACHER"></quiz-item>
             `
         });
     } catch (e) {
@@ -24,7 +37,6 @@ export class QuizzesViewer extends HTMLElement {
             Cannot get the quizzes list, please try again later
         </div>
         `
-        console.log(e)
     }
   }
 
