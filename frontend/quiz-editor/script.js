@@ -16,4 +16,14 @@ window.onload = async () => {
   } else {
     window.location = LOGIN_PAGE;
   }
+
+  // FIXME if id doesn't exit, go to another page
+  const url = new URL(window.location);
+  const quizId = url.searchParams.get("id");
+  if (quizId == null) {
+    window.location = LOGIN_PAGE;
+    return;
+  }
+
+  document.getElementById("page").innerHTML = `<quiz-editor id=${quizId}></quiz-editor>`
 };

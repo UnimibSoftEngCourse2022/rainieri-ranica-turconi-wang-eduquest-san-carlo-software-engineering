@@ -28,7 +28,7 @@ export class QuizzesViewer extends HTMLElement {
         this.innerHTML = ''
         quizzes.forEach(quiz => {
             this.innerHTML += `
-            <quiz-item id=${quiz.id} title=${quiz.title} description=${quiz.description} role="TEACHER"></quiz-item>
+            <quiz-item id=${quiz.id} title="${quiz.title}" description=${quiz.description} role="TEACHER"></quiz-item>
             `
         });
     } catch (e) {

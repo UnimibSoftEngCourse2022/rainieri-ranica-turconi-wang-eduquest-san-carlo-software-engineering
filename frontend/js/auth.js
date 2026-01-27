@@ -4,6 +4,7 @@ export const verifyUser = async (role) => {
   const token = window.localStorage.getItem("token");
   if (!token) {
     window.location = LOGIN_PAGE;
+    return;
   }
 
   const response = await fetch(USER_DATA_ENDPOINT_URL, {

@@ -1,6 +1,6 @@
 export class QuizEditor extends HTMLElement {
   connectedCallback() {
-    const quizId = this.getAttribute("id");
+    this.quizId = this.getAttribute("id");
     this.renderInitialStructure();
     this.loadData();
   }
@@ -31,7 +31,6 @@ export class QuizEditor extends HTMLElement {
                     id="description-input"
                 />
             </div>
-            <button type="submit" class="btn btn-primary">Save changes</button>
         </form>
     </div>
     `;
@@ -39,14 +38,41 @@ export class QuizEditor extends HTMLElement {
 
   async loadData() {
     const jwt = window.localStorage.getItem("token");
-    const response = await fetch("http://localhost:8080/api/quiz", {
-        method: "PUT",
+    const quizInfoEndpoint = "http://localhost:8080/api/quiz/"+this.quizId;
+    const response = await fetch(quizInfoEndpoint, {
+        method: "GET",
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "Authorization": "Bearer " + jwt
         }
     });
+
+    if (response.ok) {
+        const quizData = await response.json();
+        
+        document.getElementById("title-input").value = quizData.title;
+        document.getElementById("description-input").value = quizData.description;
+
+        if (quizData.questions.length == 0) {
+            this.innerHTML += `
+            <div class="alert alert-warning" role="alert">
+                This quiz doesn't have any question yet!
+            </div>
+            `;
+        } else {
+            this.innerHTML += `<div class="list-group">`;
+            quizData.questions.forEach(question => {
+                this.innerHTML += `
+                <a href="#" class="list-group-item list-group-item-action">${question.text}</a>
+                `
+            });
+            this.innerHTML += `</div>`;
+        }
+    } else {
+        // TODO show an error
+        console.log("error");
+    }
   }
 }
 

@@ -9,10 +9,10 @@ export class Quiz extends HTMLElement {
     let buttonLink = "";
     if (role === "STUDENT") {
       buttonText = "Run quiz"
-      buttonLink = `../quiz-execution?id=${this.id}`
+      buttonLink = `../quiz-execution/?id=${this.id}`
     } else if (role === "TEACHER") {
       buttonText = "Edit quiz"
-      buttonLink = `../quiz-editor?id=${this.id}`
+      buttonLink = `../quiz-editor/?id=${this.id}`
     }
     const button = `
     <a href="${buttonLink}">
