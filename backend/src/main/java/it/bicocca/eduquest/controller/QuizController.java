@@ -88,4 +88,15 @@ public class QuizController {
 		}
 	}
 	
+	@DeleteMapping("/{quizId}/remove-question/{questionId}")
+	public ResponseEntity<?> removeQuestionFromQuiz(@PathVariable Long quizId, @PathVariable Long questionId, Authentication authentication) {
+		String userIdString = authentication.getName();
+		long userId = Long.valueOf(userIdString).longValue();
+		try {
+			return ResponseEntity.ok(quizService.removeQuestionFromQuiz(quizId, questionId, userId));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(403).body(e.getMessage());	
+		}
+	}
+	
 }

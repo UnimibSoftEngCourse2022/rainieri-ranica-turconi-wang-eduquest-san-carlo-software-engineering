@@ -4,7 +4,7 @@ import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.dto.quiz.*;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore; // Importante per il frontend
+import com.fasterxml.jackson.annotation.JsonIgnore; // Necessary for the frontend
 
 @Entity
 @Table(name = "questions")
@@ -30,17 +30,17 @@ public abstract class Question {
 	@Embedded
 	private QuestionStats stats;
 
-    // --- AGGIUNTA FONDAMENTALE PER RISPETTARE IL DIAGRAMMA ---
+    /*
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     @JsonIgnore
-    private Quiz quiz;
+    private Quiz quiz; */
 	
 	protected Question() {
 		this.stats = new QuestionStats();
 	}
 
-    public Question(Long id, String text, String topic, User author, QuestionType questionType, Difficulty difficulty, Quiz quiz) {
+    /* public Question(Long id, String text, String topic, User author, QuestionType questionType, Difficulty difficulty, Quiz quiz) {
 		this.id = id;
 		this.text = text;
 		this.topic = topic;
@@ -49,7 +49,7 @@ public abstract class Question {
 		this.difficulty = difficulty;
 		this.stats = new QuestionStats();
 		this.quiz = quiz;
-	}
+	} */
 
     public Question(String text, String topic, User author, QuestionType questionType, Difficulty difficulty) {
 		this.text = text;
@@ -60,16 +60,6 @@ public abstract class Question {
 		this.stats = new QuestionStats();
 	}
 
-	// --- GETTER E SETTER DEL NUOVO CAMPO ---
-    public Quiz getQuiz() {
-        return quiz;
-    }
-
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
-    }
-
-	// ... (tutti gli altri getter e setter che avevi già) ...
     public long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getText() { return text; }
