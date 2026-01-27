@@ -59,7 +59,7 @@ public class UserServices {
     
     public UserInfoDTO getUserInfo(long id) {
     	User user = usersRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-    	UserInfoDTO userInfo = new UserInfoDTO(user.getName(), user.getSurname(), user.getEmail(), user.getRole());
+    	UserInfoDTO userInfo = new UserInfoDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getRole());
     	return userInfo;
     }
     

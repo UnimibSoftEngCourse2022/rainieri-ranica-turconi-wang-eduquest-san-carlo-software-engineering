@@ -16,10 +16,18 @@ public class QuizController {
 	public QuizController(QuizServices quizService) {
 		this.quizService = quizService;
 	}
-	
+
 	@GetMapping
-	public List<QuizDTO> getAllQuizzes() {
-		return quizService.getAllQuizzes();
+	public ResponseEntity<?> getQuizzesByAuthorId(@RequestParam(required = false) Long authorId) {
+		try {
+			if (authorId != null) {
+				return ResponseEntity.ok(quizService.getQuizzesByAuthorId(authorId));				
+			} else {
+				return ResponseEntity.ok(quizService.getAllQuizzes());
+			}
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(401).body(e.getMessage());
+		}
 	}
 	
 	@PostMapping

@@ -23,6 +23,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Non usare le sessioni, useremo i Token
             .authorizeHttpRequests(auth -> auth
                 // Login and authentication
+        		.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/auth/**").permitAll() 
                 // other authentication
                 .anyRequest().authenticated()

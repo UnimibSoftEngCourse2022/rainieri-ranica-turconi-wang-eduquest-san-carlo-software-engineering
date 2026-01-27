@@ -41,6 +41,26 @@ public class QuizServices {
 		return quizzesDTO;
 	}
 	
+	public List<QuizDTO> getQuizzesByAuthorId(long authorId) {
+		List<Quiz> quizzes = quizRepository.findAll();
+		
+		List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
+		for (Quiz quiz : quizzes) {
+			if (quiz.getAuthor().getId() != authorId) {
+				continue;
+			}
+			List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
+			for (Question question : quiz.getQuestions()) {
+				QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), QuestionType.OPENED, new ArrayList<String>(), new ArrayList<ClosedQuestionOptionDTO>());	
+				questionsDTO.add(questionDTO);			
+			}
+			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO);
+			quizzesDTO.add(quizDTO);
+		}
+		
+		return quizzesDTO;
+	}
+	
 	public QuizDTO addQuiz(QuizAddDTO quizAddDTO, long userIdFromRequest) {
 		User user = usersRepository.findById(userIdFromRequest).orElseThrow(() -> new RuntimeException("Cannot find a teacher with the given ID"));
 		// modificato quizAddDTO.getTeacherAuthorId() con userIdFromRequest
