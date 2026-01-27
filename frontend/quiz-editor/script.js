@@ -1,7 +1,5 @@
+import { QuizEditor } from "../components/quiz-editor.js";
 import { verifyUser } from "../js/auth.js";
-import { Quiz } from "../components/quiz-item.js";
-import { QuizzesViewer } from "../components/quizzes-viewer.js";
-import { AddQuiz } from "../components/add-quiz.js";
 
 const LOGIN_PAGE = "/login/";
 
@@ -15,9 +13,6 @@ window.onload = async () => {
   if (userData) {
     const pageDiv = document.getElementById("page");
     pageDiv.style.display = "block";
-
-    const titleElement = document.getElementById("title");
-    titleElement.innerHTML += " - Welcome " + userData.name;
   } else {
     window.location = LOGIN_PAGE;
   }

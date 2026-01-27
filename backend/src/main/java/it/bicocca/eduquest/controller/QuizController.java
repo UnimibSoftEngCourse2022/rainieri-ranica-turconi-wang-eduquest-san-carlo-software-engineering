@@ -30,6 +30,15 @@ public class QuizController {
 		}
 	}
 	
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getQuizById(@PathVariable Long id) {
+		try {
+			return ResponseEntity.ok(quizService.getQuizById(id));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(401).body(e.getMessage());
+		}
+	}
+	
 	@PostMapping
 	public ResponseEntity<?> addQuiz(@RequestBody QuizAddDTO quiz, Authentication authentication) {
 		String userIdString = authentication.getName();

@@ -24,9 +24,23 @@ public class QuizServices {
 		this.questionsRepository = questionsRepository;
 	}
 	
+	public QuizDTO getQuizById(long id) {
+		Quiz quiz = quizRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find quiz with ID " + id));
+		List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
+
+		for (Question question : quiz.getQuestions()) {
+			QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), QuestionType.OPENED, new ArrayList<String>(), new ArrayList<ClosedQuestionOptionDTO>());	
+			questionsDTO.add(questionDTO);
+		}
+
+		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO);
+		return quizDTO;
+	}
+	
 	public List<QuizDTO> getAllQuizzes() {
 		List<Quiz> quizzes = quizRepository.findAll();
 		
+		// TODO duplicated code of method above
 		List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
 		for (Quiz quiz : quizzes) {
 			List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();

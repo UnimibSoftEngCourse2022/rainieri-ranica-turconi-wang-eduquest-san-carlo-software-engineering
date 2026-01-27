@@ -1,6 +1,6 @@
 export class QuizzesViewer extends HTMLElement {
   async connectedCallback() {
-    const userId = this.getAttribute('userId')
+    const userId = this.getAttribute('userId');
     const role = this.getAttribute('role') || "STUDENT";
 
     this.renderInitialStructure();
@@ -50,12 +50,12 @@ export class QuizzesViewer extends HTMLElement {
 
     const jwt = window.localStorage.getItem("token");
     const response = await fetch(endpoint, {
-    method: "GET",
-    headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + jwt
-    }
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + jwt
+        }
     });
 
     if (response.ok) {
