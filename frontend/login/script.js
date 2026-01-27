@@ -32,7 +32,7 @@ const handleLoginSubmit = async (event) => {
     window.localStorage.setItem("token", jwtToken);
 
     if (data.role == STUDENT_ROLE) {
-      destination = "../user-dashboard/";
+      destination = "../student-dashboard/";
     } else if (data.role == TEACHER_ROLE) {
       destination = "../teacher-dashboard/";
     }
