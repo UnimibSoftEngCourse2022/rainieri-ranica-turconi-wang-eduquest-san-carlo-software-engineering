@@ -173,13 +173,16 @@ class QuizServicesTest {
         question.setId(questionId);
         question.setText("Open Question");
         question.setQuestionType(QuestionType.OPENED);
+        question.setAuthor(author);
 
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
         when(questionsRepository.findById(questionId)).thenReturn(Optional.of(question));
+        when(quizRepository.save(any(Quiz.class))).thenReturn(quiz);
 
         QuizDTO result = quizServices.addQuestionToQuiz(quizId, questionId, userId);
 
         verify(quizRepository, times(1)).save(quiz);
+        assertNotNull(result.getQuestions());
         assertEquals(1, result.getQuestions().size());
     }
 }
