@@ -55,6 +55,9 @@ public class QuizServices {
 		
 		List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
 		for (Quiz quiz : quizzes) {
+			if (quiz.getAuthor().getId() != authorId) {
+				continue;
+			}
 			List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO);
 			quizzesDTO.add(quizDTO);

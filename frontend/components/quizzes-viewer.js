@@ -1,7 +1,7 @@
 export class QuizzesViewer extends HTMLElement {
   async connectedCallback() {
-    const userId = this.getAttribute('userId');
-    const role = this.getAttribute('role') || "STUDENT";
+    this.userId = this.getAttribute('userId');
+    this.role = this.getAttribute('role') || "STUDENT";
 
     this.renderInitialStructure();
     this.loadData();
@@ -24,7 +24,7 @@ export class QuizzesViewer extends HTMLElement {
   async loadData() {
     this.renderInitialStructure();
     try {
-        const quizzes = await this.getQuizzes(this.userId);
+        const quizzes = await this.getQuizzes();
         this.innerHTML = ''
         quizzes.forEach(quiz => {
             this.innerHTML += `
@@ -32,6 +32,7 @@ export class QuizzesViewer extends HTMLElement {
             `
         });
     } catch (e) {
+        console.log(e);
         this.innerHTML = `
         <div class="alert alert-danger" role="alert">
             Cannot get the quizzes list, please try again later
@@ -40,12 +41,12 @@ export class QuizzesViewer extends HTMLElement {
     }
   }
 
-  async getQuizzes(userId) {
+  async getQuizzes() {
     let endpoint;
-    if (userId == null) {
+    if (this.userId == null) {
         endpoint = "http://localhost:8080/api/quiz";
     } else {
-        endpoint = "http://localhost:8080/api/quiz?authorId=" + userId;
+        endpoint = "http://localhost:8080/api/quiz?authorId=" + this.userId;
     }
 
     const jwt = window.localStorage.getItem("token");

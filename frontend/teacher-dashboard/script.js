@@ -33,6 +33,10 @@ window.onload = async () => {
                 document.getElementById('page').style.display = 'block';
             });
         }
+
+        document.getElementById("quizzes-container").innerHTML = `
+        <quizzes-viewer userId=${userData.id}></quizzes-viewer>
+        `
     } else {
         window.location.href = LOGIN_PAGE;
     }

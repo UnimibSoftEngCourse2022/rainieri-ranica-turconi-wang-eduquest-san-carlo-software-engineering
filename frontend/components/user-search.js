@@ -82,9 +82,9 @@ export class UserSearch extends HTMLElement {
               const userData = await response.json();
               this.populateForm(userData); 
           } else if (response.status === 404) {
-              this.showError("Utente non trovato");
+              this.showError("User not found");
           } else {
-              this.showError("Errore server");
+              this.showError("Server error");
           }
   
       } catch (error) {
