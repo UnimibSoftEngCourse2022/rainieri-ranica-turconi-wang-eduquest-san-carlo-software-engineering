@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.dto.answer;
+package it.bicocca.eduquest.dto.quizAttempt;
 
 import it.bicocca.eduquest.dto.quiz.QuestionType;
 
@@ -94,7 +94,6 @@ public class AnswerDTO {
 
 	public void setCorrect(boolean isCorrect) {
 		this.isCorrect = isCorrect;
-	}
-	
+	}	
 	
 }

@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.dto.answer;
+package it.bicocca.eduquest.dto.quizAttempt;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
