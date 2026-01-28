@@ -1,3 +1,9 @@
 spring:
   application:
     name: EduQuest
+
+# jWT security
+eduquest:
+  app:
+    jwtSecret: PasswordSuperMoltoLungaEComplicatissimaCheNessunoPuoIndovinare123!
+    jwtExpirationMs: 86400000

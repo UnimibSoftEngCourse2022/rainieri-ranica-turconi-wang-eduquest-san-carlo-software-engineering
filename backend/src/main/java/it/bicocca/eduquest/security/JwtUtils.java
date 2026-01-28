@@ -2,50 +2,59 @@ package it.bicocca.eduquest.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
-//for Spring to server
 @Component 
 public class JwtUtils {
 
-    // Long secret key >32 ch
-    private static final String SECRET = "EduQuest_Secret_Key_Bicocca_Super_Sicura_123!";
-    
-    // Token expire time
-    private static final long EXPIRATION_TIME = 86400000; 
+    @Value("${eduquest.app.jwtSecret}")
+    private String jwtSecret;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    @Value("${eduquest.app.jwtExpirationMs}")
+    private int jwtExpirationMs;
+
+    // Helper for getting key
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
 
     // Token generation
     public String generateToken(long userId) {
         return Jwts.builder()
-                .setSubject(String.valueOf(userId)) // Salviamo l'email dentro il token
-                .setIssuedAt(new Date()) // Data creazione
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Data scadenza
-                .signWith(key, SignatureAlgorithm.HS256) // Firma con la chiave segreta
+                .setSubject(String.valueOf(userId)) 
+                .setIssuedAt(new Date()) 
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256) 
                 .compact();
     }
 
     // Token validation
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            return false; // Token non valido
+            return false; 
         }
     }
 
-    // Extra method for getting user email from token
+    // Extraction ID from user
     public long getUserIdFromToken(String token) {
         String userIdStr = Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getSigningKey()) 
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-        return Long.valueOf(userIdStr).longValue();
+        
+        return Long.parseLong(userIdStr);
     }
 }
