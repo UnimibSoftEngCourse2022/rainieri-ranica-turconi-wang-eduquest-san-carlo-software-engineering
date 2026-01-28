@@ -1,5 +1,3 @@
-import { OpenQuestionViewer } from "./open-question-viewer.js";
-
 export class QuestionsViewer extends HTMLElement {
   connectedCallback() {
     this.quizId = this.getAttribute("quizId");
@@ -65,7 +63,7 @@ export class QuestionsViewer extends HTMLElement {
                 <h5 class="card-title">${question.text}</h5>
                 ${difficultyBannerHTML} <br>
                 Answers: ${answers} <br>
-                <a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>
+                ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
                 <div id="add-question-${question.id}-result"></div>
             </div>
         </div>

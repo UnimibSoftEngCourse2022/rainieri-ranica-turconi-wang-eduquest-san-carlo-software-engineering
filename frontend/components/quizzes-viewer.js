@@ -1,3 +1,5 @@
+import { Quiz } from "./quiz-item.js"
+
 export class QuizzesViewer extends HTMLElement {
   async connectedCallback() {
     this.userId = this.getAttribute('userId');
@@ -26,18 +28,25 @@ export class QuizzesViewer extends HTMLElement {
     try {
         const quizzes = await this.getQuizzes();
         if (quizzes.length == 0) {
+            let message = "";
+            if (this.role == "STUDENT") {
+                message = "There isn't any quiz yet! Wait until your teacher will create one!"
+            } else if (this.role == "TEACHER") {
+                message = "You don't have any quiz yet! Create one to start!";
+            }
             this.innerHTML = `
             <div class="alert alert-warning" role="alert">
-                You don't have any quiz yet! Create one to start!
+                ${message}
             </div>
             `
         } else {
-            this.innerHTML = ''
+            let quizzesHTML = ''
             quizzes.forEach(quiz => {
-                this.innerHTML += `
-                <quiz-item id=${quiz.id} title="${quiz.title}" description="${quiz.description}" role="TEACHER"></quiz-item>
+                quizzesHTML += `
+                <quiz-item id=${quiz.id} title="${quiz.title}" description="${quiz.description}" role="${this.role}"></quiz-item>
                 `
             });
+            this.innerHTML = quizzesHTML;
         }
     } catch (e) {
         console.log(e);

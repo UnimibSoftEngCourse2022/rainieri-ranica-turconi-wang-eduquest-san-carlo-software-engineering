@@ -4,7 +4,7 @@ import { QuizzesViewer } from "../components/quizzes-viewer.js";
 import { AddQuiz } from "../components/add-quiz.js";
 
 
-const LOGIN_PAGE = "/login/index.html";
+const LOGIN_PAGE = "../login/index.html";
 const TEACHER_ROLE = "TEACHER";
 
 let userData = null;
@@ -36,7 +36,7 @@ window.onload = async () => {
         }
 
         document.getElementById("quizzes-container").innerHTML = `
-        <quizzes-viewer userId=${userData.id}></quizzes-viewer>
+        <quizzes-viewer userId=${userData.id} role="TEACHER"></quizzes-viewer>
         `
     } else {
         window.location.href = LOGIN_PAGE;

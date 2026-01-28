@@ -16,25 +16,40 @@
         <div class="container my-5" id="page" style="display: none">
             <h1 id="title">Student dashboard</h1>
 
-            <div class="text-center my-4">
-                <button type="button" class="btn btn-primary btn-lg" id="show-add-question-btn">
-                    Add question
-                </button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-question-modal">
+                Add question
+            </button>
+            <div class="modal fade" id="add-question-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add question</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <add-question></add-question>
+                    </div>
+                    </div>
+                </div>
             </div>
-
+            
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <user-search></user-search>
                 </div>
             </div>
+            
+            <hr>
 
             <div class="container text-center my-5" id="quizzes">
-                <quizzes-viewer></quizzes-viewer>
+                <h1>All the quizzes</h1>
+                <quizzes-viewer role="STUDENT"></quizzes-viewer>
             </div>
-        </div>
 
-        <div id="add-question-container" class="container my-5" style="display: none;">
-            <add-question></add-question>
+            <div class="container text-center my-5" id="quizzes">
+                <h1>Your questions</h1>
+                <questions-viewer role="STUDENT"></questions-viewer>
+            </div>
         </div>
 
         <script
@@ -43,11 +58,8 @@
             crossorigin="anonymous"
         ></script>
         
+        <script type="module" src="../components/questions-viewer.js"></script>
         <script type="module" src="../components/add-question.js"></script>
-        
         <script type="module" src="script.js"></script>
-
-        <script type="module" src="../components/user-search.js"></script>
-
     </body>
 </html>
