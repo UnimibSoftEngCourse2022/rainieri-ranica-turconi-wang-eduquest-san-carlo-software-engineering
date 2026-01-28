@@ -135,7 +135,7 @@ public class QuizServices {
 			} else if (question.getQuestionType() == QuestionType.CLOSED) {
 				ClosedQuestion closedQuestion = (ClosedQuestion)question;
 				for (ClosedQuestionOption option : closedQuestion.getOptions()) {
-					ClosedQuestionOptionDTO optionDTO = new ClosedQuestionOptionDTO(option.getText(), option.isTrue());
+					ClosedQuestionOptionDTO optionDTO = new ClosedQuestionOptionDTO(option.getId(), option.getText(), option.isTrue());
 					closedQuestionOptions.add(optionDTO);
 				}
 			}

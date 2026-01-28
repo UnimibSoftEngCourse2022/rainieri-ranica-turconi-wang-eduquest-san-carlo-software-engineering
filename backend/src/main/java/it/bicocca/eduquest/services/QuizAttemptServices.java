@@ -71,13 +71,13 @@ public class QuizAttemptServices {
 		
 		for (Question question : questions) {
 			if (question.getQuestionType() == QuestionType.OPENED) {
-				safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, null));   
+				safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, null, question.getAuthor().getId()));   
 	        } else if (question.getQuestionType() == QuestionType.CLOSED) {
 	            List<ClosedQuestionOptionDTO> safeOptions = new ArrayList<>();
 	            for (ClosedQuestionOption optionDTO : ((ClosedQuestion)question).getOptions()) {
 	                safeOptions.add(new ClosedQuestionOptionDTO(optionDTO.getId(), optionDTO.getText(), false)); 
 	            }
-	            safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, safeOptions));
+	            safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, safeOptions, question.getAuthor().getId()));
 	        } else { 
 				throw new IllegalArgumentException("Not supported question type."); 
 			}
