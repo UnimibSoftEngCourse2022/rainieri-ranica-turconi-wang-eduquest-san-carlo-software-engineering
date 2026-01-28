@@ -1,7 +1,7 @@
 package it.bicocca.eduquest.dto.quiz;
 
 public class ClosedQuestionOptionDTO {
-	private long id;
+	private Long id;
 	private String text;
 	private boolean isTrue;
 
@@ -9,17 +9,17 @@ public class ClosedQuestionOptionDTO {
 		
 	}
 
-	public ClosedQuestionOptionDTO(long id, String text, boolean isTrue) {
+	public ClosedQuestionOptionDTO(Long id, String text, boolean isTrue) {
 		this.id = id;
 		this.text = text;
 		this.isTrue = isTrue;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
