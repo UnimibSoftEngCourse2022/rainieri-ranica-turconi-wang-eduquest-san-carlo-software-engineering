@@ -77,7 +77,8 @@ public class QuizServices {
 		Quiz quiz = new Quiz(quizAddDTO.getTitle(), quizAddDTO.getDescription(), author);
 		quizRepository.save(quiz);
 		
-		QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), new ArrayList<QuestionDTO>());
+		Quiz savedQuiz = quizRepository.save(quiz);
+		QuizDTO quizDTO = new QuizDTO(savedQuiz.getId(), savedQuiz.getTitle(), savedQuiz.getDescription(), savedQuiz.getAuthor().getId(), new ArrayList<QuestionDTO>());
 		
 		return quizDTO;
 	}
