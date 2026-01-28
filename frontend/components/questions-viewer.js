@@ -56,7 +56,7 @@ export class QuestionsViewer extends HTMLElement {
           answers = question.validAnswersOpenQuestion.join(",")
         } else if (question.questionType == "CLOSED") {
           answers = []
-          question.closedQuestionOptions.forEach(option => answers.append(option.text))
+          question.closedQuestionOptions.forEach(option => answers.push(option.text))
         }
 
         questionsHTML += `
@@ -93,11 +93,6 @@ export class QuestionsViewer extends HTMLElement {
 
     const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
     if (response.ok) {
-      addQuestionResult.innerHTML = `
-      <div class="alert alert-success" role="alert">
-            Question added correctly
-      </div>
-      `
       this.dispatchEvent(new CustomEvent("question-added-to-quiz", {
         bubbles: true,
         composed: true

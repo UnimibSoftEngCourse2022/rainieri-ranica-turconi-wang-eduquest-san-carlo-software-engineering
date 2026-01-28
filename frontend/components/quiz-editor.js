@@ -80,14 +80,23 @@ export class QuizEditor extends HTMLElement {
             </div>
             `;
         } else {
-            let questionsDiv = `<div class="list-group">`;
+            let questionsDiv = `
+            <h3>Quiz questions</h3>
+            <div class="list-group">
+            `;
             quizData.questions.forEach(question => {
                 questionsDiv += `
-                <a href="#" class="list-group-item list-group-item-action">${question.text}</a>
+                <a class="list-group-item list-group">${question.text}<button class="btn remove-question-from-quiz-button" data-id="${question.id}">🗑️</button></a>
                 `
             });
             questionsDiv += `</div>`;
             this.quizQuestions.innerHTML = questionsDiv;
+            this.quizQuestions.querySelectorAll(".remove-question-from-quiz-button").forEach(button => {
+                button.addEventListener("click", (event) => {
+                    const questionId = event.target.getAttribute("data-id");
+                    this.removeQuestionFromQuiz(questionId);
+                })
+            })
         }
     } else {
         this.innerHTML = `
@@ -95,6 +104,23 @@ export class QuizEditor extends HTMLElement {
             Error trying to show the quiz, please try again later
         </div>
         `
+    }
+  }
+
+  async removeQuestionFromQuiz(questionId) {
+    const jwt = window.localStorage.getItem("token");
+    const removeQuestionEndpoint = `http://localhost:8080/api/quiz/${this.quizId}/remove-question/${questionId}`;
+    const response = await fetch(removeQuestionEndpoint, {
+        method: "DELETE",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + jwt
+        }
+    });
+
+    if (response.ok) {
+        this.loadData();
     }
   }
 }
