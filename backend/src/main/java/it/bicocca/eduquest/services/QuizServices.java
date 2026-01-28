@@ -258,7 +258,7 @@ public class QuizServices {
 	        } else {
 	            List<ClosedQuestionOptionDTO> safeOptions = new ArrayList<>();
 	            for (ClosedQuestionOptionDTO oDTO : qDTO.getClosedQuestionOptions()) {
-	                safeOptions.add(new ClosedQuestionOptionDTO(oDTO.getText(), false)); 
+	                safeOptions.add(new ClosedQuestionOptionDTO(oDTO.getId(), oDTO.getText(), false)); 
 	            }
 	            studentQuestions.add(new QuestionDTO(qDTO.getId(), qDTO.getText(), qDTO.getDifficulty(), qDTO.getTopic(), qDTO.getQuestionType(), null, safeOptions, qDTO.getAuthorId()));
 	        }
@@ -284,7 +284,7 @@ public class QuizServices {
 				List<ClosedQuestionOptionDTO> optionDTOList = new ArrayList<ClosedQuestionOptionDTO>();
 				List<ClosedQuestionOption> optionList = ((ClosedQuestion)q).getOptions();
 				for (ClosedQuestionOption o : optionList) {
-					ClosedQuestionOptionDTO optionDTO = new ClosedQuestionOptionDTO(o.getText(), o.isTrue());
+					ClosedQuestionOptionDTO optionDTO = new ClosedQuestionOptionDTO(o.getId(), o.getText(), o.isTrue());
 					optionDTOList.add(optionDTO);
 				}
 				qDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), null, optionDTOList, q.getAuthor().getId());
