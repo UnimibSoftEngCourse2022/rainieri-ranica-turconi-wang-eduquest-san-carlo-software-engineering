@@ -2,6 +2,7 @@ import { OpenQuestionViewer } from "./open-question-viewer.js";
 
 export class QuestionsViewer extends HTMLElement {
   connectedCallback() {
+    this.quizId = this.getAttribute("quizId");
     this.authorId = this.getAttribute("authorId");
     this.role = this.getAttribute("role");
     this.render();
@@ -54,7 +55,8 @@ export class QuestionsViewer extends HTMLElement {
         if (question.questionType == "OPENED") {
           answers = question.validAnswersOpenQuestion.join(",")
         } else if (question.questionType == "CLOSED") {
-
+          answers = []
+          question.closedQuestionOptions.forEach(option => answers.append(option.text))
         }
 
         questionsHTML += `
@@ -63,12 +65,50 @@ export class QuestionsViewer extends HTMLElement {
                 <h5 class="card-title">${question.text}</h5>
                 ${difficultyBannerHTML} <br>
                 Answers: ${answers} <br>
-                <a href="#" class="btn btn-primary">Add to quiz</a>
+                <a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>
+                <div id="add-question-${question.id}-result"></div>
             </div>
         </div>
         `
     })
     this.questions.innerHTML = questionsHTML
+    this.questions.querySelectorAll(".add-question-to-quiz-button").forEach(button => {
+      button.addEventListener("click", (event) => {
+        const questionId = event.target.getAttribute("data-id");
+        this.addQuestionToQuiz(questionId);
+      })
+    })
+  }
+
+  async addQuestionToQuiz(questionId) {
+    const jwt = window.localStorage.getItem("token");
+    const response = await fetch(`http://localhost:8080/api/quiz/${this.quizId}/add-question/${questionId}`, {
+      method: "POST",
+      headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + jwt
+      }
+    });
+
+    const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
+    if (response.ok) {
+      addQuestionResult.innerHTML = `
+      <div class="alert alert-success" role="alert">
+            Question added correctly
+      </div>
+      `
+      this.dispatchEvent(new CustomEvent("question-added-to-quiz", {
+        bubbles: true,
+        composed: true
+      }))
+    } else {
+      addQuestionResult.innerHTML = `
+      <div class="alert alert-danger" role="alert">
+            Error adding question
+      </div>
+      `
+    }
   }
 }
 

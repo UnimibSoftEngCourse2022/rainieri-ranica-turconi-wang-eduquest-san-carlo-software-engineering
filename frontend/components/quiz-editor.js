@@ -5,6 +5,8 @@ export class QuizEditor extends HTMLElement {
     this.quizId = this.getAttribute("id");
     this.render();
     this.loadData();
+
+    this.addEventListener("question-added-to-quiz", () => this.loadData());
   }
 
   get quizTitle() {
@@ -48,7 +50,7 @@ export class QuizEditor extends HTMLElement {
         <div id="questions"></div>
         <hr>
         <h3>Add a question</h3>
-        <questions-viewer role="TEACHER"></questions-viewer>
+        <questions-viewer role="TEACHER" quizId="${this.quizId}"></questions-viewer>
     </div>
     `;
   }

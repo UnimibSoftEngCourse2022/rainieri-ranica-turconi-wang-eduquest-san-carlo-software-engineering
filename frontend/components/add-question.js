@@ -151,8 +151,6 @@ export class AddQuestion extends HTMLElement {
         requestBody.closedQuestionOptions = closedOptions
     }
 
-    console.log(requestBody);
-
     this.submitData(requestBody);
   }
 

@@ -25,12 +25,20 @@ export class QuizzesViewer extends HTMLElement {
     this.render();
     try {
         const quizzes = await this.getQuizzes();
-        this.innerHTML = ''
-        quizzes.forEach(quiz => {
-            this.innerHTML += `
-            <quiz-item id=${quiz.id} title="${quiz.title}" description="${quiz.description}" role="TEACHER"></quiz-item>
+        if (quizzes.length == 0) {
+            this.innerHTML = `
+            <div class="alert alert-warning" role="alert">
+                You don't have any quiz yet! Create one to start!
+            </div>
             `
-        });
+        } else {
+            this.innerHTML = ''
+            quizzes.forEach(quiz => {
+                this.innerHTML += `
+                <quiz-item id=${quiz.id} title="${quiz.title}" description="${quiz.description}" role="TEACHER"></quiz-item>
+                `
+            });
+        }
     } catch (e) {
         console.log(e);
         this.innerHTML = `
