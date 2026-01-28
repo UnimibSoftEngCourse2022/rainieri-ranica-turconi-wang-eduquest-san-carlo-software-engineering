@@ -1,9 +1,11 @@
 package it.bicocca.eduquest.domain.answers;
 
-import it.bicocca.eduquest.domain.quiz.ClosedQuestionOption; 
+import it.bicocca.eduquest.domain.quiz.ClosedQuestionOption;
 import it.bicocca.eduquest.domain.quiz.Question;
-import it.bicocca.eduquest.domain.answers.QuizAttempt;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "closed_answers")

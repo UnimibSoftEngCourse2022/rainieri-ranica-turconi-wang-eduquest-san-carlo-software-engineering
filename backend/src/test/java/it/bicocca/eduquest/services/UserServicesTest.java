@@ -1,10 +1,16 @@
 package it.bicocca.eduquest.services;
 
-import it.bicocca.eduquest.domain.users.Role;
-import it.bicocca.eduquest.domain.users.User;
-import it.bicocca.eduquest.dto.user.*;
-import it.bicocca.eduquest.repository.UsersRepository;
-import it.bicocca.eduquest.security.JwtUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,11 +18,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import it.bicocca.eduquest.domain.users.Role;
+import it.bicocca.eduquest.domain.users.User;
+import it.bicocca.eduquest.dto.user.UserInfoDTO;
+import it.bicocca.eduquest.dto.user.UserLoginDTO;
+import it.bicocca.eduquest.dto.user.UserLoginResponseDTO;
+import it.bicocca.eduquest.dto.user.UserRegistrationDTO;
+import it.bicocca.eduquest.repository.UsersRepository;
+import it.bicocca.eduquest.security.JwtUtils;
 
 @ExtendWith(MockitoExtension.class)
 class UserServicesTest {

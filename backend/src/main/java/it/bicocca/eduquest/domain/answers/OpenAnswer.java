@@ -1,9 +1,8 @@
 package it.bicocca.eduquest.domain.answers;
 
+import it.bicocca.eduquest.domain.quiz.Question;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import it.bicocca.eduquest.domain.quiz.Question;
-import it.bicocca.eduquest.domain.answers.QuizAttempt;
 
 @Entity
 @Table(name = "open_answers")

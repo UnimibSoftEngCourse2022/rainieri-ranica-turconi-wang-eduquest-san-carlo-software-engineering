@@ -1,13 +1,20 @@
 package it.bicocca.eduquest.services;
 
+import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder; 
-import it.bicocca.eduquest.domain.users.*;
-import it.bicocca.eduquest.dto.user.*;
+
+import it.bicocca.eduquest.domain.users.Role;
+import it.bicocca.eduquest.domain.users.Student;
+import it.bicocca.eduquest.domain.users.Teacher;
+import it.bicocca.eduquest.domain.users.User;
+import it.bicocca.eduquest.dto.user.UserInfoDTO;
+import it.bicocca.eduquest.dto.user.UserLoginDTO;
+import it.bicocca.eduquest.dto.user.UserLoginResponseDTO;
+import it.bicocca.eduquest.dto.user.UserRegistrationDTO;
 import it.bicocca.eduquest.repository.UsersRepository;
 import it.bicocca.eduquest.security.JwtUtils;
-
-import java.util.List;
 
 @Service
 public class UserServices {

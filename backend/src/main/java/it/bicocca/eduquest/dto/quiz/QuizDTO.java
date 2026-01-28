@@ -2,9 +2,6 @@ package it.bicocca.eduquest.dto.quiz;
 
 import java.util.List;
 
-import it.bicocca.eduquest.dto.user.UserLoginDTO;
-import it.bicocca.eduquest.dto.quiz.QuestionDTO;
-
 public class QuizDTO {
 	private long id;
 	private final String title;

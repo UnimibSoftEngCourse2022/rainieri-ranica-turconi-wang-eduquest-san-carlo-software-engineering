@@ -1,10 +1,20 @@
 package it.bicocca.eduquest.domain.quiz;
 
-import it.bicocca.eduquest.domain.users.*;
-import it.bicocca.eduquest.dto.quiz.*;
-
-import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore; // Necessary for the frontend
+import it.bicocca.eduquest.domain.users.User;
+import it.bicocca.eduquest.dto.quiz.QuestionType;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "questions")

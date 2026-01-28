@@ -1,9 +1,4 @@
 package it.bicocca.eduquest.dto.quiz;
- 
-import java.util.List;
-
-import it.bicocca.eduquest.domain.quiz.Difficulty;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QuizAddDTO {
 	private String title;

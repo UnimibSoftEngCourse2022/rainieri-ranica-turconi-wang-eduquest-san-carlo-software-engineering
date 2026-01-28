@@ -1,9 +1,15 @@
 package it.bicocca.eduquest.domain.quiz;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.bicocca.eduquest.domain.users.User;
 import it.bicocca.eduquest.dto.quiz.QuestionType;
-import jakarta.persistence.*;
-import java.util.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "open_questions")

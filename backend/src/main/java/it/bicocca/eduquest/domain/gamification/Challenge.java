@@ -1,9 +1,15 @@
 package it.bicocca.eduquest.domain.gamification;
 
-import it.bicocca.eduquest.domain.users.User;
-import it.bicocca.eduquest.domain.quiz.Quiz; 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import it.bicocca.eduquest.domain.quiz.Quiz;
+import it.bicocca.eduquest.domain.users.User;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Challenge {

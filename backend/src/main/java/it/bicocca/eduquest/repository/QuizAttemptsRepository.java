@@ -1,11 +1,14 @@
 package it.bicocca.eduquest.repository;
 
-import it.bicocca.eduquest.domain.answers.*;
-import it.bicocca.eduquest.domain.users.*;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import it.bicocca.eduquest.domain.answers.QuizAttempt;
+import it.bicocca.eduquest.domain.answers.QuizAttemptStatus;
 import it.bicocca.eduquest.domain.quiz.Quiz;
-import java.util.Optional;
+import it.bicocca.eduquest.domain.users.User;
 
 @Repository
 public interface QuizAttemptsRepository extends JpaRepository<QuizAttempt, Long> {

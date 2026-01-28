@@ -1,23 +1,34 @@
 package it.bicocca.eduquest.services;
 
-import it.bicocca.eduquest.domain.quiz.*;
-import it.bicocca.eduquest.domain.users.*;
-import it.bicocca.eduquest.dto.quiz.*;
-import it.bicocca.eduquest.repository.QuestionsRepository;
-import it.bicocca.eduquest.repository.QuizRepository;
-import it.bicocca.eduquest.repository.UsersRepository;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import it.bicocca.eduquest.domain.quiz.OpenQuestion;
+import it.bicocca.eduquest.domain.quiz.Question;
+import it.bicocca.eduquest.domain.quiz.Quiz;
+import it.bicocca.eduquest.domain.users.Student;
+import it.bicocca.eduquest.domain.users.Teacher;
+import it.bicocca.eduquest.dto.quiz.QuestionType;
+import it.bicocca.eduquest.dto.quiz.QuizAddDTO;
+import it.bicocca.eduquest.dto.quiz.QuizDTO;
+import it.bicocca.eduquest.dto.quiz.QuizEditDTO;
+import it.bicocca.eduquest.repository.QuestionsRepository;
+import it.bicocca.eduquest.repository.QuizRepository;
+import it.bicocca.eduquest.repository.UsersRepository;
 
 @ExtendWith(MockitoExtension.class)
 class QuizServicesTest {

@@ -1,12 +1,20 @@
 package it.bicocca.eduquest.controller; 
 
-import org.springframework.web.bind.annotation.*;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.http.ResponseEntity;
-import it.bicocca.eduquest.dto.user.*;
-import it.bicocca.eduquest.services.UserServices;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import it.bicocca.eduquest.dto.user.UserInfoDTO;
+import it.bicocca.eduquest.dto.user.UserLoginDTO;
+import it.bicocca.eduquest.dto.user.UserRegistrationDTO;
+import it.bicocca.eduquest.services.UserServices;
 
 @RestController
 @RequestMapping("/auth") // http://localhost:8080/auth

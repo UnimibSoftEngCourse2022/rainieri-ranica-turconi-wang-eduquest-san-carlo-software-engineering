@@ -2,8 +2,12 @@ package it.bicocca.eduquest.services;
 
 import org.springframework.stereotype.Service;
 
-import it.bicocca.eduquest.dto.quizAttempt.*;
-import it.bicocca.eduquest.repository.*;
+import it.bicocca.eduquest.dto.quizAttempt.QuizAttemptDTO;
+import it.bicocca.eduquest.repository.AnswersRepository;
+import it.bicocca.eduquest.repository.QuestionsRepository;
+import it.bicocca.eduquest.repository.QuizAttemptsRepository;
+import it.bicocca.eduquest.repository.QuizRepository;
+import it.bicocca.eduquest.repository.UsersRepository;
 
 @Service
 public class QuizAttemptServices {

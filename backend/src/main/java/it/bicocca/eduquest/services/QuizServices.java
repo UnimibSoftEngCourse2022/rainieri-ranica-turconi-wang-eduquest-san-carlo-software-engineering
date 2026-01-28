@@ -1,16 +1,29 @@
 package it.bicocca.eduquest.services;
 
-import org.springframework.stereotype.Service;
-import it.bicocca.eduquest.repository.QuizRepository;
-import it.bicocca.eduquest.domain.quiz.Question;
-import it.bicocca.eduquest.domain.quiz.*;
-import it.bicocca.eduquest.domain.users.*;
-import it.bicocca.eduquest.dto.quiz.*;
-import it.bicocca.eduquest.repository.UsersRepository;
-import it.bicocca.eduquest.repository.QuestionsRepository;
-import it.bicocca.eduquest.security.JwtUtils;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import it.bicocca.eduquest.domain.quiz.ClosedQuestion;
+import it.bicocca.eduquest.domain.quiz.ClosedQuestionOption;
+import it.bicocca.eduquest.domain.quiz.OpenQuestion;
+import it.bicocca.eduquest.domain.quiz.OpenQuestionAcceptedAnswer;
+import it.bicocca.eduquest.domain.quiz.Question;
+import it.bicocca.eduquest.domain.quiz.Quiz;
+import it.bicocca.eduquest.domain.users.Student;
+import it.bicocca.eduquest.domain.users.Teacher;
+import it.bicocca.eduquest.domain.users.User;
+import it.bicocca.eduquest.dto.quiz.ClosedQuestionOptionDTO;
+import it.bicocca.eduquest.dto.quiz.QuestionAddDTO;
+import it.bicocca.eduquest.dto.quiz.QuestionDTO;
+import it.bicocca.eduquest.dto.quiz.QuestionType;
+import it.bicocca.eduquest.dto.quiz.QuizAddDTO;
+import it.bicocca.eduquest.dto.quiz.QuizDTO;
+import it.bicocca.eduquest.dto.quiz.QuizEditDTO;
+import it.bicocca.eduquest.repository.QuestionsRepository;
+import it.bicocca.eduquest.repository.QuizRepository;
+import it.bicocca.eduquest.repository.UsersRepository;
 
 @Service
 public class QuizServices {

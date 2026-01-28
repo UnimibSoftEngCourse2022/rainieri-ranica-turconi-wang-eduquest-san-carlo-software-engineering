@@ -1,7 +1,8 @@
 package it.bicocca.eduquest.dto.quiz;
 
-import it.bicocca.eduquest.domain.quiz.Difficulty;
 import java.util.List;
+
+import it.bicocca.eduquest.domain.quiz.Difficulty;
 
 public class QuestionDTO {
 	private final long id;

@@ -1,8 +1,6 @@
 package it.bicocca.eduquest.dto.quizAttempt;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import it.bicocca.eduquest.domain.answers.QuizAttemptStatus;
 
