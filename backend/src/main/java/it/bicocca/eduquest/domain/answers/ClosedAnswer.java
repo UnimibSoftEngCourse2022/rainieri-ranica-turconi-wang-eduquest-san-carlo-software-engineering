@@ -16,15 +16,11 @@ public class ClosedAnswer extends Answer {
     public ClosedAnswer() {
     	
     }
-    
-    
 
     public ClosedAnswer(QuizAttempt attempt, Question question, ClosedQuestionOption chosenOption) {
 		super(attempt, question);
 		this.chosenOption = chosenOption;
 	}
-
-
 
 	public ClosedQuestionOption getChosenOption() {
         return chosenOption;
