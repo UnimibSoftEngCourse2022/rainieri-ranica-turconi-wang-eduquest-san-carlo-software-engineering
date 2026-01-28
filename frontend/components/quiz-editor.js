@@ -1,3 +1,5 @@
+import { QuestionsViewer } from "./questions-viewer.js";
+
 export class QuizEditor extends HTMLElement {
   connectedCallback() {
     this.quizId = this.getAttribute("id");
@@ -44,6 +46,9 @@ export class QuizEditor extends HTMLElement {
             </div>
         </form>
         <div id="questions"></div>
+        <hr>
+        <h3>Add a question</h3>
+        <questions-viewer role="TEACHER"></questions-viewer>
     </div>
     `;
   }

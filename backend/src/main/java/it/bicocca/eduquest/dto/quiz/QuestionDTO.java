@@ -14,7 +14,9 @@ public class QuestionDTO {
 	private final List<String> validAnswersOpenQuestion;
 	private final List<ClosedQuestionOptionDTO> closedQuestionOptions;
 	
-	public QuestionDTO(long id, String text, Difficulty difficulty, String topic, QuestionType questionType, List<String> validAnswersOpenQuestion, List<ClosedQuestionOptionDTO> closedQuestionOptions) {
+	private final long authorId;
+	
+	public QuestionDTO(long id, String text, Difficulty difficulty, String topic, QuestionType questionType, List<String> validAnswersOpenQuestion, List<ClosedQuestionOptionDTO> closedQuestionOptions, long authorId) {
 		this.id = id;
 		this.text = text;
 		this.difficulty = difficulty;
@@ -22,6 +24,11 @@ public class QuestionDTO {
 		this.questionType = questionType;
 		this.validAnswersOpenQuestion = validAnswersOpenQuestion;
 		this.closedQuestionOptions = closedQuestionOptions;
+		this.authorId = authorId;
+	}
+
+	public long getAuthorId() {
+		return authorId;
 	}
 
 	public long getId() {

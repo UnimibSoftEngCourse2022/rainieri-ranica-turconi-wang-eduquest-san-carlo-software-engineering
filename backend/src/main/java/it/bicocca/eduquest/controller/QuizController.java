@@ -67,6 +67,19 @@ public class QuizController {
 		}
 	}
 	
+	@GetMapping("/question")
+	public ResponseEntity<?> getQuestions(@RequestParam(required = false) Long authorId) {
+		try {
+			if (authorId != null) {
+				return ResponseEntity.ok(quizService.getQuestionsByAuthorId(authorId));				
+			} else {
+				return ResponseEntity.ok(quizService.getAllQuestions());
+			}
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(401).body(e.getMessage());
+		}
+	}
+	
 	@PostMapping("/question")
 	public ResponseEntity<?> addQuestion(@RequestBody QuestionAddDTO question, Authentication authentication) {
 		String userIdString = authentication.getName();

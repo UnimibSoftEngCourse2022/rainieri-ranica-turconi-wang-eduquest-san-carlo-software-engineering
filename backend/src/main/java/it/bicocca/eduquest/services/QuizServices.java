@@ -29,7 +29,7 @@ public class QuizServices {
 		List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
 
 		for (Question question : quiz.getQuestions()) {
-			QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), QuestionType.OPENED, new ArrayList<String>(), new ArrayList<ClosedQuestionOptionDTO>());	
+			QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), QuestionType.OPENED, new ArrayList<String>(), new ArrayList<ClosedQuestionOptionDTO>(), question.getAuthor().getId());	
 			questionsDTO.add(questionDTO);
 		}
 
@@ -100,6 +100,42 @@ public class QuizServices {
 		return quizDTO; 
 	}
 	
+	public List<QuestionDTO> getAllQuestions() {
+		List<Question> questions = questionsRepository.findAll();
+		List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
+		for (Question question : questions) {
+			List<String> validAnswersOpenQuestion = new ArrayList<String>();
+			List<ClosedQuestionOptionDTO> closedQuestionOptions = new ArrayList<ClosedQuestionOptionDTO>();
+			
+			if (question.getQuestionType() == QuestionType.OPENED) {
+				OpenQuestion openQuestion = (OpenQuestion)question;
+				for (OpenQuestionAcceptedAnswer answer : openQuestion.getValidAnswers()) {
+					validAnswersOpenQuestion.add(answer.getText());
+				}
+			} else if (question.getQuestionType() == QuestionType.CLOSED) {
+				ClosedQuestion closedQuestion = (ClosedQuestion)question;
+				for (ClosedQuestionOption option : closedQuestion.getOptions()) {
+					ClosedQuestionOptionDTO optionDTO = new ClosedQuestionOptionDTO(option.getText(), option.isTrue());
+					closedQuestionOptions.add(optionDTO);
+				}
+			}
+			
+			QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), validAnswersOpenQuestion, closedQuestionOptions, question.getAuthor().getId());
+			questionsDTO.add(questionDTO);
+		}
+		return questionsDTO;
+	}
+	
+	public List<QuestionDTO> getQuestionsByAuthorId(long authorId) {
+		List<QuestionDTO> questionsDTO = this.getAllQuestions();
+		for (QuestionDTO questionDTO : questionsDTO) {
+			if (questionDTO.getAuthorId() != authorId) {
+				questionsDTO.remove(questionDTO);
+			}
+		}
+		return questionsDTO;
+	}
+	
 	public QuestionDTO addQuestion(QuestionAddDTO questionAddDTO, long userIdFromRequest) {
 		User user = usersRepository.findById(userIdFromRequest).orElseThrow(() -> new RuntimeException("Cannot find a user with the given ID"));
 		
@@ -136,9 +172,9 @@ public class QuizServices {
 		questionsRepository.save(question);
 		
 		if (question instanceof OpenQuestion) {
-			questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), openQuestionAnswerList, null);
+			questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), openQuestionAnswerList, null, question.getAuthor().getId());
 		} else {
-			questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, closedQuestionOptionList);
+			questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, closedQuestionOptionList, question.getAuthor().getId());
 		}
 		
 		return questionDTO;
@@ -198,13 +234,13 @@ public class QuizServices {
 		
 		for (QuestionDTO qDTO : fullQuestions) {
 			if (qDTO.getQuestionType() == QuestionType.OPENED) {
-	            studentQuestions.add(new QuestionDTO(qDTO.getId(), qDTO.getText(), qDTO.getDifficulty(), qDTO.getTopic(), qDTO.getQuestionType(), null, null));   
+	            studentQuestions.add(new QuestionDTO(qDTO.getId(), qDTO.getText(), qDTO.getDifficulty(), qDTO.getTopic(), qDTO.getQuestionType(), null, null, qDTO.getAuthorId()));   
 	        } else {
 	            List<ClosedQuestionOptionDTO> safeOptions = new ArrayList<>();
 	            for (ClosedQuestionOptionDTO oDTO : qDTO.getClosedQuestionOptions()) {
 	                safeOptions.add(new ClosedQuestionOptionDTO(oDTO.getText(), false)); 
 	            }
-	            studentQuestions.add(new QuestionDTO(qDTO.getId(), qDTO.getText(), qDTO.getDifficulty(), qDTO.getTopic(), qDTO.getQuestionType(), null, safeOptions));
+	            studentQuestions.add(new QuestionDTO(qDTO.getId(), qDTO.getText(), qDTO.getDifficulty(), qDTO.getTopic(), qDTO.getQuestionType(), null, safeOptions, qDTO.getAuthorId()));
 	        }
 		}
 		
@@ -223,7 +259,7 @@ public class QuizServices {
 				for (OpenQuestionAcceptedAnswer a : openAnswerList) {
 					openAnswerTextString.add(a.getText());
 				}
-				qDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), openAnswerTextString, null);
+				qDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), openAnswerTextString, null, q.getAuthor().getId());
 			} else {
 				List<ClosedQuestionOptionDTO> optionDTOList = new ArrayList<ClosedQuestionOptionDTO>();
 				List<ClosedQuestionOption> optionList = ((ClosedQuestion)q).getOptions();
@@ -231,7 +267,7 @@ public class QuizServices {
 					ClosedQuestionOptionDTO optionDTO = new ClosedQuestionOptionDTO(o.getText(), o.isTrue());
 					optionDTOList.add(optionDTO);
 				}
-				qDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), null, optionDTOList);
+				qDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), null, optionDTOList, q.getAuthor().getId());
 			}
 			questionsDTO.add(qDTO);
 		}
