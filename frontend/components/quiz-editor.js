@@ -1,11 +1,23 @@
 export class QuizEditor extends HTMLElement {
   connectedCallback() {
     this.quizId = this.getAttribute("id");
-    this.renderInitialStructure();
+    this.render();
     this.loadData();
   }
 
-  renderInitialStructure() {
+  get quizTitle() {
+    return this.querySelector("#title-input");
+  }
+
+  get quizDescription() {
+    return this.querySelector("#description-input");
+  }
+
+  get quizQuestions() {
+    return this.querySelector("#questions");
+  }
+
+  render() {
     this.innerHTML = `
     <div class="container my-5 text-center">
         <h1>Quiz editor</h1>
@@ -18,7 +30,6 @@ export class QuizEditor extends HTMLElement {
                     type="text"
                     class="form-control"
                     id="title-input"
-                    aria-describedby="emailHelp"
                 />
             </div>
             <div class="mb-3">
@@ -32,6 +43,7 @@ export class QuizEditor extends HTMLElement {
                 />
             </div>
         </form>
+        <div id="questions"></div>
     </div>
     `;
   }
@@ -51,23 +63,24 @@ export class QuizEditor extends HTMLElement {
     if (response.ok) {
         const quizData = await response.json();
         
-        document.getElementById("title-input").value = quizData.title;
-        document.getElementById("description-input").value = quizData.description;
+        this.quizTitle.value = quizData.title;
+        this.quizDescription.value = quizData.description;
 
         if (quizData.questions.length == 0) {
-            this.innerHTML += `
+            this.quizQuestions.innerHTML = `
             <div class="alert alert-warning" role="alert">
                 This quiz doesn't have any question yet!
             </div>
             `;
         } else {
-            this.innerHTML += `<div class="list-group">`;
+            let questionsDiv = `<div class="list-group">`;
             quizData.questions.forEach(question => {
-                this.innerHTML += `
+                questionsDiv += `
                 <a href="#" class="list-group-item list-group-item-action">${question.text}</a>
                 `
             });
-            this.innerHTML += `</div>`;
+            questionsDiv += `</div>`;
+            this.quizQuestions.innerHTML = questionsDiv;
         }
     } else {
         // TODO show an error

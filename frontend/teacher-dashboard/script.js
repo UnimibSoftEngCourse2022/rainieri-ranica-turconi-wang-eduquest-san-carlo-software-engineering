@@ -3,6 +3,7 @@ import { Quiz } from "../components/quiz-item.js";
 import { QuizzesViewer } from "../components/quizzes-viewer.js";
 import { AddQuiz } from "../components/add-quiz.js";
 
+
 const LOGIN_PAGE = "/login/index.html";
 const TEACHER_ROLE = "TEACHER";
 

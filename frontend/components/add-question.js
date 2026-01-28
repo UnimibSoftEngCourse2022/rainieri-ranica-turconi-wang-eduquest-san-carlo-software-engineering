@@ -1,215 +1,177 @@
-class AddQuestion extends HTMLElement {
-    constructor() {
-        super();
-        this.currentType = null; 
-    }
+export class AddQuestion extends HTMLElement {
+  connectedCallback() {
+    this.render();
+    this.setupEventListeners();
+    this.updateQuestionFields();
+  }
 
-    connectedCallback() {
-        this.renderSelectionScreen();
-    }
+  get questionType() {
+    return this.querySelector("#type-input");
+  }
 
-    closeComponent() {
-        this.dispatchEvent(new CustomEvent("operation-completed", {
-            bubbles: true,
-            composed: true
-        }));
-    }
+  get addQuestionForm() {
+    return this.querySelector("#add-question-form");
+  }
 
-    renderSelectionScreen() {
-        this.innerHTML = `
-        <div class="card shadow-sm" style="max-width: 700px; margin: 2rem auto;">
-            <div class="card-header bg-white text-center">
-                <h1 class="h4 mt-2">Select Question Type</h1>
+  get questionText() {
+    return this.querySelector("#text-input");
+  }
+
+  get questionTopic() {
+    return this.querySelector("#topic-input");
+  }
+
+  get questionDifficulty() {
+    return this.querySelector("#difficulty-input");
+  }
+
+  get validAnswers() {
+    return this.querySelector("#valid-answers-input");
+  }
+
+  get addQuestionResult() {
+    return this.querySelector("#add-question-result")
+  }
+
+  render() {
+    this.innerHTML = `
+    <div class="container text-center">
+        <form id="add-question-form">
+            <div class="mb-3">
+                <label for="text-input" class="form-label">
+                    Text
+                </label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="text-input"
+                />
             </div>
-            <div class="card-body text-center p-5">
-                <div class="d-grid gap-3 col-md-8 mx-auto">
-                    <button class="btn btn-outline-primary btn-lg p-3" id="btn-open">
-                        Open Question
-                    </button>
-                    
-                    <div class="input-group">
-                        <button class="btn btn-outline-warning btn-lg flex-grow-1 p-3" id="btn-multi">
-                            Multiple Choice / True-False
-                        </button>
-                        <input type="number" class="form-control" id="option-count" value="4" min="2" max="10" style="max-width: 80px; text-align: center;" title="Number of options">
-                    </div>
-                    <small class="text-muted">Enter 2 in the number box to create a True/False question</small>
-                </div>
+            <div class="mb-3">
+                <label for="topic-input" class="form-label">
+                    Topic
+                </label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="topic-input"
+                />
             </div>
-            <div class="card-footer bg-white text-end">
-                 <button class="btn btn-secondary" id="cancel-selection">Cancel</button>
+            <div class="mb-3">
+                <label for="difficulty-input" class="form-label">
+                    Difficulty
+                </label>
+                <select class="form-select" id="difficulty-input">
+                    <option selected disabled>Select difficulty...</option>
+                    <option value="EASY">Easy</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HARD">Hard</option>
+                </select>
             </div>
+            <div class="mb-3">
+                <label for="type-input" class="form-label">
+                    Question type
+                </label>
+                <select class="form-select" id="type-input">
+                    <option selected value="OPENED">Opened</option>
+                    <option value="CLOSED">Closed</option>
+                </select>
+            </div>
+            <div id="other-fields"></div>
+            <button type="submit" class="btn btn-primary" id="add-question-button">Add question</button>
+            <div class="container my-2" id="add-question-result"></div>
+        </form>
+    </div>
+    `;
+  }
+
+  setupEventListeners() {
+    this.questionType.addEventListener("change", () => this.updateQuestionFields());
+    this.addQuestionForm.addEventListener("submit", (e) => this.handleAddQuestion(e));
+  }
+
+  updateQuestionFields() {
+    const otherFieldsDiv = this.querySelector("#other-fields");
+    const questionType = this.questionType.value.toUpperCase();
+
+    if (questionType == "OPENED") {
+        otherFieldsDiv.innerHTML = `
+        <div class="mb-3">
+            <label for="valid-answers-input" class="form-label">
+                Accepted answers (separated by ',')
+            </label>
+            <input
+                type="text"
+                class="form-control"
+                id="valid-answers-input"
+            />
         </div>
         `;
+    } else {
+        otherFieldsDiv.innerHTML = `
+        Not supported yet
+        `;
+    }
+  }
 
-        this.querySelector('#btn-open').addEventListener('click', () => this.renderForm('OPEN'));
-        
-        this.querySelector('#btn-multi').addEventListener('click', () => {
-            const count = this.querySelector('#option-count').value;
-            this.renderForm('MULTIPLE_CHOICE', parseInt(count));
+  async handleAddQuestion(event) {
+    event.preventDefault();
+
+    const text = this.questionText.value;
+    const topic = this.questionTopic.value;
+    const difficulty = this.questionDifficulty.value;
+    const questionType = this.questionType.value.toUpperCase();
+
+    const requestBody = {
+        text, topic, difficulty, questionType
+    }
+
+    if (questionType == "OPENED") {
+        const validAnswersOpenQuestionRaw = this.querySelector("#valid-answers-input").value.split(",");
+        const validAnswersOpenQuestion = validAnswersOpenQuestionRaw.map(s => s.trim());
+        requestBody.validAnswersOpenQuestion = validAnswersOpenQuestion;
+    } else {
+        console.error("Not supported yet");
+        return;
+    }
+
+    this.submitData(requestBody);
+  }
+
+  async submitData(requestBody) {
+    try {
+        const jwt = window.localStorage.getItem("token");
+        const response = await fetch("http://localhost:8080/api/quiz/question", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + jwt
+            },
+            body: JSON.stringify(requestBody)
         });
-
-        this.querySelector('#cancel-selection').addEventListener('click', () => this.closeComponent());
-    }
-
-    renderForm(type, optionCount = 0) {
-        this.currentType = type;
-        
-        let html = `
-        <div class="card shadow-sm" style="max-width: 700px; margin: 2rem auto;">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h1 class="h4 mt-2 mb-0">Add Question</h1>
-                <button class="btn btn-sm btn-outline-secondary" id="back-selection">Change Type</button>
+    
+        if (response.ok) {
+            this.addQuestionResult.innerHTML = `
+            <div class="alert alert-success" role="alert">
+                Question added successfully
             </div>
-            <div class="card-body">
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Topic</label>
-                        <input type="text" class="form-control" id="question-topic" placeholder="Ex: Math, History...">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Difficulty</label>
-                        <select class="form-select" id="question-difficulty">
-                            <option value="EASY">Easy</option>
-                            <option value="MEDIUM">Medium</option>
-                            <option value="HARD">Hard</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Question Text</label>
-                    <textarea class="form-control" id="question-text" rows="3" placeholder="Type your question here..."></textarea>
-                </div>
-        `;
-
-        if (type === 'OPEN') {
-            html += `<div class="alert alert-info">This question requires a free text answer.</div>`;
-        } 
-        
-        else if (type === 'MULTIPLE_CHOICE') {
-            html += `<label class="form-label fw-bold">Options</label>`;
-            
-            for (let i = 0; i < optionCount; i++) {
-                const letter = String.fromCharCode(65 + i); 
-                const placeholder = (optionCount === 2 && i === 0) ? "Ex: True" : 
-                                    (optionCount === 2 && i === 1) ? "Ex: False" : 
-                                    `Option ${letter}`;
-
-                html += `
-                <div class="input-group mb-2">
-                    <span class="input-group-text fw-bold">${letter}</span>
-                    <input type="text" class="form-control option-input" data-letter="${letter}" placeholder="${placeholder}">
-                </div>`;
-            }
-
-            html += `
-            <div class="mb-3 mt-3">
-                <label class="form-label fw-bold">Correct Answer</label>
-                <select class="form-select" id="correct-answer">
             `;
-            for (let i = 0; i < optionCount; i++) {
-                const letter = String.fromCharCode(65 + i);
-                html += `<option value="${letter}">Option ${letter}</option>`;
-            }
-            html += `</select></div>`;
+        } else {
+            this.addQuestionResult.innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                Error creating question
+            </div>
+            `
         }
-
-        html += `
-            </div>
-            <div class="card-footer d-flex justify-content-end gap-2 bg-white">
-                <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-btn">Save Question</button>
-            </div>
+    } catch (e) {
+        this.addQuestionResult.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+            Error creating question, please try again later
         </div>
-        `;
-
-        this.innerHTML = html;
-
-        this.querySelector('#back-selection').addEventListener('click', () => this.renderSelectionScreen());
-        this.querySelector('#save-btn').addEventListener('click', () => this.saveQuestion(type));
-        this.querySelector('#cancel-btn').addEventListener('click', () => this.closeComponent());
+        `
     }
-
-    async saveQuestion(type) {
-        const questionText = this.querySelector('#question-text').value;
-        const topic = this.querySelector('#question-topic').value;
-        const difficulty = this.querySelector('#question-difficulty').value;
-
-        if (!questionText.trim() || !topic.trim()) {
-            alert("Please enter the question text and topic!");
-            return;
-        }
-
-        let questionDTO = {
-            text: questionText,
-            topic: topic,
-            difficulty: difficulty,
-            questionType: type,
-            validAnswersOpenQuestion: [], 
-            closedQuestionOptions: []
-        };
-
-        if (type === 'MULTIPLE_CHOICE') {
-            const inputs = this.querySelectorAll('.option-input');
-            const selectedCorrectLetter = this.querySelector('#correct-answer').value;
-            
-            let optionsList = [];
-            let allFilled = true;
-
-            inputs.forEach(input => {
-                if(!input.value.trim()) allFilled = false;
-                
-                const currentLetter = input.dataset.letter;
-                const isThisTrue = (currentLetter === selectedCorrectLetter);
-
-                optionsList.push({
-                    text: input.value,
-                    isTrue: isThisTrue
-                });
-            });
-
-            if (!allFilled) {
-                alert("Please fill in all answer options!");
-                return;
-            }
-
-            questionDTO.closedQuestionOptions = optionsList;
-        }
-
-        const jwt = localStorage.getItem("token");
-        const API_URL = "http://localhost:8080/api/question";
-
-        if (!jwt) {
-            alert("Error: You are not logged in!");
-            window.location.href = "../login/index.html";
-            return;
-        }
-
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + jwt
-                },
-                body: JSON.stringify(questionDTO)
-            });
-
-            if (response.ok) {
-                alert("Question saved successfully!");
-                this.closeComponent();
-            } else {
-                const errorText = await response.text();
-                console.error("Server error:", errorText);
-                alert("Error saving question: " + response.status);
-            }
-        } catch (error) {
-            console.error("Connection error:", error);
-            alert("Unable to contact the server.");
-        }
-    }
+  }
 }
 
 customElements.define('add-question', AddQuestion);

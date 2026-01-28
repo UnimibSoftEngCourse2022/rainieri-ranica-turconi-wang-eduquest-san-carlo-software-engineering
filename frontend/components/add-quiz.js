@@ -1,10 +1,22 @@
 export class AddQuiz extends HTMLElement {
   connectedCallback() {
-    this.renderInitialStructure();
+    this.render();
     document.getElementById("add-quiz-button").addEventListener("click", (e) => this.handleAddQuiz(e));
   }
 
-  renderInitialStructure() {
+  get quizTitle() {
+    return this.querySelector("#quiz-title-input");
+  }
+
+  get quizDescription() {
+    return this.querySelector("#quiz-description-input");
+  }
+
+  get addQuizResult() {
+    return document.getElementById("add-quiz-result");
+  }
+
+  render() {
     this.innerHTML = `
     <div class="mb-3">
         <label for="quiz-title-input" class="form-label">
@@ -35,14 +47,19 @@ export class AddQuiz extends HTMLElement {
   }
 
   async handleAddQuiz(event) {
-    const jwt = window.localStorage.getItem("token");
-    const title = document.getElementById("quiz-title-input").value;
-    const description = document.getElementById("quiz-description-input").value;
+    const title = this.quizTitle.value;
+    const description = this.quizDescription.value;
     
     const requestBody = {
         title, description
     };
-    const response = await fetch("http://localhost:8080/api/quiz", {
+    
+    this.submitData(requestBody);
+  }
+
+  async submitData(requestBody) {
+        const jwt = window.localStorage.getItem("token");    
+        const response = await fetch("http://localhost:8080/api/quiz", {
         method: "POST",
         headers: {
             "Accept": "application/json",
@@ -52,21 +69,20 @@ export class AddQuiz extends HTMLElement {
         body: JSON.stringify(requestBody)
     });
 
-    const resultDiv = document.getElementById("add-quiz-result")
     if (response.ok) {
         const r = await response.json();
-        resultDiv.innerHTML = `
+        this.addQuizResult.innerHTML = `
         <div class="alert alert-success" role="alert">
             Quiz created successfully
         </div>
         `
 
         this.dispatchEvent(new CustomEvent("quiz-created", {
-            bubbles: true,   // Permette all'evento di risalire fino al body/document
-            composed: true   // Permette all'evento di attraversare lo Shadow DOM
+            bubbles: true,
+            composed: true
         }))
     } else {
-        resultDiv.innerHTML = `
+        this.addQuizResult.innerHTML = `
         <div class="alert alert-warning" role="alert">
             Error during the quiz creation
         </div>

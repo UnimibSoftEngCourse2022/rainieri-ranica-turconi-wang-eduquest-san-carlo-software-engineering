@@ -2,7 +2,7 @@ export class Quiz extends HTMLElement {
   connectedCallback() {
     const id = this.getAttribute('id');
     const title = this.getAttribute('title');
-    const desc = this.getAttribute('description');
+    const description = this.getAttribute('description') || "";
     const role = this.getAttribute('role') || "STUDENT";
 
     let buttonText = "";
@@ -23,7 +23,7 @@ export class Quiz extends HTMLElement {
     this.innerHTML = `
       <div class="card my-2" style="border: 1px solid #ccc; padding: 10px;">
         <h3>${title}</h3>
-        <p>${desc}</p>
+        <p>${description}</p>
         ${button}
     </div>
     `;
