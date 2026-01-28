@@ -88,8 +88,11 @@ export class QuizEditor extends HTMLElement {
             this.quizQuestions.innerHTML = questionsDiv;
         }
     } else {
-        // TODO show an error
-        console.log("error");
+        this.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+            Error trying to show the quiz, please try again later
+        </div>
+        `
     }
   }
 }

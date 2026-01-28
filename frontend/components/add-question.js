@@ -3,6 +3,8 @@ export class AddQuestion extends HTMLElement {
     this.render();
     this.setupEventListeners();
     this.updateQuestionFields();
+
+    this.nClosedQuestionOptions = 4;
   }
 
   get questionType() {
@@ -108,9 +110,18 @@ export class AddQuestion extends HTMLElement {
         </div>
         `;
     } else {
-        otherFieldsDiv.innerHTML = `
-        Not supported yet
-        `;
+        let otherFieldsHTML = ``;
+        for (let i = 0; i < this.nClosedQuestionOptions; i++) {
+            otherFieldsHTML += `
+            <div class="input-group mb-3">
+                <input id="closed-option-${i}-text" type="text" class="form-control" placeholder="Option...">
+                <div class="input-group-text">
+                    <input class="form-check-input mt-0" type="checkbox" value="" id="closed-option-${i}-is-true">
+                </div>
+            </div>
+            `;
+        }
+        otherFieldsDiv.innerHTML = otherFieldsHTML;
     }
   }
 
@@ -131,9 +142,16 @@ export class AddQuestion extends HTMLElement {
         const validAnswersOpenQuestion = validAnswersOpenQuestionRaw.map(s => s.trim());
         requestBody.validAnswersOpenQuestion = validAnswersOpenQuestion;
     } else {
-        console.error("Not supported yet");
-        return;
+        const closedOptions = []
+        for (let i = 0; i < this.nClosedQuestionOptions; i++) {
+            const text = this.querySelector(`#closed-option-${i}-text`).value
+            const isTrue = this.querySelector(`#closed-option-${i}-is-true`).checked
+            closedOptions.push({text, isTrue})
+        }
+        requestBody.closedQuestionOptions = closedOptions
     }
+
+    console.log(requestBody);
 
     this.submitData(requestBody);
   }
