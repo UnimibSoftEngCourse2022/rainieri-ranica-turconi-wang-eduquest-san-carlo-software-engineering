@@ -100,10 +100,17 @@ public class QuizServices {
 		return quizDTO; 
 	}
 	
-	public List<QuestionDTO> getAllQuestions() {
+	public List<QuestionDTO> getAllQuestions(long requestUserId) {
+		User requestUser = usersRepository.findById(requestUserId).orElseThrow(() -> new RuntimeException("Cannot find a user with the given ID"));
+		
 		List<Question> questions = questionsRepository.findAll();
 		List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
 		for (Question question : questions) {
+			if (!(requestUser instanceof Teacher) && !(requestUser.getId() == question.getAuthor().getId())) {
+				continue;
+			}
+			
+			// If the user is a teacher or it's the same who created the question, he can view this question
 			List<String> validAnswersOpenQuestion = new ArrayList<String>();
 			List<ClosedQuestionOptionDTO> closedQuestionOptions = new ArrayList<ClosedQuestionOptionDTO>();
 			
@@ -126,8 +133,8 @@ public class QuizServices {
 		return questionsDTO;
 	}
 	
-	public List<QuestionDTO> getQuestionsByAuthorId(long authorId) {
-		List<QuestionDTO> questionsDTO = this.getAllQuestions();
+	public List<QuestionDTO> getQuestionsByAuthorId(long authorId, long requestUserId) {
+		List<QuestionDTO> questionsDTO = this.getAllQuestions(requestUserId);
 		for (QuestionDTO questionDTO : questionsDTO) {
 			if (questionDTO.getAuthorId() != authorId) {
 				questionsDTO.remove(questionDTO);

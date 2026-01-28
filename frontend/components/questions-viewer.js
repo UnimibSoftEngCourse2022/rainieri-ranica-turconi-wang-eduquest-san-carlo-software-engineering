@@ -50,13 +50,19 @@ export class QuestionsViewer extends HTMLElement {
         let difficultyBannerHTML = `
         <span class="badge text-bg-secondary">${question.difficulty}</span></h6>
         `
-        
+        let answers = ''
+        if (question.questionType == "OPENED") {
+          answers = question.validAnswersOpenQuestion.join(",")
+        } else if (question.questionType == "CLOSED") {
+
+        }
+
         questionsHTML += `
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">${question.text}</h5>
                 ${difficultyBannerHTML} <br>
-                <a href="#" class="btn">Show more</a> <br>
+                Answers: ${answers} <br>
                 <a href="#" class="btn btn-primary">Add to quiz</a>
             </div>
         </div>

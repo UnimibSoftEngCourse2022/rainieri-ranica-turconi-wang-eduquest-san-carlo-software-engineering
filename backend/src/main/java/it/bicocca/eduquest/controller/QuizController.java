@@ -68,12 +68,15 @@ public class QuizController {
 	}
 	
 	@GetMapping("/question")
-	public ResponseEntity<?> getQuestions(@RequestParam(required = false) Long authorId) {
+	public ResponseEntity<?> getQuestions(@RequestParam(required = false) Long authorId, Authentication authentication) {
+		String userIdString = authentication.getName();
+		long userId = Long.valueOf(userIdString).longValue();
+		
 		try {
 			if (authorId != null) {
-				return ResponseEntity.ok(quizService.getQuestionsByAuthorId(authorId));				
+				return ResponseEntity.ok(quizService.getQuestionsByAuthorId(authorId, userId));				
 			} else {
-				return ResponseEntity.ok(quizService.getAllQuestions());
+				return ResponseEntity.ok(quizService.getAllQuestions(userId));
 			}
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(401).body(e.getMessage());
