@@ -147,13 +147,9 @@ public class QuizServices {
 	}
 	
 	public List<QuestionDTO> getQuestionsByAuthorId(long authorId, long requestUserId) {
-		List<QuestionDTO> questionsDTO = this.getAllQuestions(requestUserId);
-		for (QuestionDTO questionDTO : questionsDTO) {
-			if (questionDTO.getAuthorId() != authorId) {
-				questionsDTO.remove(questionDTO);
-			}
-		}
-		return questionsDTO;
+	    List<QuestionDTO> questionsDTO = this.getAllQuestions(requestUserId);
+	    questionsDTO.removeIf(questionDTO -> questionDTO.getAuthorId() != authorId);
+	    return questionsDTO;
 	}
 	
 	public QuestionDTO addQuestion(QuestionAddDTO questionAddDTO, long userIdFromRequest) {
