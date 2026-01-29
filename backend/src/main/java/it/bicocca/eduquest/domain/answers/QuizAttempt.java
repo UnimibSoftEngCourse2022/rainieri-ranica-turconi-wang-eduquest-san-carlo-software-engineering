@@ -86,7 +86,7 @@ public class QuizAttempt {
         this.id = id;
     }
 
-    public double getScore() {
+    public int getScore() {
         return score;
     }
 

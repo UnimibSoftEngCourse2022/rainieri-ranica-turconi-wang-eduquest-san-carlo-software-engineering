@@ -16,6 +16,7 @@ import it.bicocca.eduquest.dto.quiz.*;
 import it.bicocca.eduquest.repository.*;
 import java.util.Optional;
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Service
@@ -64,6 +65,126 @@ public class QuizAttemptServices {
 		}
 		
 		return new QuizSessionDTO(quizAttempt.getId(), quiz.getTitle(), quiz.getDescription(), safeQuestionsDTO, existingAnswersDTO);
+	}
+	
+	public AnswerDTO saveSingleAnswer(AnswerDTO answerDTO) {
+		QuizAttempt quizAttempt = quizAttemptsRepository.findById(answerDTO.getQuizAttemptId())
+                .orElseThrow(() -> new RuntimeException("Cannot find a QuizAttempt with the given ID"));
+		
+		if (quizAttempt.getStatus() != QuizAttemptStatus.STARTED) {
+			throw new RuntimeException("You cannot edit a quiz that has already been submitted or has expired!");
+		}
+		
+		Question question = questionsRepository.findById(answerDTO.getQuestionId())
+				.orElseThrow(() -> new RuntimeException("Cannot find a Question with the given ID"));
+		
+		Optional<Answer> existingAnswer = answersRepository.findByQuizAttemptAndQuestion(quizAttempt, question);
+		
+		Answer answer;
+		
+		if (existingAnswer.isPresent()) {
+			answer = existingAnswer.get();
+		} else {
+			if (question instanceof OpenQuestion) {
+				answer = new OpenAnswer();
+			} else if (question instanceof ClosedQuestion) {
+				answer = new ClosedAnswer();
+			} else { 
+				throw new IllegalArgumentException("Not supported question type."); 
+			}
+			answer.setQuizAttempt(quizAttempt);
+			answer.setQuestion(question);
+		} 
+		
+		if (question instanceof OpenQuestion) {
+			if (!(answer instanceof OpenAnswer)) {
+                // If the teacher changed the type of question while I was doing the quiz
+                throw new RuntimeException("Question/answer inconsistency");
+           } ((OpenAnswer)answer).setText(answerDTO.getTextOpenAnswer());
+		} else  if (question instanceof ClosedQuestion) {
+			if (!(answer instanceof ClosedAnswer)) {
+				// If the teacher changed the type of question while I was doing the quiz
+                throw new RuntimeException("Question/answer inconsistency");
+			} if (answerDTO.getSelectedOptionId() == null) {
+                throw new RuntimeException("You must select an option!");
+            }
+			
+			ClosedQuestion closedQuestion = (ClosedQuestion)question;
+			ClosedQuestionOption selectedOption = null;
+			
+			for (ClosedQuestionOption opt : closedQuestion.getOptions()) {
+                if (opt.getId() == answerDTO.getSelectedOptionId()) {
+                    selectedOption = opt;
+                    break;
+                }
+            }
+ 
+            if (selectedOption == null) {
+                throw new RuntimeException("Selected option is invalid or does not belong to this question");
+            }
+            
+            ((ClosedAnswer) answer).setChosenOption(selectedOption);
+		} else { 
+			throw new IllegalArgumentException("Not supported question type."); 
+		}
+		
+		Answer savedAnswer = answersRepository.save(answer);
+		
+		return convertAnswerToDTO(savedAnswer);
+	}
+	
+	public QuizAttemptDTO completeQuizAttempt(long quizAttemptId) {
+		QuizAttempt quizAttempt = quizAttemptsRepository.findById(quizAttemptId)
+                .orElseThrow(() -> new RuntimeException("Cannot find a QuizAttempt with the given ID"));
+		
+		if (quizAttempt.getStatus() != QuizAttemptStatus.STARTED) {
+			throw new RuntimeException("You cannot edit a quiz that has already been submitted or has expired!");
+		}
+		
+		quizAttempt.setFinishedAt(LocalDateTime.now());
+		quizAttempt.setStatus(QuizAttemptStatus.COMPLETED);
+		
+		List<Answer> answers = quizAttempt.getAnswers();
+		quizAttempt.setMaxScore(answers.size());
+		
+		int score = 0;
+		
+		for (Answer a : answers) {
+			boolean isCorrect = false;
+			Question question = a.getQuestion();
+			if (a instanceof ClosedAnswer) {
+				ClosedAnswer closedA = (ClosedAnswer)a;
+				if (closedA.getChosenOption() != null && closedA.getChosenOption().isTrue()) {
+					isCorrect = true;
+				}	
+			} else if (a instanceof OpenAnswer) {
+				OpenAnswer openA = (OpenAnswer)a;
+				OpenQuestion openQ = (OpenQuestion) question;
+				String studentText = openA.getText();
+				
+				if (studentText != null && openQ.getValidAnswers() != null) {
+					for (OpenQuestionAcceptedAnswer validAnswer : openQ.getValidAnswers()) {
+						if (studentText.trim().equalsIgnoreCase(validAnswer.getText().trim())) {
+							isCorrect = true;
+							break;
+						}
+					}
+				}
+			} else { 
+				throw new IllegalArgumentException("Not supported question type."); 
+			}
+			a.setCorrect(isCorrect);
+			if (isCorrect) {
+				score += 1;
+			}
+		}
+		
+		quizAttempt.setScore(score);
+		quizAttemptsRepository.save(quizAttempt);
+		
+		return new QuizAttemptDTO(quizAttempt.getId(), quizAttempt.getQuiz().getId(), quizAttempt.getQuiz().getTitle(), quizAttempt.getStudent().getId(),
+				quizAttempt.getStudent().getName(), quizAttempt.getStudent().getSurname(), quizAttempt.getScore(), quizAttempt.getMaxScore(),
+				quizAttempt.getStartedAt(), quizAttempt.getFinishedAt(), quizAttempt.getStatus());
 	}
 	
 	private List<QuestionDTO> convertQuestionsToSafeDTOs(List<Question> questions) {

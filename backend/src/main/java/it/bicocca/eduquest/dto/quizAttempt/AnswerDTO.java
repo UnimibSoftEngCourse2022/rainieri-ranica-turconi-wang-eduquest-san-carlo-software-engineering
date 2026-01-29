@@ -3,25 +3,25 @@ package it.bicocca.eduquest.dto.quizAttempt;
 import it.bicocca.eduquest.dto.quiz.QuestionType;
 
 public class AnswerDTO {
-	private long id;
+	private Long id;
 	
-	private long questionId;
+	private Long questionId;
 	private QuestionType questionType;
 	
 	private String textOpenAnswer;
 	
-	private long selectedOptionId;
+	private Long selectedOptionId;
 	private String selectedOptionText;
 	
-	private long quizAttemptId;
+	private Long quizAttemptId;
 	
-	private boolean isCorrect;
+	private Boolean isCorrect;
 
 	public AnswerDTO() {
 		
 	}
 
-	public AnswerDTO(long id, long quizAttemptId, long questionId, QuestionType type, String textOpenAnswer, long selectedOptionId, String selectedOptionText, Boolean isCorrect) {
+	public AnswerDTO(Long id, Long quizAttemptId, Long questionId, QuestionType type, String textOpenAnswer, Long selectedOptionId, String selectedOptionText, Boolean isCorrect) {
         this.id = id;
         this.quizAttemptId = quizAttemptId;
         this.questionId = questionId;
@@ -32,11 +32,11 @@ public class AnswerDTO {
         this.isCorrect = isCorrect;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public long getQuestionId() {
+	public Long getQuestionId() {
 		return questionId;
 	}
 
@@ -48,7 +48,7 @@ public class AnswerDTO {
 		return textOpenAnswer;
 	}
 
-	public long getSelectedOptionId() {
+	public Long getSelectedOptionId() {
 		return selectedOptionId;
 	}
 
@@ -56,19 +56,19 @@ public class AnswerDTO {
 		return selectedOptionText;
 	}
 
-	public long getQuizAttemptId() {
+	public Long getQuizAttemptId() {
 		return quizAttemptId;
 	}
 
-	public boolean isCorrect() {
+	public Boolean isCorrect() {
 		return isCorrect;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public void setQuestionId(long questionId) {
+	public void setQuestionId(Long questionId) {
 		this.questionId = questionId;
 	}
 
@@ -80,7 +80,7 @@ public class AnswerDTO {
 		this.textOpenAnswer = textOpenAnswer;
 	}
 
-	public void setSelectedOptionId(long selectedOptionId) {
+	public void setSelectedOptionId(Long selectedOptionId) {
 		this.selectedOptionId = selectedOptionId;
 	}
 
@@ -88,11 +88,11 @@ public class AnswerDTO {
 		this.selectedOptionText = selectedOptionText;
 	}
 
-	public void setQuizAttemptId(long quizAttemptId) {
+	public void setQuizAttemptId(Long quizAttemptId) {
 		this.quizAttemptId = quizAttemptId;
 	}
 
-	public void setCorrect(boolean isCorrect) {
+	public void setCorrect(Boolean isCorrect) {
 		this.isCorrect = isCorrect;
 	}	
 	

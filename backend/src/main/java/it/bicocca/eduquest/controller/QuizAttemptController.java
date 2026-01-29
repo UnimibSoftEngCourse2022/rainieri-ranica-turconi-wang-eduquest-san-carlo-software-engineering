@@ -28,4 +28,26 @@ public class QuizAttemptController {
         	return ResponseEntity.status(401).body(e.getMessage());
         }
     }
+	
+	@PutMapping("/answers") 
+	public ResponseEntity<?> saveSingleAnswer(@RequestBody AnswerDTO answerDTO) {
+		try {
+            AnswerDTO savedAnswer = quizAttemptServices.saveSingleAnswer(answerDTO);
+            return ResponseEntity.ok(savedAnswer);
+        } catch (RuntimeException e) {
+        	return ResponseEntity.badRequest().body(e.getMessage());
+        }
+	}
+	
+	@PostMapping("/{quizAttemptId}/complete")
+	public ResponseEntity<?> completeQuizAttempt(@PathVariable long quizAttemptId) {
+		try {
+			QuizAttemptDTO result = quizAttemptServices.completeQuizAttempt(quizAttemptId);
+			return ResponseEntity.ok(result);	
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
+		}
+	}
 }
