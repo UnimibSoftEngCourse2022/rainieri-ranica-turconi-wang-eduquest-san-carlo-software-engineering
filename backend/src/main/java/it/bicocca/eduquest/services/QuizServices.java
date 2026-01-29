@@ -159,6 +159,13 @@ public class QuizServices {
 	public QuestionDTO addQuestion(QuestionAddDTO questionAddDTO, long userIdFromRequest) {
 		User user = usersRepository.findById(userIdFromRequest).orElseThrow(() -> new RuntimeException("Cannot find a user with the given ID"));
 		
+		if (questionAddDTO.getText() == null || questionAddDTO.getText().trim().isEmpty()) {
+			throw new RuntimeException("The question's text cannot be empty!");
+		}
+		if (questionAddDTO.getTopic() == null || questionAddDTO.getTopic().trim().isEmpty()) {
+			throw new RuntimeException("The question's topic cannot be empty!");
+		}
+		
 		User author = user;
 		Question question;
 		QuestionDTO questionDTO;
