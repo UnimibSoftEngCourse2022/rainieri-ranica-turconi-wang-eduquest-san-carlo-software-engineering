@@ -19,11 +19,6 @@ public class QuizController {
 	}
 
 	@GetMapping
-    public ResponseEntity<?> getAllQuizzes() {
-        return ResponseEntity.ok(quizService.getAllQuizzes());
-    }
-	
-	@GetMapping
 	public ResponseEntity<?> getQuizzesByAuthorId(@RequestParam(required = false) Long authorId) {
 		try {
 			if (authorId != null) {
