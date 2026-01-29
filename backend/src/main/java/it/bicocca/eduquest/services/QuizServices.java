@@ -209,6 +209,12 @@ public class QuizServices {
 			throw new RuntimeException("You cannot edit quiz from another author!");
 		}
 		
+		for (Question quizQuestion : quiz.getQuestions()) {
+			if (quizQuestion.getId() == question.getId()) {
+				throw new RuntimeException("Question already included in the quiz!");
+			}
+		}
+		
 		quiz.addQuestion(question);
 		
 		quizRepository.save(quiz);
