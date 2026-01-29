@@ -15,6 +15,7 @@ import it.bicocca.eduquest.dto.user.UserInfoDTO;
 import it.bicocca.eduquest.dto.user.UserLoginDTO;
 import it.bicocca.eduquest.dto.user.UserRegistrationDTO;
 import it.bicocca.eduquest.services.UserServices;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth") // http://localhost:8080/auth
@@ -28,7 +29,7 @@ public class UserController {
 
     // Registration
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRegistrationDTO dto) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationDTO dto) {
         try {
             return ResponseEntity.ok(userServices.registerUser(dto));
         } catch (RuntimeException e) {

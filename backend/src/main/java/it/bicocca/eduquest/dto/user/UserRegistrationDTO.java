@@ -1,10 +1,15 @@
 package it.bicocca.eduquest.dto.user;
 
 import it.bicocca.eduquest.domain.users.Role;
+import jakarta.validation.constraints.NotBlank;
 
 public class UserRegistrationDTO {
-    private String name;
-    private String surname;
+    
+	@NotBlank
+	private String name;	
+	@NotBlank
+    private String surname;	
+	
     private String email;
     private String password;
     // Let front-end choose the role
