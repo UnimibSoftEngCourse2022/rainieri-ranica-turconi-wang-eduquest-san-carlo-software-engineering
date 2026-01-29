@@ -119,11 +119,10 @@ public class QuizServices {
 		List<Question> questions = questionsRepository.findAll();
 		List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
 		for (Question question : questions) {
-			if (!(requestUser instanceof Teacher) && !(requestUser.getId() == question.getAuthor().getId())) {
+			if (!(requestUser instanceof Teacher) && !requestUser.getId().equals(question.getAuthor().getId())) {
 				continue;
 			}
 			
-			// If the user is a teacher or it's the same who created the question, he can view this question
 			List<String> validAnswersOpenQuestion = new ArrayList<String>();
 			List<ClosedQuestionOptionDTO> closedQuestionOptions = new ArrayList<ClosedQuestionOptionDTO>();
 			
