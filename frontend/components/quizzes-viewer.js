@@ -2,8 +2,8 @@ import { Quiz } from "./quiz-item.js"
 
 export class QuizzesViewer extends HTMLElement {
   async connectedCallback() {
-    this.userId = this.getAttribute('userId');
     this.role = this.getAttribute('role') || "STUDENT";
+    this.userId = this.getAttribute('user-id');
 
     this.render();
     this.loadData();
@@ -43,7 +43,7 @@ export class QuizzesViewer extends HTMLElement {
             let quizzesHTML = ''
             quizzes.forEach(quiz => {
                 quizzesHTML += `
-                <quiz-item id=${quiz.id} title="${quiz.title}" description="${quiz.description}" role="${this.role}"></quiz-item>
+                <quiz-item id="${quiz.id}" title="${quiz.title}" description="${quiz.description}" role="${this.role}" user-id="${this.userId}"></quiz-item>
                 `
             });
             this.innerHTML = quizzesHTML;
@@ -60,7 +60,7 @@ export class QuizzesViewer extends HTMLElement {
 
   async getQuizzes() {
     let endpoint;
-    if (this.userId == null) {
+    if (this.role == "STUDENT") {
         endpoint = "http://localhost:8080/api/quiz";
     } else {
         endpoint = "http://localhost:8080/api/quiz?authorId=" + this.userId;

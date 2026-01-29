@@ -36,7 +36,7 @@ window.onload = async () => {
         }
 
         document.getElementById("quizzes-container").innerHTML = `
-        <quizzes-viewer userId=${userData.id} role="TEACHER"></quizzes-viewer>
+        <quizzes-viewer user-id=${userData.id} role="TEACHER"></quizzes-viewer>
         `
     } else {
         window.location.href = LOGIN_PAGE;

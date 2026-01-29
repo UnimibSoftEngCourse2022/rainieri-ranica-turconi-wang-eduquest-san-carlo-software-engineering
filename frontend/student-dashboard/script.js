@@ -22,4 +22,12 @@ window.onload = async () => {
     } else {
         window.location.href = LOGIN_PAGE;
     }
+
+    document.getElementById("quizzes").innerHTML = `
+    <quizzes-viewer role="STUDENT" user-id="${userData.id}"></quizzes-viewer>
+    `
+
+    document.getElementById("quizzes-attempts").innerHTML = `
+    <quizzes-attempts-viewer user-id="${userData.id}"></quizzes-attempts-viewer>
+    `
 };

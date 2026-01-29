@@ -6,18 +6,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import it.bicocca.eduquest.dto.quizAttempt.*;
+import java.util.List;
 
 import it.bicocca.eduquest.services.QuizAttemptServices;
 
 @RestController
 @RequestMapping("/api/quizAttempt")
-// @CrossOrigin(origins = "*") serve per evitare blocchi se il frontend lavora su una porta diversa, lo usiamo?
+// @CrossOrigin(origins = "*") // serve per evitare blocchi se il frontend lavora su una porta diversa, lo usiamo?
 public class QuizAttemptController {
 	private final QuizAttemptServices quizAttemptServices;
 
 	public QuizAttemptController(QuizAttemptServices quizAttemptServices) {
 		this.quizAttemptServices = quizAttemptServices;
 	}
+	
+	@GetMapping
+    public ResponseEntity<?> getQuizAttempts(@RequestParam Long studentId) {
+        try {
+            List<QuizAttemptDTO> quizAttemptsDTO = quizAttemptServices.getQuizAttemptsByUserId(studentId);
+            return ResponseEntity.ok(quizAttemptsDTO);     
+        } catch (RuntimeException e) {
+        	return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
+	
 	
 	@PostMapping("/start")
     public ResponseEntity<?> startQuiz(@RequestParam Long quizId, @RequestParam Long studentId) {

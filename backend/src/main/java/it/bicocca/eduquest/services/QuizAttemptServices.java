@@ -36,6 +36,23 @@ public class QuizAttemptServices {
 		this.questionsRepository = questionsRepository;
 	}
 	
+	public List<QuizAttemptDTO> getQuizAttemptsByUserId(long userId) {
+		List<QuizAttempt> quizAttempts = quizAttemptsRepository.findAll();
+		
+		List<QuizAttemptDTO> quizAttemptsDTO = new ArrayList<QuizAttemptDTO>();
+		for (QuizAttempt quizAttempt : quizAttempts) {
+			if (quizAttempt.getStudent().getId() != userId) {
+				continue;
+			}
+			QuizAttemptDTO quizAttemptDTO = new QuizAttemptDTO(quizAttempt.getId(), quizAttempt.getQuiz().getId(), quizAttempt.getQuiz().getTitle(), 
+															   quizAttempt.getStudent().getId(), quizAttempt.getStudent().getName(), 
+															   quizAttempt.getStudent().getSurname(), quizAttempt.getScore(), quizAttempt.getMaxScore(), 
+															   quizAttempt.getStartedAt(), quizAttempt.getFinishedAt(), quizAttempt.getStatus());
+			quizAttemptsDTO.add(quizAttemptDTO);
+		}
+		return quizAttemptsDTO;
+	}
+	
 	public QuizSessionDTO startQuiz(long quizId, long studentId) {
 		User user = usersRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Cannot find a student with the given ID"));
 		
