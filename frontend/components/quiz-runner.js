@@ -6,6 +6,7 @@ export class QuizRunner extends HTMLElement {
 
     this.quizQuestions = [];
     this.currentQuestionIndex = -1;
+    this.currentQuestionType;
   }
 
   get upperSpace() {
@@ -20,16 +21,16 @@ export class QuizRunner extends HTMLElement {
     return this.querySelector("#questions-viewer");
   }
 
-  get previousQuestionButton() {
-    return this.querySelector("#button-prev-question");
-  }
-
-  get nextQuestionButton() {
-    return this.querySelector("#button-next-question");
-  }
-
   get saveAnswerButton() {
     return this.querySelector("#save-answer-button");
+  }
+
+  get openQuestionAnswer() {
+    return this.querySelector("#open-question-answer");
+  }
+
+  get closedQuestionAnswer() {
+    return this.querySelector('input[type="radio"]:checked');
   }
 
   render() {
@@ -89,6 +90,7 @@ export class QuizRunner extends HTMLElement {
       const quizData = await response.json();
       this.quizQuestions = quizData.questions;
       this.currentQuestionIndex = 0;
+      this.currentQuestionType = quizData.questions[0].questionType;
       this.updateQuestionsViewer();
     } else {
       this.quizErrorSpace.innerHTML = `
@@ -105,19 +107,9 @@ export class QuizRunner extends HTMLElement {
     let questionsViewerHTML = `
     ${this.getQuestionHTML(currentQuestion)} <br>
     <p>Domanda ${this.currentQuestionIndex + 1}/${this.quizQuestions.length} <br>
-    <button id="button-prev-question" class="btn btn-primary" ${this.currentQuestionIndex == 0                             ? "disabled" : ""}>Previous</button>
-    <button id="button-next-question" class="btn btn-primary" ${this.currentQuestionIndex == this.quizQuestions.length - 1 ? "disabled" : ""}>Next</button>
     `
     
     this.questionsViewer.innerHTML = questionsViewerHTML;
-    this.previousQuestionButton.addEventListener("click", () => {
-      this.currentQuestionIndex--;
-      this.updateQuestionsViewer();
-    })
-    this.nextQuestionButton.addEventListener("click", () => {
-      this.currentQuestionIndex++;
-      this.updateQuestionsViewer();
-    })
     this.saveAnswerButton.addEventListener("click", () => { 
       this.handleSaveAnswerToCurrentQuestion();
     });
@@ -128,9 +120,18 @@ export class QuizRunner extends HTMLElement {
     let html = ``;
     html += `<h1>${question.text}</h1>`;
     if (question.questionType == "OPENED") {
-      html += `<input class="form-control" placeholder="Write here your answer..."></input><br>`
+      html += `<input class="form-control" placeholder="Write here your answer..." id="open-question-answer"></input><br>`
     } else if (question.questionType == "CLOSED") {
-      // TODO
+      html += `<div class="input-group mb-3">`
+      question.closedQuestionOptions.forEach(option => {
+        html += `
+        <div class="input-group-text">
+            <input class="form-check-input mt-0" name="question-${question.id}" type="radio" value="${option.id}" id="closed-option-${option.id}">
+        </div>
+        <label class="form-control" for="closed-option-${option.id}">${option.text}</label>
+        `
+      })
+      html += `</div>`
     }
     html += `<button class="btn btn-primary" id="save-answer-button">Save answer</button><br>`
     return html;
@@ -138,16 +139,24 @@ export class QuizRunner extends HTMLElement {
 
   async handleSaveAnswerToCurrentQuestion() {
     const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
-    const answerInput = this.questionsViewer.querySelector("input");
-    const answerText = answerInput.value;
 
-    console.log("salvo la domanda " + currentQuestion.id + " con risposta: " + answerText);
-
-    const jwt = window.localStorage.getItem("token");
     const requestBody = {
-      questionId: currentQuestion.id,
-      textOpenAnswer: answerText
+      questionId: currentQuestion.id
     }
+
+    let answer;
+    if (this.currentQuestionType == "OPEN") {
+      answer = this.openQuestionAnswer.value;
+      requestBody.openQuestionAnswer = answer;
+    } else if (this.currentQuestionType == "CLOSED") {
+      if (!this.closedQuestionAnswer) {
+        return;
+      }
+      answer = parseInt(this.closedQuestionAnswer.value);
+      requestBody.selectedOptionId = answer;
+    }
+    
+    const jwt = window.localStorage.getItem("token");
     const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}/answers`, {
       method: "PUT",
       headers: {
@@ -157,6 +166,18 @@ export class QuizRunner extends HTMLElement {
       },
       body: JSON.stringify(requestBody)
     });
+
+    if (response.ok) {
+      this.currentQuestionIndex++;
+      this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
+      this.updateQuestionsViewer();
+    } else {
+      this.quizErrorSpace.innerHTML = `
+      <div class="alert alert-danger" role="alert">
+        Error sending your answer, please try again later
+      </div>
+      `
+    }
   }
 }
 
