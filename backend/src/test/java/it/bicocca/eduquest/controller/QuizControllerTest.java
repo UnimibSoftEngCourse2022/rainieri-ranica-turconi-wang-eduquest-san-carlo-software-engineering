@@ -24,8 +24,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import it.bicocca.eduquest.dto.quiz.QuestionAddDTO;
-import it.bicocca.eduquest.dto.quiz.QuestionType;
 import it.bicocca.eduquest.dto.quiz.QuizAddDTO;
 import it.bicocca.eduquest.dto.quiz.QuizDTO;
 import it.bicocca.eduquest.dto.quiz.QuizEditDTO;

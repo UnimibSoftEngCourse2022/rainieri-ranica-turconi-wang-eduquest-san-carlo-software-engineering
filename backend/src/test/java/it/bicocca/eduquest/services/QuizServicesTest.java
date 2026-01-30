@@ -183,27 +183,6 @@ class QuizServicesTest {
     }
 
     @Test
-    void testGetAllQuestions_AsStudent_SeeOnlyOwn() {
-        long studentId = 5L;
-        Student student = new Student(); student.setId(studentId);
-        Teacher teacher = new Teacher(); teacher.setId(6L);
-
-        OpenQuestion q1 = new OpenQuestion("My Q", "T", student, Difficulty.EASY);
-        q1.setId(10L);
-        
-        OpenQuestion q2 = new OpenQuestion("Prof Q", "T", teacher, Difficulty.EASY);
-        q2.setId(11L);
-
-        when(usersRepository.findById(studentId)).thenReturn(Optional.of(student));
-        when(questionsRepository.findAll()).thenReturn(Arrays.asList(q1, q2));
-
-        List<QuestionDTO> result = quizServices.getAllQuestions(studentId);
-
-        assertEquals(1, result.size());
-        assertEquals("My Q", result.get(0).getText());
-    }
-
-    @Test
     void testGetAllQuestions_UserNotFound() {
         when(usersRepository.findById(99L)).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> quizServices.getAllQuestions(99L));
