@@ -27,6 +27,9 @@ import it.bicocca.eduquest.repository.UsersRepository;
 
 @Service
 public class QuizServices {
+	
+	private static final String CANNOT_FIND_QUIZ_MSG = "Cannot find a quiz with the given ID";
+	
 	private final QuizRepository quizRepository;
 	private final UsersRepository usersRepository;
 	private final QuestionsRepository questionsRepository;
@@ -101,7 +104,7 @@ public class QuizServices {
 	}
 	
 	public QuizDTO editQuiz(long quizId, QuizEditDTO quizEditDTO, long userIdFromRequest) {
-		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Cannot find a quiz with the given ID"));
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
 		
 		if (!quiz.getAuthor().getId().equals(userIdFromRequest)) {
 			throw new IllegalStateException("You cannot edit quiz from another author!");
@@ -181,7 +184,7 @@ public class QuizServices {
 	}
 	
 	public QuizDTO addQuestionToQuiz (long quizId, long questionId, long userIdFromRequest) {
-		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Cannot find a quiz with the given ID"));
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
 		
 		Question question = questionsRepository.findById(questionId).orElseThrow(() -> new IllegalArgumentException("Cannot find a question with the given ID"));
 		
@@ -205,7 +208,7 @@ public class QuizServices {
 	}
 	
 	public QuizDTO removeQuestionFromQuiz(long quizId, long questionId, long userIdFromRequest) {
-		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Cannot find a quiz with the given ID"));
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
 		
 		Question question = questionsRepository.findById(questionId).orElseThrow(() -> new IllegalArgumentException("Cannot find a question with the given ID"));
 		
@@ -228,7 +231,7 @@ public class QuizServices {
 			throw new IllegalArgumentException("Given ID is associated to a Teacher, not a Student");
 		}
 		
-		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Cannot find a quiz with the given ID"));
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
 		
 		List<QuestionDTO> fullQuestions = convertQuestionsToDTOs(quiz.getQuestions());
 		

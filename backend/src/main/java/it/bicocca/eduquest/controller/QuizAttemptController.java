@@ -15,6 +15,10 @@ import it.bicocca.eduquest.services.QuizAttemptServices;
 // @CrossOrigin(origins = "*") // serve per evitare blocchi se il frontend lavora su una porta diversa, lo usiamo?
 @CrossOrigin(origins = "http://127.0.0.1:5500") // Aggiungilo qui esplicitamente per test
 public class QuizAttemptController {
+	
+	private static final String NOT_FOUND_MSG = "not found";
+	private static final String CANNOT_FIND_MSG = "Cannot find";
+	
 	private final QuizAttemptServices quizAttemptServices;
 
 	public QuizAttemptController(QuizAttemptServices quizAttemptServices) {
@@ -30,7 +34,7 @@ public class QuizAttemptController {
             return ResponseEntity.ok(quizAttemptServices.getQuizAttemptById(quizAttemptId, loggedId));     
         } catch (RuntimeException e) {
         	String msg = e.getMessage();
-            if (msg.contains("not found")) {
+            if (msg.contains(NOT_FOUND_MSG)) {
                  return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(msg);
@@ -50,7 +54,7 @@ public class QuizAttemptController {
             return ResponseEntity.ok(quizAttemptServices.getQuizAttemptsByUserId(studentId));     
         } catch (RuntimeException e) {
         	String msg = e.getMessage();
-            if (msg.contains("not found")) {
+            if (msg.contains(NOT_FOUND_MSG)) {
                  return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(msg);
@@ -72,7 +76,7 @@ public class QuizAttemptController {
         	String msg = e.getMessage();
 
             // 404 -> quiz or user not found
-            if (msg.contains("Cannot find")) {
+            if (msg.contains(CANNOT_FIND_MSG)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
             }
 
@@ -97,7 +101,7 @@ public class QuizAttemptController {
         	String msg = e.getMessage();
 
             // 404 -> quizAttempt or question not found
-            if (msg.contains("Cannot find") || msg.contains("not found")) {
+            if (msg.contains(CANNOT_FIND_MSG) || msg.contains(NOT_FOUND_MSG)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
             }
             
@@ -125,7 +129,7 @@ public class QuizAttemptController {
 			String msg = e.getMessage();
 
             // 404 -> attempt not found
-            if (msg.contains("Cannot find") || msg.contains("not found")) {
+            if (msg.contains(CANNOT_FIND_MSG) || msg.contains(NOT_FOUND_MSG)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
             }
             

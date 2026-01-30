@@ -12,6 +12,9 @@ import it.bicocca.eduquest.services.QuizServices;
 @RequestMapping("/api/quizzes")
 public class QuizController {
 	
+	private static final String CANNOT_FIND_MSG = "Cannot find";
+	private static final String CANNOT_EDIT_MSG = "cannot edit";
+	
 	private final QuizServices quizService;
 	
 	public QuizController(QuizServices quizService) {
@@ -66,11 +69,11 @@ public class QuizController {
 		} catch (RuntimeException e) {
 			String msg = e.getMessage();
             
-            if (msg.contains("Cannot find")) {
+            if (msg.contains(CANNOT_FIND_MSG)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg); // 404
             }
             
-            if (msg.contains("cannot edit")) {
+            if (msg.contains(CANNOT_EDIT_MSG)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg); // 403
             }
 
@@ -88,11 +91,11 @@ public class QuizController {
 		} catch (RuntimeException e) {
 			String msg = e.getMessage();
 			
-			if (msg.contains("Cannot find")) {
+			if (msg.contains(CANNOT_FIND_MSG)) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg); // 404
 			}
 			
-			if (msg.contains("cannot edit")) {
+			if (msg.contains(CANNOT_EDIT_MSG)) {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg); // 403
 			}
 			
@@ -110,12 +113,12 @@ public class QuizController {
 			String msg = e.getMessage();
 			
 			// Quiz or qomanda not found
-			if (msg.contains("Cannot find")) {
+			if (msg.contains(CANNOT_FIND_MSG)) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
 			}
 			
 			// Edit a quiz of another author
-			if (msg.contains("cannot edit")) {
+			if (msg.contains(CANNOT_EDIT_MSG)) {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
 			}
 			
@@ -134,7 +137,7 @@ public class QuizController {
 			String msg = e.getMessage();
 
 			// 404 -> quiz not Found
-			if (msg.contains("Cannot find a quiz")) {
+			if (msg.contains(CANNOT_FIND_MSG)) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
 			}
 
@@ -149,3 +152,4 @@ public class QuizController {
 	}
 	
 }
+
