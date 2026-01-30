@@ -35,7 +35,7 @@ public abstract class Answer {
     	
     }
     
-    public Answer(QuizAttempt quizAttempt, Question question) {
+    protected Answer(QuizAttempt quizAttempt, Question question) {
         this.quizAttempt = quizAttempt;
         this.question = question;
     }

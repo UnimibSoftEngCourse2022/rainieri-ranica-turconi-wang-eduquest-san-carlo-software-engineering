@@ -23,20 +23,17 @@ public class UserServices {
     private final PasswordEncoder passwordEncoder; 
     private final JwtUtils jwtUtils; 
 
-    // Adding passwordEncoder and jwtUtils  
     public UserServices(UsersRepository usersRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
     }
 
-    // registration
     public UserInfoDTO registerUser(UserRegistrationDTO dto) {
         if (usersRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered!");
+            throw new IllegalArgumentException("Email already registered!");
         }
 
-        // role
         User newUser;
         if (dto.getRole() == Role.TEACHER) {
             newUser = new Teacher(dto.getName(), dto.getSurname(), dto.getEmail(), dto.getPassword());
@@ -44,7 +41,6 @@ public class UserServices {
         	newUser = new Student(dto.getName(), dto.getSurname(), dto.getEmail(), dto.getPassword());
         }
 
-        // password crypting
         newUser.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User savedUser = usersRepository.save(newUser);
@@ -55,20 +51,17 @@ public class UserServices {
         		savedUser.getSurname(),
         		savedUser.getEmail(),
         		savedUser.getRole()
-        		// add UserStats
         	);
     }
     
-    // login
     public UserLoginResponseDTO loginUser(UserLoginDTO dto) {
         User user = usersRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
         
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Password errata");
+            throw new IllegalArgumentException("Password errata");
         }
 
-        // Token JwtUtils
         String token = jwtUtils.generateToken(user.getId());
         
         return new UserLoginResponseDTO(token, user.getId(), user.getRole());
@@ -76,7 +69,7 @@ public class UserServices {
     
     public UserInfoDTO getUserInfo(long id) {
     	User user = usersRepository.findById(id)
-    			.orElseThrow(() -> new RuntimeException("User not found"));
+    			.orElseThrow(() -> new IllegalArgumentException("User not found"));
     	
     	return new UserInfoDTO(
         		user.getId(),
@@ -84,7 +77,6 @@ public class UserServices {
         		user.getSurname(),
         		user.getEmail(),
         		user.getRole()
-        		// add UserStats
         	);
     }
     
@@ -106,4 +98,3 @@ public class UserServices {
 				.toList();
 	}
 }
-

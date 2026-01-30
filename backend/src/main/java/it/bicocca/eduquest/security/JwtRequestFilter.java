@@ -3,7 +3,6 @@ package it.bicocca.eduquest.security;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -17,7 +16,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-	@Autowired private JwtUtils jwtUtils;
+	
+	private final JwtUtils jwtUtils;
+
+	public JwtRequestFilter(JwtUtils jwtUtils) {
+		this.jwtUtils = jwtUtils;
+	}
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

@@ -17,6 +17,7 @@ public class QuestionDTO {
 	
 	private final long authorId;
 	
+	@SuppressWarnings("java:S107")
 	public QuestionDTO(long id, String text, Difficulty difficulty, String topic, QuestionType questionType, List<String> validAnswersOpenQuestion, List<ClosedQuestionOptionDTO> closedQuestionOptions, long authorId) {
 		this.id = id;
 		this.text = text;

@@ -53,13 +53,16 @@ public class QuizAttemptServices {
 	}
 	
 	public QuizSessionDTO startQuiz(long quizId, long studentId) {
-		User user = usersRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Cannot find a student with the given ID"));
+		// FIX: RuntimeException -> IllegalArgumentException
+		User user = usersRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("Cannot find a student with the given ID"));
 		
 		if (!(user instanceof Student)) {
-			throw new RuntimeException("Given ID is associated to a Teacher, not a Student");
+			// FIX: RuntimeException -> IllegalArgumentException
+			throw new IllegalArgumentException("Given ID is associated to a Teacher, not a Student");
 		}
 		
-		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Cannot find quiz with ID " + quizId));
+		// FIX: RuntimeException -> IllegalArgumentException
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Cannot find quiz with ID " + quizId));
 		
 		Optional<QuizAttempt> existingAttemptOpt = quizAttemptsRepository
 	            .findByStudentAndQuizAndStatus(user, quiz, QuizAttemptStatus.STARTED);
@@ -88,11 +91,13 @@ public class QuizAttemptServices {
 		QuizAttempt quizAttempt = getValidQuizAttempt(answerDTO.getQuizAttemptId());
 		
 		if (!quizAttempt.getStudent().getId().equals(requestUserId)) {
-	        throw new RuntimeException("This is not your attempt! You cannot edit it.");
+			// FIX: RuntimeException -> IllegalStateException (Accesso negato/Stato non valido per questo utente)
+	        throw new IllegalStateException("This is not your attempt! You cannot edit it.");
 	    }
 		
+		// FIX: RuntimeException -> IllegalArgumentException
 		Question question = questionsRepository.findById(answerDTO.getQuestionId())
-				.orElseThrow(() -> new RuntimeException("Cannot find a Question with the given ID"));
+				.orElseThrow(() -> new IllegalArgumentException("Cannot find a Question with the given ID"));
 		
 		Answer answer = getOrCreateAnswer(quizAttempt, question);
 		
@@ -109,7 +114,8 @@ public class QuizAttemptServices {
 		QuizAttempt quizAttempt = getValidQuizAttempt(quizAttemptId);
 		
 		if (!quizAttempt.getStudent().getId().equals(requestUserId)) {
-	        throw new RuntimeException("This is not your attempt! You cannot complete it.");
+			// FIX: RuntimeException -> IllegalStateException
+	        throw new IllegalStateException("This is not your attempt! You cannot complete it.");
 	    }
 		
 		quizAttempt.setFinishedAt(LocalDateTime.now());
@@ -173,11 +179,13 @@ public class QuizAttemptServices {
 	
 	
 	private QuizAttempt getValidQuizAttempt(long quizAttemptId) {
+		// FIX: RuntimeException -> IllegalArgumentException
 		QuizAttempt quizAttempt = quizAttemptsRepository.findById(quizAttemptId)
-                .orElseThrow(() -> new RuntimeException("Cannot find a QuizAttempt with the given ID"));
+                .orElseThrow(() -> new IllegalArgumentException("Cannot find a QuizAttempt with the given ID"));
 		
 		if (quizAttempt.getStatus() != QuizAttemptStatus.STARTED) {
-			throw new RuntimeException("You cannot edit a quiz that has already been submitted or has expired!");
+			// FIX: RuntimeException -> IllegalStateException
+			throw new IllegalStateException("You cannot edit a quiz that has already been submitted or has expired!");
 		}
 		return quizAttempt;
 	}
@@ -214,17 +222,20 @@ public class QuizAttemptServices {
 
 	private void updateOpenAnswer(Answer answer, AnswerDTO answerDTO) {
 		if (!(answer instanceof OpenAnswer)) {
-            throw new RuntimeException("Question/answer inconsistency");
+			// FIX: RuntimeException -> IllegalStateException
+            throw new IllegalStateException("Question/answer inconsistency");
        } 
        ((OpenAnswer)answer).setText(answerDTO.getTextOpenAnswer());
 	}
 
 	private void updateClosedAnswer(Answer answer, ClosedQuestion question, AnswerDTO answerDTO) {
 		if (!(answer instanceof ClosedAnswer)) {
-            throw new RuntimeException("Question/answer inconsistency");
+			// FIX: RuntimeException -> IllegalStateException
+            throw new IllegalStateException("Question/answer inconsistency");
 		} 
 		if (answerDTO.getSelectedOptionId() == null) {
-            throw new RuntimeException("You must select an option!");
+			// FIX: RuntimeException -> IllegalArgumentException
+            throw new IllegalArgumentException("You must select an option!");
         }
 		
 		ClosedQuestionOption selectedOption = null;
@@ -237,7 +248,8 @@ public class QuizAttemptServices {
         }
 
         if (selectedOption == null) {
-            throw new RuntimeException("Selected option is invalid or does not belong to this question");
+        	// FIX: RuntimeException -> IllegalArgumentException
+            throw new IllegalArgumentException("Selected option is invalid or does not belong to this question");
         }
         
         ((ClosedAnswer) answer).setChosenOption(selectedOption);
