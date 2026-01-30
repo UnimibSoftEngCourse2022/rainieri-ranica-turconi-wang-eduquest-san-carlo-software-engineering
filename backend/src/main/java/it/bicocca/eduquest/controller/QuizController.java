@@ -19,7 +19,7 @@ public class QuizController {
 	}
 
 	@GetMapping
-	public ResponseEntity<?> getQuizzesByAuthorId(@RequestParam(required = false) Long authorId) {
+	public ResponseEntity<Object> getQuizzesByAuthorId(@RequestParam(required = false) Long authorId) {
 		try {
 			if (authorId != null) {
 				return ResponseEntity.ok(quizService.getQuizzesByAuthorId(authorId));				
@@ -32,7 +32,7 @@ public class QuizController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getQuizById(@PathVariable Long id) {
+	public ResponseEntity<Object> getQuizById(@PathVariable Long id) {
 		try {
 			return ResponseEntity.ok(quizService.getQuizById(id));
 		} catch (RuntimeException e) {
@@ -41,7 +41,7 @@ public class QuizController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> addQuiz(@RequestBody QuizAddDTO quiz, Authentication authentication) {
+	public ResponseEntity<Object> addQuiz(@RequestBody QuizAddDTO quiz, Authentication authentication) {
 		String userIdString = authentication.getName();
 		long userId = Long.valueOf(userIdString).longValue();
 		
@@ -53,7 +53,7 @@ public class QuizController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> editQuiz(@PathVariable("id") long quizId, @RequestBody QuizEditDTO quiz, Authentication authentication) {
+	public ResponseEntity<Object> editQuiz(@PathVariable("id") long quizId, @RequestBody QuizEditDTO quiz, Authentication authentication) {
 		String userIdString = authentication.getName();
 		long userId = Long.valueOf(userIdString).longValue();
 		
@@ -67,7 +67,7 @@ public class QuizController {
 	}
 	
 	@GetMapping("/question")
-	public ResponseEntity<?> getQuestions(@RequestParam(required = false) Long authorId, Authentication authentication) {
+	public ResponseEntity<Object> getQuestions(@RequestParam(required = false) Long authorId, Authentication authentication) {
 		String userIdString = authentication.getName();
 		long userId = Long.valueOf(userIdString).longValue();
 		
@@ -83,7 +83,7 @@ public class QuizController {
 	}
 	
 	@PostMapping("/question")
-	public ResponseEntity<?> addQuestion(@RequestBody QuestionAddDTO question, Authentication authentication) {
+	public ResponseEntity<Object> addQuestion(@RequestBody QuestionAddDTO question, Authentication authentication) {
 		String userIdString = authentication.getName();
 		long userId = Long.valueOf(userIdString).longValue();
 		
@@ -95,7 +95,7 @@ public class QuizController {
 	}
 	
 	@PostMapping("/{quizId}/add-question/{questionId}")
-	public ResponseEntity<?> addQuestionToQuiz(@PathVariable Long quizId, @PathVariable Long questionId, Authentication authentication) {
+	public ResponseEntity<Object> addQuestionToQuiz(@PathVariable Long quizId, @PathVariable Long questionId, Authentication authentication) {
 		String userIdString = authentication.getName();
 		long userId = Long.valueOf(userIdString).longValue();
 		try {
@@ -106,7 +106,7 @@ public class QuizController {
 	}
 	
 	@DeleteMapping("/{quizId}/remove-question/{questionId}")
-	public ResponseEntity<?> removeQuestionFromQuiz(@PathVariable Long quizId, @PathVariable Long questionId, Authentication authentication) {
+	public ResponseEntity<Object> removeQuestionFromQuiz(@PathVariable Long quizId, @PathVariable Long questionId, Authentication authentication) {
 		String userIdString = authentication.getName();
 		long userId = Long.valueOf(userIdString).longValue();
 		try {
@@ -117,7 +117,7 @@ public class QuizController {
 	}
 	
 	@GetMapping("/{quizId}/quiz-for-student")
-	public ResponseEntity<?> getQuizForStudent(@PathVariable("quizId") long quizId, Authentication authentication) {
+	public ResponseEntity<Object> getQuizForStudent(@PathVariable("quizId") long quizId, Authentication authentication) {
 		String userIdString = authentication.getName();
 		long userId = Long.valueOf(userIdString).longValue();
 		try {

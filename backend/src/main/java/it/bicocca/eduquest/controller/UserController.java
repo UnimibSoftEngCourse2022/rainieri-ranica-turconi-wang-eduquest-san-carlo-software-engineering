@@ -29,7 +29,7 @@ public class UserController {
 
     // Registration
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationDTO dto) {
+    public ResponseEntity<Object> register(@Valid @RequestBody UserRegistrationDTO dto) {
         try {
             return ResponseEntity.ok(userServices.registerUser(dto));
         } catch (RuntimeException e) {
@@ -39,7 +39,7 @@ public class UserController {
 
     // login
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginDTO dto) {
+    public ResponseEntity<Object> login(@RequestBody UserLoginDTO dto) {
         try {
             return ResponseEntity.ok(userServices.loginUser(dto));
         } catch (RuntimeException e) {
@@ -48,7 +48,7 @@ public class UserController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserInfo(@PathVariable long id) {
+    public ResponseEntity<Object> getUserInfo(@PathVariable long id) {
     	try {
     		return ResponseEntity.ok(userServices.getUserInfo(id));
     	} catch (RuntimeException e) {
@@ -57,7 +57,7 @@ public class UserController {
     }
     
     @GetMapping("/me")
-    public ResponseEntity<?> getUserInfoFromJwt(Authentication authentication) {
+    public ResponseEntity<Object> getUserInfoFromJwt(Authentication authentication) {
     	try {
     		long userId = (long)authentication.getPrincipal();
     		return ResponseEntity.ok(userServices.getUserInfo(userId));
@@ -68,7 +68,7 @@ public class UserController {
     
     // see all users
     @GetMapping("/all")
-    public ResponseEntity<?> getAllInfos(Authentication authentication) {
+    public ResponseEntity<Object> getAllInfos(Authentication authentication) {
     	if (authentication == null || !authentication.isAuthenticated()) {
     		return ResponseEntity.status(401).body("Accesso negato devi essere autenticato");
     	}

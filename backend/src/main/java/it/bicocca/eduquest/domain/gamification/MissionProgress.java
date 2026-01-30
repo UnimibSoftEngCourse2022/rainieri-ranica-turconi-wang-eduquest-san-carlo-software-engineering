@@ -27,7 +27,9 @@ public class MissionProgress {
     @JoinColumn(name = "user_id")
     private User student; 
 
-    public MissionProgress() {}
+    public MissionProgress() {
+    	// Default constructor
+    }
 
 	public Long getId() {
 		return id;

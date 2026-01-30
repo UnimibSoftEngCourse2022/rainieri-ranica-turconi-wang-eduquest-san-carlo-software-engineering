@@ -7,7 +7,9 @@ public class StudentStats {
 	private int numberOfCompletedQuizzes = 0;
 	private int numberOfCompletedMissions = 0;
 	
-	public StudentStats() {}
+	public StudentStats() {
+		// Default constructor
+	}
 	
 	public int getNumberOfCompletedQuizzes() {
 		return numberOfCompletedQuizzes;

@@ -21,7 +21,7 @@ public class QuizAttemptController {
 	}
 	
 	@GetMapping
-    public ResponseEntity<?> getQuizAttempts(@RequestParam Long studentId) {
+    public ResponseEntity<Object> getQuizAttempts(@RequestParam Long studentId) {
         try {
             List<QuizAttemptDTO> quizAttemptsDTO = quizAttemptServices.getQuizAttemptsByUserId(studentId);
             return ResponseEntity.ok(quizAttemptsDTO);     
@@ -32,7 +32,7 @@ public class QuizAttemptController {
 	
 	
 	@PostMapping("/start")
-    public ResponseEntity<?> startQuiz(@RequestParam Long quizId, @RequestParam Long studentId) {
+    public ResponseEntity<Object> startQuiz(@RequestParam Long quizId, @RequestParam Long studentId) {
         try {
             QuizSessionDTO session = quizAttemptServices.startQuiz(quizId, studentId);
             return ResponseEntity.ok(session);     
@@ -42,7 +42,7 @@ public class QuizAttemptController {
     }
 	
 	@PutMapping("/answers") 
-	public ResponseEntity<?> saveSingleAnswer(@RequestBody AnswerDTO answerDTO) {
+	public ResponseEntity<Object> saveSingleAnswer(@RequestBody AnswerDTO answerDTO) {
 		try {
             AnswerDTO savedAnswer = quizAttemptServices.saveSingleAnswer(answerDTO);
             return ResponseEntity.ok(savedAnswer);
@@ -52,7 +52,7 @@ public class QuizAttemptController {
 	}
 	
 	@PostMapping("/{quizAttemptId}/complete")
-	public ResponseEntity<?> completeQuizAttempt(@PathVariable long quizAttemptId) {
+	public ResponseEntity<Object> completeQuizAttempt(@PathVariable long quizAttemptId) {
 		try {
 			QuizAttemptDTO result = quizAttemptServices.completeQuizAttempt(quizAttemptId);
 			return ResponseEntity.ok(result);	

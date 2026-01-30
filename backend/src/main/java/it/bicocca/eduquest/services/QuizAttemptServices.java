@@ -13,7 +13,6 @@ import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.domain.answers.*;
 import it.bicocca.eduquest.dto.quizAttempt.*;
 import it.bicocca.eduquest.dto.quiz.*;
-import it.bicocca.eduquest.repository.*;
 import java.util.Optional;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -39,7 +38,7 @@ public class QuizAttemptServices {
 	public List<QuizAttemptDTO> getQuizAttemptsByUserId(long userId) {
 		List<QuizAttempt> quizAttempts = quizAttemptsRepository.findAll();
 		
-		List<QuizAttemptDTO> quizAttemptsDTO = new ArrayList<QuizAttemptDTO>();
+		List<QuizAttemptDTO> quizAttemptsDTO = new ArrayList<>();
 		for (QuizAttempt quizAttempt : quizAttempts) {
 			if (quizAttempt.getStudent().getId() != userId) {
 				continue;
@@ -68,7 +67,7 @@ public class QuizAttemptServices {
 		QuizAttempt quizAttempt;
 		
 		if (existingAttemptOpt.isPresent()) {
-			quizAttempt = existingAttemptOpt.get(); // Resume existing attempt
+			quizAttempt = existingAttemptOpt.get(); 
 		} else {
 			quizAttempt = new QuizAttempt(user, quiz);
 			quizAttemptsRepository.save(quizAttempt);
@@ -84,79 +83,26 @@ public class QuizAttemptServices {
 		return new QuizSessionDTO(quizAttempt.getId(), quiz.getTitle(), quiz.getDescription(), safeQuestionsDTO, existingAnswersDTO);
 	}
 	
+
 	public AnswerDTO saveSingleAnswer(AnswerDTO answerDTO) {
-		QuizAttempt quizAttempt = quizAttemptsRepository.findById(answerDTO.getQuizAttemptId())
-                .orElseThrow(() -> new RuntimeException("Cannot find a QuizAttempt with the given ID"));
-		
-		if (quizAttempt.getStatus() != QuizAttemptStatus.STARTED) {
-			throw new RuntimeException("You cannot edit a quiz that has already been submitted or has expired!");
-		}
+		QuizAttempt quizAttempt = getValidQuizAttempt(answerDTO.getQuizAttemptId());
 		
 		Question question = questionsRepository.findById(answerDTO.getQuestionId())
 				.orElseThrow(() -> new RuntimeException("Cannot find a Question with the given ID"));
 		
-		Optional<Answer> existingAnswer = answersRepository.findByQuizAttemptAndQuestion(quizAttempt, question);
+		Answer answer = getOrCreateAnswer(quizAttempt, question);
 		
-		Answer answer;
-		
-		if (existingAnswer.isPresent()) {
-			answer = existingAnswer.get();
-		} else {
-			if (question instanceof OpenQuestion) {
-				answer = new OpenAnswer();
-			} else if (question instanceof ClosedQuestion) {
-				answer = new ClosedAnswer();
-			} else { 
-				throw new IllegalArgumentException("Not supported question type."); 
-			}
-			answer.setQuizAttempt(quizAttempt);
-			answer.setQuestion(question);
-		} 
-		
-		if (question instanceof OpenQuestion) {
-			if (!(answer instanceof OpenAnswer)) {
-                // If the teacher changed the type of question while I was doing the quiz
-                throw new RuntimeException("Question/answer inconsistency");
-           } ((OpenAnswer)answer).setText(answerDTO.getTextOpenAnswer());
-		} else  if (question instanceof ClosedQuestion) {
-			if (!(answer instanceof ClosedAnswer)) {
-				// If the teacher changed the type of question while I was doing the quiz
-                throw new RuntimeException("Question/answer inconsistency");
-			} if (answerDTO.getSelectedOptionId() == null) {
-                throw new RuntimeException("You must select an option!");
-            }
-			
-			ClosedQuestion closedQuestion = (ClosedQuestion)question;
-			ClosedQuestionOption selectedOption = null;
-			
-			for (ClosedQuestionOption opt : closedQuestion.getOptions()) {
-                if (opt.getId() == answerDTO.getSelectedOptionId()) {
-                    selectedOption = opt;
-                    break;
-                }
-            }
- 
-            if (selectedOption == null) {
-                throw new RuntimeException("Selected option is invalid or does not belong to this question");
-            }
-            
-            ((ClosedAnswer) answer).setChosenOption(selectedOption);
-		} else { 
-			throw new IllegalArgumentException("Not supported question type."); 
-		}
+		updateAnswerContent(answer, question, answerDTO);
 		
 		Answer savedAnswer = answersRepository.save(answer);
 		
 		return convertAnswerToDTO(savedAnswer);
 	}
 	
+	
 	public QuizAttemptDTO completeQuizAttempt(long quizAttemptId) {
-		QuizAttempt quizAttempt = quizAttemptsRepository.findById(quizAttemptId)
-                .orElseThrow(() -> new RuntimeException("Cannot find a QuizAttempt with the given ID"));
 		
-		if (quizAttempt.getStatus() != QuizAttemptStatus.STARTED) {
-			throw new RuntimeException("You cannot edit a quiz that has already been submitted or has expired!");
-		}
+		QuizAttempt quizAttempt = getValidQuizAttempt(quizAttemptId);
 		
 		quizAttempt.setFinishedAt(LocalDateTime.now());
 		quizAttempt.setStatus(QuizAttemptStatus.COMPLETED);
@@ -164,39 +110,9 @@ public class QuizAttemptServices {
 		List<Answer> answers = quizAttempt.getAnswers();
 		quizAttempt.setMaxScore(answers.size());
 		
-		int score = 0;
-		
-		for (Answer a : answers) {
-			boolean isCorrect = false;
-			Question question = a.getQuestion();
-			if (a instanceof ClosedAnswer) {
-				ClosedAnswer closedA = (ClosedAnswer)a;
-				if (closedA.getChosenOption() != null && closedA.getChosenOption().isTrue()) {
-					isCorrect = true;
-				}	
-			} else if (a instanceof OpenAnswer) {
-				OpenAnswer openA = (OpenAnswer)a;
-				OpenQuestion openQ = (OpenQuestion) question;
-				String studentText = openA.getText();
-				
-				if (studentText != null && openQ.getValidAnswers() != null) {
-					for (OpenQuestionAcceptedAnswer validAnswer : openQ.getValidAnswers()) {
-						if (studentText.trim().equalsIgnoreCase(validAnswer.getText().trim())) {
-							isCorrect = true;
-							break;
-						}
-					}
-				}
-			} else { 
-				throw new IllegalArgumentException("Not supported question type."); 
-			}
-			a.setCorrect(isCorrect);
-			if (isCorrect) {
-				score += 1;
-			}
-		}
-		
+		int score = calculateScore(answers);
 		quizAttempt.setScore(score);
+		
 		quizAttemptsRepository.save(quizAttempt);
 		
 		return new QuizAttemptDTO(quizAttempt.getId(), quizAttempt.getQuiz().getId(), quizAttempt.getQuiz().getTitle(), quizAttempt.getStudent().getId(),
@@ -245,5 +161,119 @@ public class QuizAttemptServices {
 		
 		return answerDTO;
 	}
+
 	
+	
+	private QuizAttempt getValidQuizAttempt(long quizAttemptId) {
+		QuizAttempt quizAttempt = quizAttemptsRepository.findById(quizAttemptId)
+                .orElseThrow(() -> new RuntimeException("Cannot find a QuizAttempt with the given ID"));
+		
+		if (quizAttempt.getStatus() != QuizAttemptStatus.STARTED) {
+			throw new RuntimeException("You cannot edit a quiz that has already been submitted or has expired!");
+		}
+		return quizAttempt;
+	}
+
+	private Answer getOrCreateAnswer(QuizAttempt quizAttempt, Question question) {
+		Optional<Answer> existingAnswer = answersRepository.findByQuizAttemptAndQuestion(quizAttempt, question);
+		
+		if (existingAnswer.isPresent()) {
+			return existingAnswer.get();
+		}
+		
+		Answer answer;
+		if (question instanceof OpenQuestion) {
+			answer = new OpenAnswer();
+		} else if (question instanceof ClosedQuestion) {
+			answer = new ClosedAnswer();
+		} else { 
+			throw new IllegalArgumentException("Not supported question type."); 
+		}
+		answer.setQuizAttempt(quizAttempt);
+		answer.setQuestion(question);
+		return answer;
+	}
+
+	private void updateAnswerContent(Answer answer, Question question, AnswerDTO answerDTO) {
+		if (question instanceof OpenQuestion) {
+			updateOpenAnswer(answer, answerDTO);
+		} else  if (question instanceof ClosedQuestion) {
+			updateClosedAnswer(answer, (ClosedQuestion) question, answerDTO);
+		} else { 
+			throw new IllegalArgumentException("Not supported question type."); 
+		}
+	}
+
+	private void updateOpenAnswer(Answer answer, AnswerDTO answerDTO) {
+		if (!(answer instanceof OpenAnswer)) {
+            throw new RuntimeException("Question/answer inconsistency");
+       } 
+       ((OpenAnswer)answer).setText(answerDTO.getTextOpenAnswer());
+	}
+
+	private void updateClosedAnswer(Answer answer, ClosedQuestion question, AnswerDTO answerDTO) {
+		if (!(answer instanceof ClosedAnswer)) {
+            throw new RuntimeException("Question/answer inconsistency");
+		} 
+		if (answerDTO.getSelectedOptionId() == null) {
+            throw new RuntimeException("You must select an option!");
+        }
+		
+		ClosedQuestionOption selectedOption = null;
+		
+		for (ClosedQuestionOption opt : question.getOptions()) {
+            if (opt.getId() == answerDTO.getSelectedOptionId()) {
+                selectedOption = opt;
+                break;
+            }
+        }
+
+        if (selectedOption == null) {
+            throw new RuntimeException("Selected option is invalid or does not belong to this question");
+        }
+        
+        ((ClosedAnswer) answer).setChosenOption(selectedOption);
+	}
+	
+	
+	
+	private int calculateScore(List<Answer> answers) {
+		int score = 0;
+		for (Answer a : answers) {
+			boolean isCorrect = isAnswerCorrect(a);
+			a.setCorrect(isCorrect);
+			if (isCorrect) {
+				score++;
+			}
+		}
+		return score;
+	}
+	
+	private boolean isAnswerCorrect(Answer a) {
+		if (a instanceof ClosedAnswer) {
+			return isClosedAnswerCorrect((ClosedAnswer)a);
+		} else if (a instanceof OpenAnswer) {
+			return isOpenAnswerCorrect((OpenAnswer)a);
+		} else { 
+			throw new IllegalArgumentException("Not supported question type."); 
+		}
+	}
+	
+	private boolean isClosedAnswerCorrect(ClosedAnswer closedA) {
+		return closedA.getChosenOption() != null && closedA.getChosenOption().isTrue();
+	}
+	
+	private boolean isOpenAnswerCorrect(OpenAnswer openA) {
+		OpenQuestion openQ = (OpenQuestion) openA.getQuestion();
+		String studentText = openA.getText();
+		
+		if (studentText != null && openQ.getValidAnswers() != null) {
+			for (OpenQuestionAcceptedAnswer validAnswer : openQ.getValidAnswers()) {
+				if (studentText.trim().equalsIgnoreCase(validAnswer.getText().trim())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

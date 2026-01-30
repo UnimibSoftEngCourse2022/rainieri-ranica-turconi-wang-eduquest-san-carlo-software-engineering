@@ -33,7 +33,9 @@ public class Challenge {
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
-    public Challenge() {}
+    public Challenge() {
+    	// Default constructor
+    }
 
     
     public Long getId() {
