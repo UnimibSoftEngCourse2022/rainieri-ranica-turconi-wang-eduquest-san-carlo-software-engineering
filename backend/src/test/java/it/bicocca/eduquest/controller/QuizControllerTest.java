@@ -49,14 +49,14 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = "1") 
     void shouldGetAllQuizzes() throws Exception {
-        mockMvc.perform(get("/api/quiz"))
+        mockMvc.perform(get("/api/quizzes"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(username = "1")
     void shouldGetQuizzesByAuthorId() throws Exception {
-        mockMvc.perform(get("/api/quiz")
+        mockMvc.perform(get("/api/quizzes")
                 .param("authorId", "5")) 
                 .andExpect(status().isOk());
     }
@@ -64,13 +64,13 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = "1")
     void shouldGetQuizById_Success() throws Exception {
-        QuizDTO mockQuiz = new QuizDTO(1L, "Titolo Test", "Descrizione", 1L, Collections.emptyList());
+        QuizDTO mockQuiz = new QuizDTO(1L, "Title test", "Description", 1L, Collections.emptyList());
         
         when(quizService.getQuizById(1L)).thenReturn(mockQuiz);
 
-        mockMvc.perform(get("/api/quiz/1"))
+        mockMvc.perform(get("/api/quizzes/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Titolo Test")); 
+                .andExpect(jsonPath("$.title").value("Title test")); 
     }
 
     @Test
@@ -78,7 +78,7 @@ public class QuizControllerTest {
     void shouldReturn404_WhenQuizNotFound() throws Exception {
         when(quizService.getQuizById(999L)).thenThrow(new RuntimeException("Cannot find quiz with ID 999"));
 
-        mockMvc.perform(get("/api/quiz/999"))
+        mockMvc.perform(get("/api/quizzes/999"))
                 .andExpect(status().isNotFound()); 
     }
 
@@ -86,11 +86,11 @@ public class QuizControllerTest {
     @WithMockUser(username = "11") 
     void shouldAddQuiz() throws Exception {
         QuizAddDTO quizDTO = new QuizAddDTO();
-        quizDTO.setTitle("Nuovo Quiz");
-        quizDTO.setDescription("Descrizione prova");
+        quizDTO.setTitle("New Quiz");
+        quizDTO.setDescription("Description test");
 
-        mockMvc.perform(post("/api/quiz")
-                .with(csrf()) // OBBLIGATORIO per le POST nei test
+        mockMvc.perform(post("/api/quizzes")
+                .with(csrf()) 
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(quizDTO)))
                 .andExpect(status().isOk());
@@ -98,25 +98,10 @@ public class QuizControllerTest {
 
     @Test
     @WithMockUser(username = "11")
-    void shouldAddQuestion() throws Exception {
-        QuestionAddDTO questionDTO = new QuestionAddDTO();
-        questionDTO.setText("Domanda di prova?");
-        questionDTO.setTopic("Generale");
-        questionDTO.setQuestionType(QuestionType.OPENED); 
-
-        mockMvc.perform(post("/api/quiz/question")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(questionDTO)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(username = "11")
     void shouldEditQuiz_Success() throws Exception {
-        QuizEditDTO editDTO = new QuizEditDTO("Titolo Modificato", "Nuova desc");
+        QuizEditDTO editDTO = new QuizEditDTO("Title modified", "New desc");
 
-        mockMvc.perform(put("/api/quiz/1")
+        mockMvc.perform(put("/api/quizzes/1")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(editDTO)))
@@ -126,12 +111,12 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = "11")
     void shouldReturn403_WhenEditQuizFailsAuthorization() throws Exception {
-        QuizEditDTO editDTO = new QuizEditDTO("Titolo", "Desc");
+        QuizEditDTO editDTO = new QuizEditDTO("Title", "Desc");
         
         doThrow(new RuntimeException("You cannot edit quiz from another author!"))
             .when(quizService).editQuiz(anyLong(), any(QuizEditDTO.class), anyLong());
 
-        mockMvc.perform(put("/api/quiz/1")
+        mockMvc.perform(put("/api/quizzes/1")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(editDTO)))
@@ -141,7 +126,7 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = "11")
     void shouldAddQuestionToQuiz() throws Exception {
-        mockMvc.perform(post("/api/quiz/1/add-question/5")
+        mockMvc.perform(post("/api/quizzes/1/questions/5")
                 .with(csrf()))
                 .andExpect(status().isOk());
     }
@@ -149,15 +134,15 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = "100")
     void shouldRemoveQuestionFromQuiz() throws Exception {
-        mockMvc.perform(delete("/api/quiz/1/remove-question/5")
+        mockMvc.perform(delete("/api/quizzes/1/questions/5")
                 .with(csrf()))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "100")
+    @WithMockUser(username = "11")
     void shouldGetQuizForStudent() throws Exception {
-        mockMvc.perform(get("/api/quiz/1/quiz-for-student"))
+        mockMvc.perform(get("/api/quizzes/1/quiz-for-student"))
                 .andExpect(status().isOk());
     }
 }
