@@ -128,13 +128,16 @@ public class QuizServices {
 	public List<QuestionDTO> getAllQuestions(long requestUserId) {
 		User requestUser = usersRepository.findById(requestUserId).orElseThrow(() -> new IllegalArgumentException("Cannot find a user with the given ID"));
 		
-		List<Question> questions = questionsRepository.findAll();
+		List<Question> questions;
+		
+		if (requestUser instanceof Teacher) {
+	        questions = questionsRepository.findAll();
+	    } else {
+	        questions = questionsRepository.findByAuthorId(requestUserId); 
+	    }
+		
 		List<QuestionDTO> questionsDTO = new ArrayList<>();
-		for (Question question : questions) {
-			if (!(requestUser instanceof Teacher) && !requestUser.getId().equals(question.getAuthor().getId())) {
-				continue;
-			}
-			
+		for (Question question : questions) {			
 			List<String> validAnswersOpenQuestion = new ArrayList<>();
 			List<ClosedQuestionOptionDTO> closedQuestionOptions = new ArrayList<>();
 			
