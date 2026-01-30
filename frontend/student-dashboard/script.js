@@ -3,7 +3,7 @@ import { QuizzesViewer } from "../components/quizzes-viewer.js"
 
 const LOGIN_PAGE = "../login/index.html";
 const STUDENT_ROLE = "STUDENT";
-const ALL_QUIZZES_ENDPOINT = "http://localhost:8080/api/quiz";
+const ALL_QUIZZES_ENDPOINT = "http://localhost:8080/api/quizzes";
 
 const errorDiv = "<div class='alert alert-danger' role='alert'>An error occurred during the loading of quizzes. Please try again later.</div>";
 const emptyQuizListDiv = "<div class='alert alert-info' role='alert'>No quizzes available at the moment. Check back later!</div>";

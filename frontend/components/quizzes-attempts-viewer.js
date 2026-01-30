@@ -19,7 +19,7 @@ export class QuizzesAttemptsViewer extends HTMLElement {
 
   async loadData() {
     const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quizAttempt?studentId=${this.userId}`, {
+    const response = await fetch(`http://localhost:8080/api/quiz-attempts?studentId=${this.userId}`, {
         method: "GET",
         headers: {
             "Accept": "application/json",

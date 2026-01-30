@@ -18,7 +18,7 @@ export class QuestionsViewer extends HTMLElement {
   async loadData() {
     const jwt = window.localStorage.getItem("token");
 
-    let questionsEndpoint = "http://localhost:8080/api/quiz/question";
+    let questionsEndpoint = "http://localhost:8080/api/questions";
     if (this.authorId) {
         questionsEndpoint += `?authorId=${this.authorId}`
     }

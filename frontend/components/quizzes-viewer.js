@@ -61,7 +61,7 @@ export class QuizzesViewer extends HTMLElement {
   async getQuizzes() {
     let endpoint;
     if (this.role == "STUDENT") {
-        endpoint = "http://localhost:8080/api/quiz";
+        endpoint = "http://localhost:8080/api/quizzes";
     } else {
         endpoint = "http://localhost:8080/api/quiz?authorId=" + this.userId;
     }

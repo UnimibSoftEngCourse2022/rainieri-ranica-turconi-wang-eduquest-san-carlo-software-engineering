@@ -20,6 +20,18 @@ export class QuizRunner extends HTMLElement {
     return this.querySelector("#questions-viewer");
   }
 
+  get previousQuestionButton() {
+    return this.querySelector("#button-prev-question");
+  }
+
+  get nextQuestionButton() {
+    return this.querySelector("#button-next-question");
+  }
+
+  get saveAnswerButton() {
+    return this.querySelector("#save-answer-button");
+  }
+
   render() {
     this.innerHTML = `
     <div class="card text-center">
@@ -35,7 +47,7 @@ export class QuizRunner extends HTMLElement {
 
   async loadData() {
     const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quizAttempt/${this.quizAttemptId}`, {
+    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}`, {
         method: "GET",
         headers: {
             "Accept": "application/json",
@@ -65,7 +77,7 @@ export class QuizRunner extends HTMLElement {
     `
 
     const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz/${quizData.quizId}`, {
+    const response = await fetch(`http://localhost:8080/api/quizzes/${quizData.quizId}`, {
       method: "GET",
       headers: {
           "Accept": "application/json",
@@ -89,15 +101,62 @@ export class QuizRunner extends HTMLElement {
 
   async updateQuestionsViewer() {
     const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
-    let currentQuestionHTML = `
-    <h4>${currentQuestion.text}</h4>
-    `
-
+    
     let questionsViewerHTML = `
-    ${currentQuestionHTML}
-    <p>Domanda ${this.currentQuestionIndex + 1}/${this.quizQuestions.length}
+    ${this.getQuestionHTML(currentQuestion)} <br>
+    <p>Domanda ${this.currentQuestionIndex + 1}/${this.quizQuestions.length} <br>
+    <button id="button-prev-question" class="btn btn-primary" ${this.currentQuestionIndex == 0                             ? "disabled" : ""}>Previous</button>
+    <button id="button-next-question" class="btn btn-primary" ${this.currentQuestionIndex == this.quizQuestions.length - 1 ? "disabled" : ""}>Next</button>
     `
+    
     this.questionsViewer.innerHTML = questionsViewerHTML;
+    this.previousQuestionButton.addEventListener("click", () => {
+      this.currentQuestionIndex--;
+      this.updateQuestionsViewer();
+    })
+    this.nextQuestionButton.addEventListener("click", () => {
+      this.currentQuestionIndex++;
+      this.updateQuestionsViewer();
+    })
+    this.saveAnswerButton.addEventListener("click", () => { 
+      this.handleSaveAnswerToCurrentQuestion();
+    });
+  }
+
+  getQuestionHTML(question) {
+    console.log(question);
+    let html = ``;
+    html += `<h1>${question.text}</h1>`;
+    if (question.questionType == "OPENED") {
+      html += `<input class="form-control" placeholder="Write here your answer..."></input><br>`
+    } else if (question.questionType == "CLOSED") {
+      // TODO
+    }
+    html += `<button class="btn btn-primary" id="save-answer-button">Save answer</button><br>`
+    return html;
+  }
+
+  async handleSaveAnswerToCurrentQuestion() {
+    const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
+    const answerInput = this.questionsViewer.querySelector("input");
+    const answerText = answerInput.value;
+
+    console.log("salvo la domanda " + currentQuestion.id + " con risposta: " + answerText);
+
+    const jwt = window.localStorage.getItem("token");
+    const requestBody = {
+      questionId: currentQuestion.id,
+      textOpenAnswer: answerText
+    }
+    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}/answers`, {
+      method: "PUT",
+      headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + jwt
+      },
+      body: JSON.stringify(requestBody)
+    });
   }
 }
 

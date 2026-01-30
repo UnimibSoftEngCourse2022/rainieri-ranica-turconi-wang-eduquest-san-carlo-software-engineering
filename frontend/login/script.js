@@ -2,7 +2,7 @@ const EMAIL_INPUT_TAG_ID = "email-input";
 const PASSWORD_INPUT_TAG_ID = "password-input";
 const LOGIN_RESULT_TAG_ID = "login-result";
 
-const LOGIN_ENDPOINT_URL = "http://localhost:8080/auth/login";
+const LOGIN_ENDPOINT_URL = "http://localhost:8080/api/auth/login";
 
 const LOGIN_ERROR_DIV =
   "<div class='alert alert-danger' role='alert'>Email or password are wrong</div>";

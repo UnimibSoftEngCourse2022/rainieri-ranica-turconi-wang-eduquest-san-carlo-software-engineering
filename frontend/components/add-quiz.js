@@ -59,7 +59,7 @@ export class AddQuiz extends HTMLElement {
 
   async submitData(requestBody) {
         const jwt = window.localStorage.getItem("token");    
-        const response = await fetch("http://localhost:8080/api/quiz", {
+        const response = await fetch("http://localhost:8080/api/quizzes", {
         method: "POST",
         headers: {
             "Accept": "application/json",

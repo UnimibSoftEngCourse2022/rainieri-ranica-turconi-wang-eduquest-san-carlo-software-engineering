@@ -1,4 +1,4 @@
-const USER_DATA_ENDPOINT_URL = "http://localhost:8080/auth/me";
+const USER_DATA_ENDPOINT_URL = "http://localhost:8080/api/users/me";
 
 export const verifyUser = async (role) => {
   const token = window.localStorage.getItem("token");

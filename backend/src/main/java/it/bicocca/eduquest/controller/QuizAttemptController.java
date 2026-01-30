@@ -30,7 +30,7 @@ public class QuizAttemptController {
         Long loggedId = Long.valueOf(loggedIdString);
         
         try {
-            return ResponseEntity.ok(quizAttemptServices.getQuizAttemptById(quizAttemptId, loggedId));     
+            return ResponseEntity.ok(quizAttemptServices.getQuizAttemptById(quizAttemptId, loggedId));
         } catch (RuntimeException e) {
         	String msg = e.getMessage();
             if (msg.contains(NOT_FOUND_MSG)) {

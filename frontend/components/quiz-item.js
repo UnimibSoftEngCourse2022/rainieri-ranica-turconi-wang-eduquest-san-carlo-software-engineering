@@ -40,7 +40,7 @@ export class Quiz extends HTMLElement {
       return;
     } else if (this.role == "STUDENT") {
       const jwt = window.localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/quizAttempt/start?quizId=${this.id}&studentId=${this.userId}`, {
+      const response = await fetch(`http://localhost:8080/api/quiz-attempts?quizId=${this.id}&studentId=${this.userId}`, {
         method: "POST",
         headers: {
             "Accept": "application/json",
