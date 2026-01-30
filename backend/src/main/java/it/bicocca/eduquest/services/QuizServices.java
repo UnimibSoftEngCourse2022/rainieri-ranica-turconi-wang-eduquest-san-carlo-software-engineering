@@ -44,8 +44,25 @@ public class QuizServices {
 		Quiz quiz = quizRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Cannot find quiz with ID " + id));
 		List<QuestionDTO> questionsDTO = new ArrayList<>();
 
+		List<String> validAnswersOpenQuestionDTO = new ArrayList<String>();
+		List<ClosedQuestionOptionDTO> closedQuestionOptionsDTO = new ArrayList<ClosedQuestionOptionDTO>();
+		
 		for (Question question : quiz.getQuestions()) {
-			QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), QuestionType.OPENED, new ArrayList<>(), new ArrayList<>(), question.getAuthor().getId());	
+			if (question instanceof OpenQuestion) {		
+				OpenQuestion openQuestion = (OpenQuestion)question;
+				List<OpenQuestionAcceptedAnswer> validAnswersOpenQuestion = openQuestion.getValidAnswers();
+				for (OpenQuestionAcceptedAnswer a : validAnswersOpenQuestion) {
+					validAnswersOpenQuestionDTO.add(a.getText());
+				}
+			} else if (question instanceof ClosedQuestion) {
+				ClosedQuestion closedQuestion = (ClosedQuestion)question;
+				List<ClosedQuestionOption> optionsClosedQuestion = closedQuestion.getOptions();
+				for (ClosedQuestionOption c : optionsClosedQuestion) {
+					closedQuestionOptionsDTO.add(new ClosedQuestionOptionDTO(c.getId(), c.getText(), c.isTrue()));
+				}
+			}
+			
+			QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), validAnswersOpenQuestionDTO, closedQuestionOptionsDTO, question.getAuthor().getId());	
 			questionsDTO.add(questionDTO);
 		}
 

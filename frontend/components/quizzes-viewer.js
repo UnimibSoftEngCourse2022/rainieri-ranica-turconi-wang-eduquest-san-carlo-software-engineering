@@ -63,7 +63,7 @@ export class QuizzesViewer extends HTMLElement {
     if (this.role == "STUDENT") {
         endpoint = "http://localhost:8080/api/quizzes";
     } else {
-        endpoint = "http://localhost:8080/api/quiz?authorId=" + this.userId;
+        endpoint = "http://localhost:8080/api/quizzes?authorId=" + this.userId;
     }
 
     const jwt = window.localStorage.getItem("token");

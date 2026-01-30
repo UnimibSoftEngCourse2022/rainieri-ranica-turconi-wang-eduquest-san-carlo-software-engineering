@@ -80,7 +80,7 @@ export class QuestionsViewer extends HTMLElement {
 
   async addQuestionToQuiz(questionId) {
     const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz/${this.quizId}/add-question/${questionId}`, {
+    const response = await fetch(`http://localhost:8080/api/quizzes/${this.quizId}/questions/${questionId}`, {
       method: "POST",
       headers: {
             "Accept": "application/json",

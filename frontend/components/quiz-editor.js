@@ -57,7 +57,7 @@ export class QuizEditor extends HTMLElement {
 
   async loadData() {
     const jwt = window.localStorage.getItem("token");
-    const quizInfoEndpoint = "http://localhost:8080/api/quiz/"+this.quizId;
+    const quizInfoEndpoint = "http://localhost:8080/api/quizzes/"+this.quizId;
     const response = await fetch(quizInfoEndpoint, {
         method: "GET",
         headers: {
@@ -109,7 +109,7 @@ export class QuizEditor extends HTMLElement {
 
   async removeQuestionFromQuiz(questionId) {
     const jwt = window.localStorage.getItem("token");
-    const removeQuestionEndpoint = `http://localhost:8080/api/quiz/${this.quizId}/remove-question/${questionId}`;
+    const removeQuestionEndpoint = `http://localhost:8080/api/quizzes/${this.quizId}/questions/${questionId}`;
     const response = await fetch(removeQuestionEndpoint, {
         method: "DELETE",
         headers: {
