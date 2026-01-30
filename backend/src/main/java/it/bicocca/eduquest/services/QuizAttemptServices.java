@@ -35,6 +35,18 @@ public class QuizAttemptServices {
 		this.questionsRepository = questionsRepository;
 	}
 	
+	public QuizAttemptDTO getQuizAttemptById(long id, long userId) {
+		QuizAttempt quizAttempt = quizAttemptsRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find quiz attempt with the given ID"));
+		if (quizAttempt.getStudent().getId() != userId) {
+			throw new RuntimeException("Not authorized");
+		}
+		QuizAttemptDTO quizAttemptDTO = new QuizAttemptDTO(quizAttempt.getId(), quizAttempt.getQuiz().getId(), quizAttempt.getQuiz().getTitle(), 
+				   quizAttempt.getStudent().getId(), quizAttempt.getStudent().getName(), 
+				   quizAttempt.getStudent().getSurname(), quizAttempt.getScore(), quizAttempt.getMaxScore(), 
+				   quizAttempt.getStartedAt(), quizAttempt.getFinishedAt(), quizAttempt.getStatus());
+		return quizAttemptDTO;
+	}
+	
 	public List<QuizAttemptDTO> getQuizAttemptsByUserId(long userId) {
 		List<QuizAttempt> quizAttempts = quizAttemptsRepository.findByStudentId(userId);
 		

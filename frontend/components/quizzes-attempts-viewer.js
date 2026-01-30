@@ -40,7 +40,7 @@ export class QuizzesAttemptsViewer extends HTMLElement {
           let quizzesAttemptsHTML = `<div class="list-group">`
           quizzesAttempts.forEach(quizAttempt => {
               quizzesAttemptsHTML += `
-              <a class="list-group-item list-group" href="../quiz-runner/?id=${quizAttempt.id}">${quizAttempt.quizTitle}</a>
+              <a class="list-group-item list-group" href="../quiz-runner/?quizAttemptId=${quizAttempt.id}">${quizAttempt.quizTitle}</a>
               `
           })
           quizzesAttemptsHTML += `</div>`

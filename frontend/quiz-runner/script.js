@@ -18,13 +18,13 @@ window.onload = async () => {
 
   // FIXME if id doesn't exit, go to another page
   const url = new URL(window.location);
-  const quizId = url.searchParams.get("id");
+  const quizId = url.searchParams.get("quizAttemptId");
   if (quizId == null) {
     window.location = LOGIN_PAGE;
     return;
   }
 
   document.getElementById("page").innerHTML = `
-  <quiz-runner id="${quizId}"></quiz-runner>
+  <quiz-runner quiz-attempt-id="${quizId}"></quiz-runner>
   `
 };

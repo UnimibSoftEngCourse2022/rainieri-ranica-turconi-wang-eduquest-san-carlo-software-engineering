@@ -21,6 +21,22 @@ public class QuizAttemptController {
 		this.quizAttemptServices = quizAttemptServices;
 	}
 	
+	@GetMapping("/{quizAttemptId}")
+	public ResponseEntity<Object> getQuizAttemptById(@PathVariable Long quizAttemptId, Authentication authentication) {
+		String loggedIdString = authentication.getName();
+        Long loggedId = Long.valueOf(loggedIdString);
+        
+        try {
+            return ResponseEntity.ok(quizAttemptServices.getQuizAttemptById(quizAttemptId, loggedId));     
+        } catch (RuntimeException e) {
+        	String msg = e.getMessage();
+            if (msg.contains("not found")) {
+                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(msg);
+        }
+	}
+	
 	@GetMapping
     public ResponseEntity<Object> getQuizAttemptsByUserId(@RequestParam Long studentId, Authentication authentication) {
 		String loggedIdString = authentication.getName();
