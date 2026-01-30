@@ -4,7 +4,7 @@ export class QuizzesAttemptsViewer extends HTMLElement {
     this.render();
     this.loadData();
 
-    this.addEventListener("quiz-attempt-started", () => this.loadData());
+    document.addEventListener("quiz-attempt-started", () => this.loadData());
   }
 
   get quizzesAttempts() {
@@ -29,17 +29,22 @@ export class QuizzesAttemptsViewer extends HTMLElement {
     });
 
     if (response.ok) {
-        const quizzesAttempts = response.json();
+        const quizzesAttempts = await response.json();
         if (quizzesAttempts.length == 0) {
-            quizzesAttempts.forEach(quizAttempt => {
-                console.log(quizAttempt);
-            })
+          this.quizzesAttempts.innerHTML = `
+          <div class="alert alert-warning" role="alert">
+            You haven't started a quiz yet!
+          </div>
+          `
         } else {
-            this.quizzesAttempts.innerHTML = `
-            <div class="alert alert-warning" role="alert">
-              You haven't started a quiz yet!
-            </div>
-            `
+          let quizzesAttemptsHTML = `<div class="list-group">`
+          quizzesAttempts.forEach(quizAttempt => {
+              quizzesAttemptsHTML += `
+              <a class="list-group-item list-group" href="../quiz-runner/?id=${quizAttempt.id}">${quizAttempt.quizTitle}</a>
+              `
+          })
+          quizzesAttemptsHTML += `</div>`
+          this.quizzesAttempts.innerHTML = quizzesAttemptsHTML;
         }
     } else {
         this.quizzesAttempts.innerHTML = `

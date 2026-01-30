@@ -18,6 +18,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configure(http))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
         		.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()

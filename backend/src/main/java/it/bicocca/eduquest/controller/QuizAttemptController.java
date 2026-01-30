@@ -13,6 +13,7 @@ import it.bicocca.eduquest.services.QuizAttemptServices;
 @RestController
 @RequestMapping("/api/quizAttempt")
 // @CrossOrigin(origins = "*") // serve per evitare blocchi se il frontend lavora su una porta diversa, lo usiamo?
+@CrossOrigin(origins = "http://127.0.0.1:5500") // Aggiungilo qui esplicitamente per test
 public class QuizAttemptController {
 	private final QuizAttemptServices quizAttemptServices;
 

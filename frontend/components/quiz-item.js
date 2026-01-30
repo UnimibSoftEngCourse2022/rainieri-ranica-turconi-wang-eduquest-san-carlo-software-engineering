@@ -39,7 +39,7 @@ export class Quiz extends HTMLElement {
       window.location = `../quiz-editor/?id=${this.id}`;
       return;
     } else if (this.role == "STUDENT") {
-      const jwt = window.localStorage.getItem("jwt");
+      const jwt = window.localStorage.getItem("token");
       const response = await fetch(`http://localhost:8080/api/quizAttempt/start?quizId=${this.id}&studentId=${this.userId}`, {
         method: "POST",
         headers: {
@@ -57,8 +57,6 @@ export class Quiz extends HTMLElement {
       } else {
         // TODO show an error
       }
-
-      buttonLink = `../quiz-runner/?id=${this.id}`;
     }
   }
 }

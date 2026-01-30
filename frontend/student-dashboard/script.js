@@ -28,6 +28,7 @@ window.onload = async () => {
     `
 
     document.getElementById("quizzes-attempts").innerHTML = `
+    <h1>Your quizzes attempts</h1>
     <quizzes-attempts-viewer user-id="${userData.id}"></quizzes-attempts-viewer>
     `
 };
