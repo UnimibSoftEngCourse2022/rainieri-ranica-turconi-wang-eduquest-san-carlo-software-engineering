@@ -11,9 +11,8 @@ import it.bicocca.eduquest.dto.quizAttempt.*;
 import it.bicocca.eduquest.services.QuizAttemptServices;
 
 @RestController
-@RequestMapping("/api/quizAttempt")
-// @CrossOrigin(origins = "*") // serve per evitare blocchi se il frontend lavora su una porta diversa, lo usiamo?
-@CrossOrigin(origins = "http://127.0.0.1:5500") // Aggiungilo qui esplicitamente per test
+@RequestMapping("/api/quiz-attempts")
+@CrossOrigin(origins = "http://127.0.0.1:5500") 
 public class QuizAttemptController {
 	
 	private static final String NOT_FOUND_MSG = "not found";
@@ -62,7 +61,7 @@ public class QuizAttemptController {
     }
 	
 	
-	@PostMapping("/start")
+	@PostMapping
     public ResponseEntity<Object> startQuiz(@RequestParam Long quizId, @RequestParam Long studentId, Authentication authentication) {
 		String loggedIdString = authentication.getName();
         Long loggedId = Long.valueOf(loggedIdString);
@@ -90,7 +89,7 @@ public class QuizAttemptController {
         }
     }
 	
-	@PutMapping("/answers") 
+	@PutMapping("/{attemptId}/answers") 
 	public ResponseEntity<Object> saveSingleAnswer(@RequestBody AnswerDTO answerDTO, Authentication authentication) {
 		String loggedIdString = authentication.getName();
         Long loggedId = Long.valueOf(loggedIdString);
