@@ -90,9 +90,11 @@ public class QuizAttemptController {
     }
 	
 	@PutMapping("/{attemptId}/answers") 
-	public ResponseEntity<Object> saveSingleAnswer(@RequestBody AnswerDTO answerDTO, Authentication authentication) {
+	public ResponseEntity<Object> saveSingleAnswer(@PathVariable Long attemptId, @RequestBody AnswerDTO answerDTO, Authentication authentication) {
 		String loggedIdString = authentication.getName();
         Long loggedId = Long.valueOf(loggedIdString);
+        
+        answerDTO.setQuizAttemptId(attemptId);
         
 		try {
             return ResponseEntity.ok(quizAttemptServices.saveSingleAnswer(answerDTO, loggedId));
