@@ -85,6 +85,13 @@ public class QuizServices {
 			throw new RuntimeException("Given ID is associated to a Student, not a Teacher");
 		}
 		
+		if (quizAddDTO.getTitle() == null || quizAddDTO.getTitle().trim().isEmpty()) {
+			throw new RuntimeException("The quiz title cannot be empty!");
+		}
+		if (quizAddDTO.getDescription() == null || quizAddDTO.getDescription().trim().isEmpty()) {
+			throw new RuntimeException("The quiz description cannot be empty!");
+		}
+		
 		Teacher author = (Teacher) user;
 		
 		Quiz quiz = new Quiz(quizAddDTO.getTitle(), quizAddDTO.getDescription(), author);
@@ -101,7 +108,14 @@ public class QuizServices {
 		
 		if (!quiz.getAuthor().getId().equals(userIdFromRequest)) {
 			throw new RuntimeException("You cannot edit quiz from another author!");
-		}                               
+		}    
+		
+		if (quizEditDTO.getTitle() == null || quizEditDTO.getTitle().trim().isEmpty()) {
+	        throw new RuntimeException("The quiz title cannot be empty!");
+	    }
+	    if (quizEditDTO.getDescription() == null || quizEditDTO.getDescription().trim().isEmpty()) {
+	        throw new RuntimeException("The quiz description cannot be empty!");
+	    }
 		
 		quiz.setTitle(quizEditDTO.getTitle());
 		quiz.setDescription(quizEditDTO.getDescription());
@@ -173,20 +187,43 @@ public class QuizServices {
 			question = new OpenQuestion(questionAddDTO.getText(), questionAddDTO.getTopic(), author, questionAddDTO.getDifficulty());
 			if (questionAddDTO.getValidAnswersOpenQuestion() != null) {
 				for (String text : questionAddDTO.getValidAnswersOpenQuestion()) {
+					if (text == null || text.trim().isEmpty()) {
+						throw new RuntimeException("The question's options cannot be empty!");
+					}
 					openQuestionAnswer = new OpenQuestionAcceptedAnswer(text);
 					((OpenQuestion) question).addAnswer(openQuestionAnswer);
 					openQuestionAnswerList.add(text);
 				}
 			}
+			if (openQuestionAnswerList.isEmpty()) {
+            throw new RuntimeException("You must enter at least one accepted correct answer!");
+			} 
 		} else if (questionAddDTO.getQuestionType() == QuestionType.CLOSED) {
 			question = new ClosedQuestion(questionAddDTO.getText(), questionAddDTO.getTopic(), author, questionAddDTO.getDifficulty());
-			if (questionAddDTO.getClosedQuestionOptions() != null) {
-				for (ClosedQuestionOptionDTO closedQuestionOptionDTO  : questionAddDTO.getClosedQuestionOptions()) {
-					closedQuestionOption = new ClosedQuestionOption(closedQuestionOptionDTO.getText(), closedQuestionOptionDTO.isTrue());
-					((ClosedQuestion) question).addOption(closedQuestionOption);
-					closedQuestionOptionList.add(closedQuestionOptionDTO);
-				}
+			if (questionAddDTO.getClosedQuestionOptions() == null || questionAddDTO.getClosedQuestionOptions().isEmpty()) {
+				throw new RuntimeException("A closed question must have options!");
 			}
+			
+			boolean hasCorrectAnswer = false;
+			
+			for (ClosedQuestionOptionDTO closedQuestionOptionDTO  : questionAddDTO.getClosedQuestionOptions()) {
+				if (closedQuestionOptionDTO.getText() == null || closedQuestionOptionDTO.getText().trim().isEmpty()) {
+					throw new RuntimeException("The text of an option cannot be empty!");
+				}
+				
+				closedQuestionOption = new ClosedQuestionOption(closedQuestionOptionDTO.getText(), closedQuestionOptionDTO.isTrue());
+				((ClosedQuestion) question).addOption(closedQuestionOption);
+				closedQuestionOptionList.add(closedQuestionOptionDTO);
+				
+				if (closedQuestionOptionDTO.isTrue()) {
+					hasCorrectAnswer = true;
+				}
+			} 
+			
+			if (!hasCorrectAnswer) {
+				throw new RuntimeException("You must select at least one correct answer for the closed question!");
+			}
+			
 		} else { 
 			throw new IllegalArgumentException("Not supported question type."); 
 		}
