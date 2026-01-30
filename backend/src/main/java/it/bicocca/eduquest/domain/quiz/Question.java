@@ -61,7 +61,7 @@ public abstract class Question {
 		this.quiz = quiz;
 	} */
 
-    public Question(String text, String topic, User author, QuestionType questionType, Difficulty difficulty) {
+    protected Question(String text, String topic, User author, QuestionType questionType, Difficulty difficulty) {
 		this.text = text;
 		this.topic = topic;
 		this.author = author;

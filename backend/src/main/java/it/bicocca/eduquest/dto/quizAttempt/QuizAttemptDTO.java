@@ -26,6 +26,7 @@ public class QuizAttemptDTO {
 		
 	}
 
+	@SuppressWarnings("java:S107")
 	public QuizAttemptDTO(long id, long quizId, String quizTitle, long studentId, String studentName, String studentSurname, 
 			int score, int maxScore, LocalDateTime startedAt, LocalDateTime finishedAt, QuizAttemptStatus status) {
 		this.id = id;

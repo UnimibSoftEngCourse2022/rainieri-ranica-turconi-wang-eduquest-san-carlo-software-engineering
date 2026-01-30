@@ -73,11 +73,6 @@ public class QuizAttempt {
         a.setQuizAttempt(this); 
     }
 
-    /* public double calculateFinalScore() {
-        // da fare
-        return this.score;
-    } */
-
     public Long getId() {
         return id;
     }

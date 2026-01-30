@@ -8,7 +8,7 @@ public class UserInfoDTO {
 	private final String surname;
 	private final String email;
 	private final Role role;
-	// FIXME add userStatsDTO
+	// da fare add userStatsDTO
 	
 	public UserInfoDTO(long id, String name, String surname, String email, Role role) {
 		this.id = id;

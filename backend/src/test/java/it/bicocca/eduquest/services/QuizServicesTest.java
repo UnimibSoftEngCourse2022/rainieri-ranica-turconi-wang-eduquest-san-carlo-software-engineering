@@ -53,7 +53,7 @@ class QuizServicesTest {
     @Test
     void testGetQuizById_NotFound() {
         when(quizRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.getQuizById(99L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.getQuizById(99L));
     }
 
     @Test
@@ -115,14 +115,16 @@ class QuizServicesTest {
     @Test
     void testAddQuiz_UserNotFound() {
         when(usersRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.addQuiz(new QuizAddDTO(), 1L));
+        QuizAddDTO dto = new QuizAddDTO();
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuiz(dto, 1L));
     }
 
     @Test
     void testAddQuiz_NotTeacher() {
         Student student = new Student();
         when(usersRepository.findById(2L)).thenReturn(Optional.of(student));
-        assertThrows(RuntimeException.class, () -> quizServices.addQuiz(new QuizAddDTO(), 2L));
+        QuizAddDTO dto = new QuizAddDTO();
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuiz(dto, 2L));
     }
 
     @Test
@@ -143,7 +145,8 @@ class QuizServicesTest {
     @Test
     void testEditQuiz_QuizNotFound() {
         when(quizRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.editQuiz(99L, new QuizEditDTO(), 1L));
+        QuizEditDTO dto = new QuizEditDTO();
+        assertThrows(IllegalArgumentException.class, () -> quizServices.editQuiz(99L, dto, 1L));
     }
 
     @Test
@@ -151,8 +154,8 @@ class QuizServicesTest {
         Teacher author = new Teacher(); author.setId(10L);
         Quiz quiz = new Quiz(1L, "T", "D", author);
         when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));
-        
-        assertThrows(RuntimeException.class, () -> quizServices.editQuiz(1L, new QuizEditDTO(), 99L));
+        QuizEditDTO dto = new QuizEditDTO();
+        assertThrows(IllegalStateException.class, () -> quizServices.editQuiz(1L, dto, 99L));
     }
 
     @Test
@@ -203,7 +206,7 @@ class QuizServicesTest {
     @Test
     void testGetAllQuestions_UserNotFound() {
         when(usersRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.getAllQuestions(99L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.getAllQuestions(99L));
     }
 
     @Test
@@ -282,10 +285,10 @@ class QuizServicesTest {
         when(usersRepository.findById(1L)).thenReturn(Optional.of(new Teacher()));
         
         QuestionAddDTO dto1 = new QuestionAddDTO(); dto1.setText("");
-        assertThrows(RuntimeException.class, () -> quizServices.addQuestion(dto1, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto1, 1L));
 
         QuestionAddDTO dto2 = new QuestionAddDTO(); dto2.setText("Ok"); dto2.setTopic(null);
-        assertThrows(RuntimeException.class, () -> quizServices.addQuestion(dto2, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto2, 1L));
 
         QuestionAddDTO dto3 = new QuestionAddDTO(); dto3.setText("Ok"); dto3.setTopic("Topic"); 
         assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto3, 1L));
@@ -294,7 +297,8 @@ class QuizServicesTest {
     @Test
     void testAddQuestion_UserNotFound() {
         when(usersRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.addQuestion(new QuestionAddDTO(), 99L));
+        QuestionAddDTO dto = new QuestionAddDTO();
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 99L));
     }
 
     @Test
@@ -324,7 +328,7 @@ class QuizServicesTest {
         when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));
         when(questionsRepository.findById(2L)).thenReturn(Optional.of(question));
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> quizServices.addQuestionToQuiz(1L, 2L, userId));
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> quizServices.addQuestionToQuiz(1L, 2L, userId));
         assertEquals("Question already included in the quiz!", ex.getMessage());
     }
 
@@ -337,17 +341,17 @@ class QuizServicesTest {
         when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));
         when(questionsRepository.findById(2L)).thenReturn(Optional.of(question));
         
-        assertThrows(RuntimeException.class, () -> quizServices.addQuestionToQuiz(1L, 2L, 99L));
+        assertThrows(IllegalStateException.class, () -> quizServices.addQuestionToQuiz(1L, 2L, 99L));
     }
     
     @Test
     void testAddQuestionToQuiz_NotFound() {
         when(quizRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.addQuestionToQuiz(99L, 1L, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestionToQuiz(99L, 1L, 1L));
         
         when(quizRepository.findById(1L)).thenReturn(Optional.of(new Quiz()));
         when(questionsRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.addQuestionToQuiz(1L, 99L, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestionToQuiz(1L, 99L, 1L));
     }
 
     @Test
@@ -370,18 +374,18 @@ class QuizServicesTest {
     @Test
     void testRemoveQuestionFromQuiz_Errors() {
         when(quizRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.removeQuestionFromQuiz(99L, 1L, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.removeQuestionFromQuiz(99L, 1L, 1L));
         
         when(quizRepository.findById(1L)).thenReturn(Optional.of(new Quiz()));
         when(questionsRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.removeQuestionFromQuiz(1L, 99L, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.removeQuestionFromQuiz(1L, 99L, 1L));
         
         Teacher author = new Teacher(); author.setId(10L);
         Quiz quiz = new Quiz(1L, "T", "D", author);
         Question question = new OpenQuestion(); question.setId(2L);
         when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));
         when(questionsRepository.findById(2L)).thenReturn(Optional.of(question));
-        assertThrows(RuntimeException.class, () -> quizServices.removeQuestionFromQuiz(1L, 2L, 99L));
+        assertThrows(IllegalStateException.class, () -> quizServices.removeQuestionFromQuiz(1L, 2L, 99L));
     }
 
     @Test
@@ -419,20 +423,20 @@ class QuizServicesTest {
         Teacher teacher = new Teacher(); teacher.setId(2L);
         when(usersRepository.findById(2L)).thenReturn(Optional.of(teacher));
         
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> quizServices.getQuizForStudent(1L, 2L));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> quizServices.getQuizForStudent(1L, 2L));
         assertEquals("Given ID is associated to a Teacher, not a Student", ex.getMessage());
     }
 
     @Test
     void testGetQuizForStudent_UserNotFound() {
         when(usersRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.getQuizForStudent(1L, 99L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.getQuizForStudent(1L, 99L));
     }
     
     @Test
     void testGetQuizForStudent_QuizNotFound() {
         when(usersRepository.findById(1L)).thenReturn(Optional.of(new Student()));
         when(quizRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> quizServices.getQuizForStudent(99L, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.getQuizForStudent(99L, 1L));
     }
 }

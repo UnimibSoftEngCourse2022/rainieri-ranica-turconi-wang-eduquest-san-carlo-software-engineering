@@ -21,6 +21,7 @@ public class AnswerDTO {
 		
 	}
 
+	@SuppressWarnings("java:S107")
 	public AnswerDTO(Long id, Long quizAttemptId, Long questionId, QuestionType type, String textOpenAnswer, Long selectedOptionId, String selectedOptionText, Boolean isCorrect) {
         this.id = id;
         this.quizAttemptId = quizAttemptId;
