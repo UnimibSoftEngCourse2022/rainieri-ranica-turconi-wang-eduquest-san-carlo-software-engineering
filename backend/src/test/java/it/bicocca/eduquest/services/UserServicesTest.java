@@ -138,7 +138,7 @@ class UserServicesTest {
             userServices.loginUser(loginDto);
         });
 
-        assertEquals("Utente non trovato", exception.getMessage());
+        assertEquals("User not found", exception.getMessage());
     }
 
     @Test

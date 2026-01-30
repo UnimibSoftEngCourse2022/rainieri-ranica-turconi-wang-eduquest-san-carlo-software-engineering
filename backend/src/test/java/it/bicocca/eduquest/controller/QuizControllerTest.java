@@ -75,11 +75,11 @@ public class QuizControllerTest {
 
     @Test
     @WithMockUser(username = "1")
-    void shouldReturn401_WhenQuizNotFound() throws Exception {
-        when(quizService.getQuizById(999L)).thenThrow(new RuntimeException("Quiz non trovato"));
+    void shouldReturn404_WhenQuizNotFound() throws Exception {
+        when(quizService.getQuizById(999L)).thenThrow(new RuntimeException("Cannot find quiz with ID 999"));
 
         mockMvc.perform(get("/api/quiz/999"))
-                .andExpect(status().isUnauthorized()); 
+                .andExpect(status().isNotFound()); 
     }
 
     @Test
@@ -128,7 +128,7 @@ public class QuizControllerTest {
     void shouldReturn403_WhenEditQuizFailsAuthorization() throws Exception {
         QuizEditDTO editDTO = new QuizEditDTO("Titolo", "Desc");
         
-        doThrow(new IllegalArgumentException("Non sei l'autore"))
+        doThrow(new RuntimeException("You cannot edit quiz from another author!"))
             .when(quizService).editQuiz(anyLong(), any(QuizEditDTO.class), anyLong());
 
         mockMvc.perform(put("/api/quiz/1")

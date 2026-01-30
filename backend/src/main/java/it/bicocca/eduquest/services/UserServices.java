@@ -62,7 +62,7 @@ public class UserServices {
     // login
     public UserLoginResponseDTO loginUser(UserLoginDTO dto) {
         User user = usersRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new RuntimeException("Password errata");

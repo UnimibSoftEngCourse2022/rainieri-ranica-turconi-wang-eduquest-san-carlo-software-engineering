@@ -2,6 +2,7 @@ package it.bicocca.eduquest.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,17 +34,19 @@ public class UserController {
         try {
             return ResponseEntity.ok(userServices.registerUser(dto));
         } catch (RuntimeException e) {
+        	// 400 -> bad request (incorrect or duplicated data)
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // login
+    // Login
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody UserLoginDTO dto) {
         try {
             return ResponseEntity.ok(userServices.loginUser(dto));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(401).body(e.getMessage()); // 401 = Non autorizzato
+        	// 401 -> failed login
+            return ResponseEntity.status(401).body(e.getMessage()); // 401 = Not authorized
         }
     }
     
@@ -52,31 +55,38 @@ public class UserController {
     	try {
     		return ResponseEntity.ok(userServices.getUserInfo(id));
     	} catch (RuntimeException e) {
-    		return ResponseEntity.status(401).body(e.getMessage());
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     	}
     }
     
     @GetMapping("/me")
     public ResponseEntity<Object> getUserInfoFromJwt(Authentication authentication) {
+    	if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access denied, you must be authenticated");
+        }
     	try {
-    		long userId = (long)authentication.getPrincipal();
+    		String userIdString = authentication.getName(); 
+    		long userId = Long.valueOf(userIdString).longValue();
+   
     		return ResponseEntity.ok(userServices.getUserInfo(userId));
     	} catch (RuntimeException e) {
-    		return ResponseEntity.status(401).body(e.getMessage());
+    		// Valid token but there is not the user in the database
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     	}
     }
     
-    // see all users
+    // See all users
     @GetMapping("/all")
     public ResponseEntity<Object> getAllInfos(Authentication authentication) {
     	if (authentication == null || !authentication.isAuthenticated()) {
-    		return ResponseEntity.status(401).body("Accesso negato devi essere autenticato");
-    	}
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access denied, you must be authenticated");
+        }
     	try {
     		List<UserInfoDTO> users = userServices.getAllUsers();
     		return ResponseEntity.ok(users);
     	} catch (RuntimeException e){
-    		return ResponseEntity.status(401).body(e.getMessage());
+    		// 500 internal error -> list recovery fails
+    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore interno nel recupero utenti: " + e.getMessage());
     	}
     		
     }
