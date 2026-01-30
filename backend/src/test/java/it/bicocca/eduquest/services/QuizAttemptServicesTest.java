@@ -129,10 +129,15 @@ class QuizAttemptServicesTest {
     void testSaveSingleAnswer_Open_Success_CreateNew() {
         long attemptId = 1L;
         long questionId = 10L;
+        long userId = 50L; // <--- Nuovo parametro
+
+        Student student = new Student(); 
+        student.setId(userId); // <--- Setup studente
 
         QuizAttempt attempt = new QuizAttempt();
         attempt.setId(attemptId);
         attempt.setStatus(QuizAttemptStatus.STARTED);
+        attempt.setStudent(student); // <--- Importante!
 
         OpenQuestion question = new OpenQuestion();
         question.setId(questionId);
@@ -148,7 +153,8 @@ class QuizAttemptServicesTest {
         
         when(answersRepository.save(any(Answer.class))).thenAnswer(i -> i.getArgument(0));
 
-        AnswerDTO result = quizAttemptServices.saveSingleAnswer(dto);
+        // Passiamo userId al metodo
+        AnswerDTO result = quizAttemptServices.saveSingleAnswer(dto, userId);
 
         assertEquals("Risposta aperta", result.getTextOpenAnswer());
         verify(answersRepository).save(any(OpenAnswer.class));
@@ -159,13 +165,18 @@ class QuizAttemptServicesTest {
         long attemptId = 1L;
         long questionId = 20L;
         long optionId = 100L;
+        long userId = 50L;
+
+        Student student = new Student(); 
+        student.setId(userId);
 
         QuizAttempt attempt = new QuizAttempt();
-        attempt.setId(attemptId); // <--- AGGIUNTO QUI (Importante!)
+        attempt.setId(attemptId);
         attempt.setStatus(QuizAttemptStatus.STARTED);
+        attempt.setStudent(student); // Setup studente
 
         ClosedQuestion question = new ClosedQuestion();
-        question.setId(questionId); // <--- AGGIUNTO QUI (Cruciale per evitare l'errore!)
+        question.setId(questionId); 
         
         ClosedQuestionOption option = new ClosedQuestionOption("Correct Option", true);
         option.setId(optionId);
@@ -183,26 +194,57 @@ class QuizAttemptServicesTest {
         when(answersRepository.findByQuizAttemptAndQuestion(attempt, question)).thenReturn(Optional.of(existingAnswer));
         when(answersRepository.save(any(Answer.class))).thenAnswer(i -> i.getArgument(0));
 
-        AnswerDTO result = quizAttemptServices.saveSingleAnswer(dto);
+        // Passiamo userId
+        AnswerDTO result = quizAttemptServices.saveSingleAnswer(dto, userId);
 
         assertEquals(optionId, result.getSelectedOptionId());
         verify(answersRepository).save(existingAnswer);
     }
+    
+    @Test
+    void testSaveSingleAnswer_Security_NotYourAttempt() {
+        long attemptId = 1L;
+        long ownerId = 10L;
+        long hackerId = 666L;
+
+        Student owner = new Student(); owner.setId(ownerId);
+        QuizAttempt attempt = new QuizAttempt();
+        attempt.setId(attemptId);
+        attempt.setStatus(QuizAttemptStatus.STARTED);
+        attempt.setStudent(owner); // Il proprietario è ID 10
+
+        when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
+
+        AnswerDTO dto = new AnswerDTO();
+        dto.setQuizAttemptId(attemptId);
+
+        // Provo a salvare con l'ID dell'hacker (666)
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> 
+            quizAttemptServices.saveSingleAnswer(dto, hackerId)
+        );
+        assertTrue(ex.getMessage().contains("not your attempt"));
+    }
 
     @Test
     void testSaveSingleAnswer_Failures() {
+        long userId = 1L;
+        Student student = new Student(); student.setId(userId);
+        
         QuizAttempt attempt = new QuizAttempt();
         attempt.setId(1L);
+        attempt.setStudent(student); // Setup studente
+
         when(quizAttemptsRepository.findById(1L)).thenReturn(Optional.of(attempt));
 
+        // Test 1: Quiz Completed
         attempt.setStatus(QuizAttemptStatus.COMPLETED);
         AnswerDTO dto = new AnswerDTO(); dto.setQuizAttemptId(1L);
-        assertThrows(RuntimeException.class, () -> quizAttemptServices.saveSingleAnswer(dto));
+        assertThrows(RuntimeException.class, () -> quizAttemptServices.saveSingleAnswer(dto, userId));
 
+        // Test 2: Inconsistency
         attempt.setStatus(QuizAttemptStatus.STARTED);
         ClosedQuestion closedQ = new ClosedQuestion(); closedQ.setId(2L);
         when(questionsRepository.findById(2L)).thenReturn(Optional.of(closedQ));
-        when(answersRepository.findByQuizAttemptAndQuestion(any(), any())).thenReturn(Optional.empty());
         
         OpenAnswer wrongTypeAnswer = new OpenAnswer();
         when(answersRepository.findByQuizAttemptAndQuestion(attempt, closedQ)).thenReturn(Optional.of(wrongTypeAnswer));
@@ -210,13 +252,20 @@ class QuizAttemptServicesTest {
         dto.setQuestionId(2L);
         dto.setSelectedOptionId(5L);
         
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> quizAttemptServices.saveSingleAnswer(dto));
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> quizAttemptServices.saveSingleAnswer(dto, userId));
         assertEquals("Question/answer inconsistency", ex.getMessage());
     }
 
     @Test
     void testSaveSingleAnswer_Closed_InvalidOption() {
-        QuizAttempt attempt = new QuizAttempt(); attempt.setStatus(QuizAttemptStatus.STARTED);
+        long userId = 1L;
+        Student student = new Student(); student.setId(userId);
+
+        QuizAttempt attempt = new QuizAttempt(); 
+        attempt.setId(1L);
+        attempt.setStatus(QuizAttemptStatus.STARTED);
+        attempt.setStudent(student);
+
         ClosedQuestion question = new ClosedQuestion(); 
         
         AnswerDTO dto = new AnswerDTO();
@@ -228,7 +277,7 @@ class QuizAttemptServicesTest {
         when(questionsRepository.findById(2L)).thenReturn(Optional.of(question));
         when(answersRepository.findByQuizAttemptAndQuestion(attempt, question)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> quizAttemptServices.saveSingleAnswer(dto));
+        assertThrows(RuntimeException.class, () -> quizAttemptServices.saveSingleAnswer(dto, userId));
     }
 
     @Test
@@ -266,7 +315,8 @@ class QuizAttemptServicesTest {
 
         when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
 
-        QuizAttemptDTO result = quizAttemptServices.completeQuizAttempt(attemptId);
+        // Passiamo l'ID corretto (10L)
+        QuizAttemptDTO result = quizAttemptServices.completeQuizAttempt(attemptId, 10L);
 
         assertEquals(QuizAttemptStatus.COMPLETED, result.getStatus());
         assertNotNull(result.getFinishedAt());
@@ -280,12 +330,35 @@ class QuizAttemptServicesTest {
     
     @Test
     void testCompleteQuizAttempt_FailIfAlreadyCompleted() {
+        long userId = 1L;
+        Student student = new Student(); student.setId(userId);
+        
         QuizAttempt attempt = new QuizAttempt();
         attempt.setStatus(QuizAttemptStatus.COMPLETED);
+        attempt.setStudent(student);
         
         when(quizAttemptsRepository.findById(1L)).thenReturn(Optional.of(attempt));
         
-        assertThrows(RuntimeException.class, () -> quizAttemptServices.completeQuizAttempt(1L));
+        assertThrows(RuntimeException.class, () -> quizAttemptServices.completeQuizAttempt(1L, userId));
+    }
+    
+    @Test
+    void testCompleteQuizAttempt_Security_NotYourAttempt() {
+        long attemptId = 1L;
+        long ownerId = 10L;
+        long hackerId = 999L;
+
+        Student owner = new Student(); owner.setId(ownerId);
+        QuizAttempt attempt = new QuizAttempt();
+        attempt.setId(attemptId);
+        attempt.setStatus(QuizAttemptStatus.STARTED);
+        attempt.setStudent(owner);
+
+        when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
+        
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> 
+            quizAttemptServices.completeQuizAttempt(attemptId, hackerId)
+        );
+        assertTrue(ex.getMessage().contains("not your attempt"));
     }
 }
-

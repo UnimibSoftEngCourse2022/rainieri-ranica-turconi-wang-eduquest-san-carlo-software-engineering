@@ -36,7 +36,7 @@ public class QuizAttemptServices {
 	}
 	
 	public List<QuizAttemptDTO> getQuizAttemptsByUserId(long userId) {
-		List<QuizAttempt> quizAttempts = quizAttemptsRepository.findAll();
+		List<QuizAttempt> quizAttempts = quizAttemptsRepository.findByStudentId(userId);
 		
 		List<QuizAttemptDTO> quizAttemptsDTO = new ArrayList<>();
 		for (QuizAttempt quizAttempt : quizAttempts) {
@@ -84,8 +84,12 @@ public class QuizAttemptServices {
 	}
 	
 
-	public AnswerDTO saveSingleAnswer(AnswerDTO answerDTO) {
+	public AnswerDTO saveSingleAnswer(AnswerDTO answerDTO, long requestUserId) {
 		QuizAttempt quizAttempt = getValidQuizAttempt(answerDTO.getQuizAttemptId());
+		
+		if (!quizAttempt.getStudent().getId().equals(requestUserId)) {
+	        throw new RuntimeException("This is not your attempt! You cannot edit it.");
+	    }
 		
 		Question question = questionsRepository.findById(answerDTO.getQuestionId())
 				.orElseThrow(() -> new RuntimeException("Cannot find a Question with the given ID"));
@@ -100,9 +104,13 @@ public class QuizAttemptServices {
 	}
 	
 	
-	public QuizAttemptDTO completeQuizAttempt(long quizAttemptId) {
+	public QuizAttemptDTO completeQuizAttempt(long quizAttemptId, long requestUserId) {
 		
 		QuizAttempt quizAttempt = getValidQuizAttempt(quizAttemptId);
+		
+		if (!quizAttempt.getStudent().getId().equals(requestUserId)) {
+	        throw new RuntimeException("This is not your attempt! You cannot complete it.");
+	    }
 		
 		quizAttempt.setFinishedAt(LocalDateTime.now());
 		quizAttempt.setStatus(QuizAttemptStatus.COMPLETED);
