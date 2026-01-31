@@ -1,4 +1,3 @@
-import { callApi, endpoints } from "../js/api.js";
 import { QuizService } from "../services/quiz-service.js";
 
 export class AddQuiz extends HTMLElement {

@@ -1,4 +1,3 @@
-import { endpoints, callApi } from "../js/api.js";
 import { QuizService } from "../services/quiz-service.js";
 import { QuestionsViewer } from "./questions-viewer.js";
 
@@ -103,10 +102,9 @@ export class QuizEditor extends HTMLElement {
   }
 
   async removeQuestionFromQuiz(questionId) {
-    const removeQuestionEndpoint = `${endpoints.quizzes}/${this.quizId}/questions/${questionId}`;
-    const response = await callApi(removeQuestionEndpoint, "DELETE");
+    const response = await this.quizService.removeQuestionFromQuiz(this.quizId, questionId);
 
-    if (response.ok) {
+    if (response) {
         this.loadData();
     }
   }

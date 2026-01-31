@@ -1,8 +1,9 @@
-import { callApi, endpoints } from "../js/api.js";
+import { AttemptsService } from "../services/attempts-service.js";
 
 export class QuizzesAttemptsViewer extends HTMLElement {
   connectedCallback() {
     this.userId = this.getAttribute("user-id");
+    this.attemptsService = new AttemptsService();
     this.render();
     this.loadData();
 
@@ -20,10 +21,9 @@ export class QuizzesAttemptsViewer extends HTMLElement {
   }
 
   async loadData() {
-    const response = await callApi(`${endpoints.attempts}?studentId=${this.userId}`, "GET");
+    const quizzesAttempts = await this.attemptsService.getAttemptsByStudentId(this.userId);
 
-    if (response.ok) {
-        const quizzesAttempts = await response.json();
+    if (quizzesAttempts) {
         if (quizzesAttempts.length == 0) {
           this.quizzesAttempts.innerHTML = `
           <div class="alert alert-warning" role="alert">

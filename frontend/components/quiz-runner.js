@@ -1,8 +1,12 @@
-import { callApi, endpoints } from "../js/api.js";
+import { AttemptsService } from "../services/attempts-service.js";
+import { QuizService } from "../services/quiz-service.js";
 
 export class QuizRunner extends HTMLElement {
   connectedCallback() {
     this.quizAttemptId = this.getAttribute("quiz-attempt-id");
+    this.attemptsService = new AttemptsService();
+    this.quizService = new QuizService();
+
     this.render();
     this.loadData();
 
@@ -49,11 +53,10 @@ export class QuizRunner extends HTMLElement {
   }
 
   async loadData() {
-    const response = await callApi(`${endpoints.attempts}/${this.quizAttemptId}`, "GET");
+    const attemptData = await this.attemptsService.getAttemptById(this.quizAttemptId);
 
-    if (response.ok) {
-        const quizData = await response.json();
-        this.showQuizData(quizData);
+    if (attemptData) {
+        this.showAttemptData(attemptData);
     } else {
         this.quizErrorSpace.innerHTML = `
         <div class="alert alert-danger" role="alert">
@@ -63,17 +66,16 @@ export class QuizRunner extends HTMLElement {
     }
   }
 
-  async showQuizData(quizData) {
-    const [startDate, completeStartTime] = quizData.startedAt.split("T")
+  async showAttemptData(attemptData) {
+    const [startDate, completeStartTime] = attemptData.startedAt.split("T")
     const [startTime, _] = completeStartTime.split(".")
     this.upperSpace.innerHTML = `
-    <h4>${quizData.quizTitle}</h4>
+    <h4>${attemptData.quizTitle}</h4>
     Started at: ${startTime}, ${startDate}
     `
 
-    const response = await callApi(`${endpoints.quizzes}/${quizData.quizId}`, "GET");
-    if (response.ok) {
-      const quizData = await response.json();
+    const quizData = await this.quizService.getQuizById(attemptData.quizId);
+    if (quizData) {
       this.quizQuestions = quizData.questions;
       this.currentQuestionIndex = 0;
       this.currentQuestionType = quizData.questions[0].questionType;
@@ -142,9 +144,9 @@ export class QuizRunner extends HTMLElement {
       requestBody.selectedOptionId = answer;
     }
 
-    const response = await callApi(`${endpoints.attempts}/${this.quizAttemptId}/answers`, "PUT", requestBody);
+    const response = await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
 
-    if (response.ok) {
+    if (response) {
       if (this.currentQuestionIndex < this.quizQuestions.length - 1) {
         this.currentQuestionIndex++;
         this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
@@ -162,8 +164,8 @@ export class QuizRunner extends HTMLElement {
   }
 
   async handleCompleteQuiz() {
-    const response = await callApi(`${endpoints.attempts}/${this.quizAttemptId}/complete`, "POST");
-    if (response.ok) {
+    const response = await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
+    if (response) {
       window.location = "../student-dashboard/";
       return;
     } else {

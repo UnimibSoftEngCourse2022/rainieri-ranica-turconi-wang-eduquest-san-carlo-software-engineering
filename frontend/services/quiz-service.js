@@ -32,10 +32,43 @@ export class QuizService {
             const response = await callApi(endpoints.quizzes, "POST", quizData);
 
             if (response.ok) {
-                appStore.setState({ loading: false });
+                appStore.updateAppState({ loading: false });
             } else {
                 appStore.updateAppState({ loading: false, error: true });
             }
+            return await response.json();
+        } catch (e) {
+            appStore.updateAppState({ loading: false, error: true });
+        }
+    }
+
+    async addQuestionToQuiz(quizId, questionId) {
+        appStore.updateAppState({ loading: true });
+        try {
+            const response = await callApi(`${endpoints.quizzes}/${quizId}/questions/${questionId}`, "POST");
+
+            if (response.ok) {
+                appStore.updateAppState({ loading: false });
+            } else {
+                appStore.updateAppState({ loading: false, error: true });
+            }
+            return await response.json();
+        } catch (e) {
+            appStore.updateAppState({ loading: false, error: true });
+        }
+    }
+
+    async removeQuestionFromQuiz(quizId, questionId) {
+        appStore.updateAppState({ loading: true });
+        try {
+            const response = await callApi(`${endpoints.quizzes}/${quizId}/questions/${questionId}`, "DELETE");
+
+            if (response.ok) {
+                appStore.updateAppState({ loading: false });
+            } else {
+                appStore.updateAppState({ loading: false, error: true });
+            }
+            
             return await response.json();
         } catch (e) {
             appStore.updateAppState({ loading: false, error: true });

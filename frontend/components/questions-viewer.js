@@ -1,10 +1,14 @@
-import { callApi, endpoints } from "../js/api.js";
+import { QuestionsService } from "../services/questions-service.js";
+import { QuizService } from "../services/quiz-service.js";
 
 export class QuestionsViewer extends HTMLElement {
   connectedCallback() {
     this.quizId = this.getAttribute("quizId");
     this.authorId = this.getAttribute("authorId");
     this.role = this.getAttribute("role");
+
+    this.questionsService = new QuestionsService();
+    this.quizService = new QuizService();
     this.render();
     this.loadData();
   }
@@ -18,17 +22,17 @@ export class QuestionsViewer extends HTMLElement {
   }
 
   async loadData() {
-    let questionsEndpoint = endpoints.questions;
+    let questions = null;
     if (this.authorId) {
-        questionsEndpoint += `?authorId=${this.authorId}`
-    }
-    const response = await callApi(questionsEndpoint, "GET");
-
-    if (response.ok) {
-        const questions = await response.json();
-        this.showQuestions(questions)
+      questions = await this.questionsService.getQuestionByAuthorId(this.authorId);
     } else {
-        this.questions.innerHTML = `
+      questions = await this.questionsService.getQuestions();
+    }
+    
+    if (questions != null && questions != undefined) {
+      this.showQuestions(questions)
+    } else {
+      this.questions.innerHTML = `
         <div class="alert alert-danger" role="alert">
             Cannot get questions, please try again
         </div>
@@ -72,15 +76,14 @@ export class QuestionsViewer extends HTMLElement {
   }
 
   async addQuestionToQuiz(questionId) {
-    const response = await callApi(`${endpoints.quizzes}/${this.quizId}/questions/${questionId}`, "POST");
-
-    const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
-    if (response.ok) {
+    const response = await this.quizService.addQuestionToQuiz(this.quizId, questionId);
+    if (response) {
       this.dispatchEvent(new CustomEvent("question-added-to-quiz", {
         bubbles: true,
         composed: true
-      }))
+      }));
     } else {
+      const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
       addQuestionResult.innerHTML = `
       <div class="alert alert-danger" role="alert">
             Error adding question

@@ -1,4 +1,4 @@
-import { endpoints, callApi } from "../js/api.js";
+import { AttemptsService } from "../services/attempts-service.js";
 
 export class Quiz extends HTMLElement {
   connectedCallback() {
@@ -7,6 +7,8 @@ export class Quiz extends HTMLElement {
     this.description = this.getAttribute('description') || "";
     this.role = this.getAttribute('role') || "STUDENT";
     this.userId = this.getAttribute('user-id');
+
+    this.attemptsService = new AttemptsService();
 
     let buttonText = "";
     if (this.role === "STUDENT") {
@@ -41,16 +43,11 @@ export class Quiz extends HTMLElement {
       window.location = `../quiz-editor/?id=${this.id}`;
       return;
     } else if (this.role == "STUDENT") {
-      const startQuizEndpoint = `${endpoints.attempts}?quizId=${this.id}&studentId=${this.userId}`;
-      const response = await callApi(startQuizEndpoint, "POST");
-      if (response.ok) {
-        this.dispatchEvent(new CustomEvent("quiz-attempt-started", {
-            bubbles: true,
-            composed: true
-        }))
-      } else {
-        // TODO show an error
-      }
+      const response = await this.attemptsService.addAttempt(this.id, this.userId);
+      this.dispatchEvent(new CustomEvent("quiz-attempt-started", {
+          bubbles: true,
+          composed: true
+      }))
     }
   }
 }

@@ -1,4 +1,3 @@
-import { callApi, endpoints } from "../js/api.js";
 import { QuizService } from "../services/quiz-service.js";
 import { Quiz } from "./quiz-item.js"
 

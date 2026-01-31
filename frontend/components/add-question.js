@@ -1,7 +1,8 @@
-import { callApi, endpoints } from "../js/api.js";
+import { QuestionsService } from "../services/questions-service.js";
 
 export class AddQuestion extends HTMLElement {
   connectedCallback() {
+    this.questionsService = new QuestionsService();
     this.render();
     this.setupEventListeners();
     this.updateQuestionFields();
@@ -164,27 +165,18 @@ export class AddQuestion extends HTMLElement {
 
   async submitData(requestBody) {
     try {
-        const response = await callApi(endpoints.questions, "POST", requestBody);
-
-        if (response.ok) {
-            this.addQuestionResult.innerHTML = `
-            <div class="alert alert-success" role="alert">
-                Question added successfully
-            </div>
-            `;
-        } else {
-            this.addQuestionResult.innerHTML = `
-            <div class="alert alert-danger" role="alert">
-                Error creating question
-            </div>
-            `
-        }
+        const response = await this.questionsService.createQuestion(requestBody);
+        this.addQuestionResult.innerHTML = `
+        <div class="alert alert-success" role="alert">
+            Question added successfully
+        </div>
+        `;
     } catch (e) {
         this.addQuestionResult.innerHTML = `
         <div class="alert alert-danger" role="alert">
-            Error creating question, please try again later
+            Error creating question, please check the entered data
         </div>
-        `
+        `;
     }
   }
 }

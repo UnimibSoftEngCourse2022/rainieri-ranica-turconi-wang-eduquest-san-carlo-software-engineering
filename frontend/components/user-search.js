@@ -1,9 +1,10 @@
-import { callApi, endpoints } from "../js/api.js";
+import { UsersService } from "../services/users-service.js";
 
 export class UserSearch extends HTMLElement {
  
     connectedCallback() {
       this.renderInitialStructure();
+      this.userService = new UsersService();
       this.attachEvents(); 
     }
 
@@ -71,15 +72,12 @@ export class UserSearch extends HTMLElement {
       if (!id) return; 
   
       try {
-          const response = await callApi(`${endpoints.users}/${id}`, "GET");
-  
-          if (response.ok) {
-              const userData = await response.json();
+          const userData = await this.userService.getUserInfoById(id);
+          
+          if (userData) {
               this.populateForm(userData); 
-          } else if (response.status === 404) {
-              this.showError("User not found");
           } else {
-              this.showError("Server error");
+              this.showError("User not found");
           }
   
       } catch (error) {
