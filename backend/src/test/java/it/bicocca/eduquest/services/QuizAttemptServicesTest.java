@@ -21,6 +21,7 @@ import it.bicocca.eduquest.dto.quizAttempt.AnswerDTO;
 import it.bicocca.eduquest.dto.quizAttempt.QuizAttemptDTO;
 import it.bicocca.eduquest.dto.quizAttempt.QuizSessionDTO;
 import it.bicocca.eduquest.repository.*;
+import org.springframework.context.ApplicationEventPublisher;
 
 @ExtendWith(MockitoExtension.class)
 class QuizAttemptServicesTest {
@@ -30,6 +31,7 @@ class QuizAttemptServicesTest {
     @Mock private QuizRepository quizRepository;
     @Mock private UsersRepository usersRepository;
     @Mock private QuestionsRepository questionsRepository;
+    @Mock private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private QuizAttemptServices quizAttemptServices;
