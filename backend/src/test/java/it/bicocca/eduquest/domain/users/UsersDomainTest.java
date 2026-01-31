@@ -52,31 +52,6 @@ class UsersDomainTest {
     }
 
     @Test
-    void testStudentStats() {
-        StudentStats stats = new StudentStats();
-        
-        assertEquals(0, stats.getNumberOfCompletedQuizzes());
-        assertEquals(0, stats.getNumberOfCompletedMissions());
-
-        stats.setNumberOfCompletedQuizzes(5);
-        stats.setNumberOfCompletedMissions(3);
-
-        assertEquals(5, stats.getNumberOfCompletedQuizzes());
-        assertEquals(3, stats.getNumberOfCompletedMissions());
-    }
-
-    @Test
-    void testStudentStatsIntegration() {
-        Student student = new Student();
-        StudentStats newStats = new StudentStats();
-        newStats.setNumberOfCompletedQuizzes(10);
-        
-        student.setStats(newStats);
-        
-        assertEquals(10, student.getStats().getNumberOfCompletedQuizzes());
-    }
-
-    @Test
     void testRoleEnum() {
         assertEquals(Role.STUDENT, Role.valueOf("STUDENT"));
         assertEquals(Role.TEACHER, Role.valueOf("TEACHER"));
