@@ -145,7 +145,7 @@ export class QuizRunner extends HTMLElement {
     }
 
     let answer;
-    if (this.currentQuestionType == "OPEN") {
+    if (this.currentQuestionType == "OPENED") {
       answer = this.openQuestionAnswer.value;
       requestBody.openQuestionAnswer = answer;
     } else if (this.currentQuestionType == "CLOSED") {
@@ -155,7 +155,7 @@ export class QuizRunner extends HTMLElement {
       answer = parseInt(this.closedQuestionAnswer.value);
       requestBody.selectedOptionId = answer;
     }
-    
+
     const jwt = window.localStorage.getItem("token");
     const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}/answers`, {
       method: "PUT",
@@ -168,13 +168,39 @@ export class QuizRunner extends HTMLElement {
     });
 
     if (response.ok) {
-      this.currentQuestionIndex++;
-      this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
-      this.updateQuestionsViewer();
+      if (this.currentQuestionIndex < this.quizQuestions.length - 1) {
+        this.currentQuestionIndex++;
+        this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
+        this.updateQuestionsViewer();
+      } else {
+        this.handleCompleteQuiz();
+      }
     } else {
       this.quizErrorSpace.innerHTML = `
       <div class="alert alert-danger" role="alert">
         Error sending your answer, please try again later
+      </div>
+      `
+    }
+  }
+
+  async handleCompleteQuiz() {
+    const jwt = window.localStorage.getItem("token");
+    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}/complete`, {
+      method: "POST",
+      headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + jwt
+      }
+    })
+    if (response.ok) {
+      window.location = "../student-dashboard/";
+      return;
+    } else {
+      this.quizErrorSpace.innerHTML = `
+      <div class="alert alert-danger" role="alert">
+        Error trying to complete the quiz, please try again later
       </div>
       `
     }

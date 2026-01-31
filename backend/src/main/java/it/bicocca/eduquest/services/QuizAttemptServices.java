@@ -1,5 +1,6 @@
 package it.bicocca.eduquest.services;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import it.bicocca.eduquest.dto.quizAttempt.QuizAttemptDTO;
@@ -296,7 +297,7 @@ public class QuizAttemptServices {
 	}
 	
 	private boolean isOpenAnswerCorrect(OpenAnswer openA) {
-		OpenQuestion openQ = (OpenQuestion) openA.getQuestion();
+		OpenQuestion openQ = (OpenQuestion) Hibernate.unproxy(openA.getQuestion());
 		String studentText = openA.getText();
 		
 		if (studentText != null && openQ.getValidAnswers() != null) {

@@ -39,9 +39,7 @@ export class QuizzesAttemptsViewer extends HTMLElement {
         } else {
           let quizzesAttemptsHTML = `<div class="list-group">`
           quizzesAttempts.forEach(quizAttempt => {
-              quizzesAttemptsHTML += `
-              <a class="list-group-item list-group" href="../quiz-runner/?quizAttemptId=${quizAttempt.id}">${quizAttempt.quizTitle}</a>
-              `
+            quizzesAttemptsHTML += this.getQuizAttemptRow(quizAttempt);
           })
           quizzesAttemptsHTML += `</div>`
           this.quizzesAttempts.innerHTML = quizzesAttemptsHTML;
@@ -54,6 +52,27 @@ export class QuizzesAttemptsViewer extends HTMLElement {
         `
     }
   };
+
+  getQuizAttemptRow(quizAttempt) {
+    if (quizAttempt.status == "COMPLETED") {
+      const quizResultPercentage = quizAttempt.score / quizAttempt.maxScore;
+      const badgeColor = quizResultPercentage > 0.6 ? "success" : "danger";
+      return `
+      <p class="list-group-item list-group"">
+        ${quizAttempt.quizTitle}
+        <span class="badge text-bg-${badgeColor}">${quizAttempt.status} (${quizResultPercentage * 100}%)</span>
+      </a>
+      `
+    } else {
+      const quizAttemptLink = `../quiz-runner/?quizAttemptId=${quizAttempt.id}`
+      return `
+        <a class="list-group-item list-group" href="${quizAttemptLink}">
+          ${quizAttempt.quizTitle}
+          <span class="badge text-bg-secondary">${quizAttempt.status}</span>
+        </a>
+      `
+    }
+  }
 }
 
 customElements.define('quizzes-attempts-viewer', QuizzesAttemptsViewer);
