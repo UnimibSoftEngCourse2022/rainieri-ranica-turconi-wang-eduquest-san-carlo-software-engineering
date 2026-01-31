@@ -12,6 +12,8 @@ import it.bicocca.eduquest.repository.UsersRepository;
 import it.bicocca.eduquest.domain.quiz.*;
 import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.domain.answers.*;
+import it.bicocca.eduquest.domain.events.*;
+import org.springframework.context.ApplicationEventPublisher;
 import it.bicocca.eduquest.dto.quizAttempt.*;
 import it.bicocca.eduquest.dto.quiz.*;
 import java.util.Optional;
@@ -26,16 +28,19 @@ public class QuizAttemptServices {
 	private final QuizRepository quizRepository;
 	private final UsersRepository usersRepository;
 	private final QuestionsRepository questionsRepository;
+	private final ApplicationEventPublisher eventPublisher;
 	
 	public QuizAttemptServices(AnswersRepository answersRepository, QuizAttemptsRepository quizAttemptsRepository,
-			QuizRepository quizRepository, UsersRepository usersRepository, QuestionsRepository questionsRepository) {
+			QuizRepository quizRepository, UsersRepository usersRepository, QuestionsRepository questionsRepository,
+			ApplicationEventPublisher eventPublisher) {
 		this.answersRepository = answersRepository;
 		this.quizAttemptsRepository = quizAttemptsRepository;
 		this.quizRepository = quizRepository;
 		this.usersRepository = usersRepository;
 		this.questionsRepository = questionsRepository;
+		this.eventPublisher = eventPublisher;
 	}
-	
+
 	public QuizAttemptDTO getQuizAttemptById(long id, long userId) {
 		QuizAttempt quizAttempt = quizAttemptsRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find quiz attempt with the given ID"));
 		if (quizAttempt.getStudent().getId() != userId) {
@@ -141,6 +146,8 @@ public class QuizAttemptServices {
 		quizAttempt.setScore(score);
 		
 		quizAttemptsRepository.save(quizAttempt);
+		
+		eventPublisher.publishEvent(new QuizCompletedEvent(this, quizAttempt));
 		
 		return new QuizAttemptDTO(quizAttempt.getId(), quizAttempt.getQuiz().getId(), quizAttempt.getQuiz().getTitle(), quizAttempt.getStudent().getId(),
 				quizAttempt.getStudent().getName(), quizAttempt.getStudent().getSurname(), quizAttempt.getScore(), quizAttempt.getMaxScore(),

@@ -94,5 +94,13 @@ public abstract class Question {
 	public void setQuestionType(QuestionType questionType) {
 		this.questionType = questionType;
 	}
+
+	public QuestionStats getStats() {
+		return stats;
+	}
+
+	public void setStats(QuestionStats stats) {
+		this.stats = stats;
+	}
     
 }
