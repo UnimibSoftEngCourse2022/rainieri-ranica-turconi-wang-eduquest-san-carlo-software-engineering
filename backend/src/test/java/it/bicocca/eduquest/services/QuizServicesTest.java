@@ -241,9 +241,13 @@ class QuizServicesTest {
         QuestionAddDTO dto = new QuestionAddDTO();
         dto.setText("Text"); dto.setTopic("Topic");
         dto.setQuestionType(QuestionType.CLOSED);
-        ClosedQuestionOptionDTO optDTO = new ClosedQuestionOptionDTO();
-        optDTO.setText("Opt"); optDTO.setTrue(true);
-        dto.setClosedQuestionOptions(Arrays.asList(optDTO));
+        ClosedQuestionOptionDTO cqo1 = new ClosedQuestionOptionDTO();
+        cqo1.setText("Opt1"); cqo1.setTrue(true);
+        
+        ClosedQuestionOptionDTO cqo2 = new ClosedQuestionOptionDTO();
+        cqo2.setText("Opt2"); cqo2.setTrue(false);
+        
+        dto.setClosedQuestionOptions(Arrays.asList(cqo1, cqo2));
 
         when(usersRepository.findById(userId)).thenReturn(Optional.of(author));
         when(questionsRepository.save(any(Question.class))).thenAnswer(i -> {
@@ -257,6 +261,7 @@ class QuizServicesTest {
         assertEquals(600L, result.getId());
         assertEquals(QuestionType.CLOSED, result.getQuestionType());
         assertNotNull(result.getClosedQuestionOptions());
+        assertEquals(2, result.getClosedQuestionOptions().size());
     }
 
     @Test

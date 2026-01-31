@@ -143,4 +143,125 @@ public class QuizControllerTest {
         mockMvc.perform(get("/api/quizzes/1/quiz-for-student"))
                 .andExpect(status().isOk());
     }
+    
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn500_WhenGetQuizzesFails() throws Exception {
+        when(quizService.getAllQuizzes()).thenThrow(new RuntimeException("Database error"));
+
+        mockMvc.perform(get("/api/quizzes"))
+                .andExpect(status().isInternalServerError());
+    }
+    
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn400_WhenAddQuizFails() throws Exception {
+        QuizAddDTO quizDTO = new QuizAddDTO(); 
+        when(quizService.addQuiz(any(), anyLong())).thenThrow(new RuntimeException("Invalid data"));
+
+        mockMvc.perform(post("/api/quizzes")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(quizDTO)))
+                .andExpect(status().isBadRequest());
+    }
+    
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn404_WhenEditQuizNotFound() throws Exception {
+        QuizEditDTO editDTO = new QuizEditDTO("T", "D");
+        // Simula "Cannot find" per entrare nel primo IF del catch
+        doThrow(new RuntimeException("Cannot find quiz"))
+            .when(quizService).editQuiz(anyLong(), any(), anyLong());
+
+        mockMvc.perform(put("/api/quizzes/1")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(editDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn400_WhenEditQuizIllegalArgument() throws Exception {
+        QuizEditDTO editDTO = new QuizEditDTO("T", "D");
+        doThrow(new IllegalArgumentException("Bad argument"))
+            .when(quizService).editQuiz(anyLong(), any(), anyLong());
+
+        mockMvc.perform(put("/api/quizzes/1")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(editDTO)))
+                .andExpect(status().isBadRequest());
+    }
+    
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn404_WhenAddQuestionQuizNotFound() throws Exception {
+        doThrow(new RuntimeException("Cannot find quiz"))
+            .when(quizService).addQuestionToQuiz(anyLong(), anyLong(), anyLong());
+
+        mockMvc.perform(post("/api/quizzes/1/questions/5").with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn403_WhenAddQuestionForbidden() throws Exception {
+        doThrow(new RuntimeException("cannot edit quiz"))
+            .when(quizService).addQuestionToQuiz(anyLong(), anyLong(), anyLong());
+
+        mockMvc.perform(post("/api/quizzes/1/questions/5").with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn400_WhenAddQuestionGenericError() throws Exception {
+        doThrow(new RuntimeException("Generic error"))
+            .when(quizService).addQuestionToQuiz(anyLong(), anyLong(), anyLong());
+
+        mockMvc.perform(post("/api/quizzes/1/questions/5").with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+    
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn404_WhenRemoveQuestionNotFound() throws Exception {
+        doThrow(new RuntimeException("Cannot find question"))
+            .when(quizService).removeQuestionFromQuiz(anyLong(), anyLong(), anyLong());
+
+        mockMvc.perform(delete("/api/quizzes/1/questions/5").with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+    
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn404_WhenGetStudentQuizNotFound() throws Exception {
+        doThrow(new RuntimeException("Cannot find a quiz"))
+            .when(quizService).getQuizForStudent(anyLong(), anyLong());
+
+        mockMvc.perform(get("/api/quizzes/1/quiz-for-student"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn403_WhenTeacherTriesToTakeQuiz() throws Exception {
+        doThrow(new RuntimeException("Teacher cannot take quiz"))
+            .when(quizService).getQuizForStudent(anyLong(), anyLong());
+
+        mockMvc.perform(get("/api/quizzes/1/quiz-for-student"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturn500_WhenGetStudentQuizGenericError() throws Exception {
+        doThrow(new RuntimeException("Database down"))
+            .when(quizService).getQuizForStudent(anyLong(), anyLong());
+
+        mockMvc.perform(get("/api/quizzes/1/quiz-for-student"))
+                .andExpect(status().isInternalServerError());
+    }
 }
