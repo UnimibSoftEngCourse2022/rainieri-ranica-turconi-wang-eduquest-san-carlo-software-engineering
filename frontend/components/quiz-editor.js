@@ -1,10 +1,15 @@
+import { endpoints, callApi } from "../js/api.js";
+import { QuizService } from "../services/quiz-service.js";
 import { QuestionsViewer } from "./questions-viewer.js";
 
 export class QuizEditor extends HTMLElement {
   connectedCallback() {
     this.quizId = this.getAttribute("id");
+    this.quizService = new QuizService();
+
     this.render();
     this.loadData();
+
 
     this.addEventListener("question-added-to-quiz", () => this.loadData());
   }
@@ -56,23 +61,12 @@ export class QuizEditor extends HTMLElement {
   }
 
   async loadData() {
-    const jwt = window.localStorage.getItem("token");
-    const quizInfoEndpoint = "http://localhost:8080/api/quizzes/"+this.quizId;
-    const response = await fetch(quizInfoEndpoint, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
-
-    if (response.ok) {
-        const quizData = await response.json();
+    try {
+        const quizData = await this.quizService.getQuizById(this.quizId);
         
         this.quizTitle.value = quizData.title;
         this.quizDescription.value = quizData.description;
-
+    
         if (quizData.questions.length == 0) {
             this.quizQuestions.innerHTML = `
             <div class="alert alert-warning" role="alert">
@@ -98,26 +92,19 @@ export class QuizEditor extends HTMLElement {
                 })
             })
         }
-    } else {
+    } catch (e) {
+        console.log(e);
         this.innerHTML = `
         <div class="alert alert-danger" role="alert">
             Error trying to show the quiz, please try again later
         </div>
         `
-    }
+    }    
   }
 
   async removeQuestionFromQuiz(questionId) {
-    const jwt = window.localStorage.getItem("token");
-    const removeQuestionEndpoint = `http://localhost:8080/api/quizzes/${this.quizId}/questions/${questionId}`;
-    const response = await fetch(removeQuestionEndpoint, {
-        method: "DELETE",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
+    const removeQuestionEndpoint = `${endpoints.quizzes}/${this.quizId}/questions/${questionId}`;
+    const response = await callApi(removeQuestionEndpoint, "DELETE");
 
     if (response.ok) {
         this.loadData();

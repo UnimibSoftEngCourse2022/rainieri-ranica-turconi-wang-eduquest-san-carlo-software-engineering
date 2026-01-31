@@ -1,3 +1,5 @@
+import { endpoints, callApi } from "../js/api.js";
+
 export class Quiz extends HTMLElement {
   connectedCallback() {
     this.id = this.getAttribute('id');
@@ -39,16 +41,8 @@ export class Quiz extends HTMLElement {
       window.location = `../quiz-editor/?id=${this.id}`;
       return;
     } else if (this.role == "STUDENT") {
-      const jwt = window.localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/quiz-attempts?quizId=${this.id}&studentId=${this.userId}`, {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-      });
-
+      const startQuizEndpoint = `${endpoints.attempts}?quizId=${this.id}&studentId=${this.userId}`;
+      const response = await callApi(startQuizEndpoint, "POST");
       if (response.ok) {
         this.dispatchEvent(new CustomEvent("quiz-attempt-started", {
             bubbles: true,

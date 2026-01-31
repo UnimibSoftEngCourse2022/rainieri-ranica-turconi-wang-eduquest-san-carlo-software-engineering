@@ -1,5 +1,9 @@
+import { callApi, endpoints } from "../js/api.js";
+import { QuizService } from "../services/quiz-service.js";
+
 export class AddQuiz extends HTMLElement {
   connectedCallback() {
+    this.quizService = new QuizService();
     this.render();
     document.getElementById("add-quiz-button").addEventListener("click", (e) => this.handleAddQuiz(e));
   }
@@ -58,19 +62,8 @@ export class AddQuiz extends HTMLElement {
   }
 
   async submitData(requestBody) {
-        const jwt = window.localStorage.getItem("token");    
-        const response = await fetch("http://localhost:8080/api/quizzes", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        },
-        body: JSON.stringify(requestBody)
-    });
-
-    if (response.ok) {
-        const r = await response.json();
+    try {
+        const response = await this.quizService.createQuiz(requestBody);
         this.addQuizResult.innerHTML = `
         <div class="alert alert-success" role="alert">
             Quiz created successfully
@@ -81,7 +74,7 @@ export class AddQuiz extends HTMLElement {
             bubbles: true,
             composed: true
         }))
-    } else {
+    } catch (e) {
         this.addQuizResult.innerHTML = `
         <div class="alert alert-warning" role="alert">
             Error during the quiz creation

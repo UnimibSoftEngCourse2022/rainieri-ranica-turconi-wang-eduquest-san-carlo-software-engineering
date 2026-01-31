@@ -1,20 +1,7 @@
-const USER_DATA_ENDPOINT_URL = "http://localhost:8080/api/users/me";
+import { callApi, endpoints } from "./api.js";
 
 export const verifyUser = async (role) => {
-  const token = window.localStorage.getItem("token");
-  if (!token) {
-    window.location = LOGIN_PAGE;
-    return;
-  }
-
-  const response = await fetch(USER_DATA_ENDPOINT_URL, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  });
+  const response = await callApi(endpoints.auth.me, "GET");
 
   if (response.ok) {
     const userData = await response.json();

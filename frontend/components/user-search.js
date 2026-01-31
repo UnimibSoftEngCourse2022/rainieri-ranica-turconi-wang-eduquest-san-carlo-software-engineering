@@ -1,3 +1,5 @@
+import { callApi, endpoints } from "../js/api.js";
+
 export class UserSearch extends HTMLElement {
  
     connectedCallback() {
@@ -69,14 +71,7 @@ export class UserSearch extends HTMLElement {
       if (!id) return; 
   
       try {
-          const response = await fetch(`http://localhost:8080/auth/${id}`, { 
-              method: "GET",
-              headers: {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-                  "Authorization": "Bearer " + jwt
-              }
-          });
+          const response = await callApi(`${endpoints.users}/${id}`, "GET");
   
           if (response.ok) {
               const userData = await response.json();

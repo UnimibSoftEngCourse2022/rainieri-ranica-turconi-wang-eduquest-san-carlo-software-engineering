@@ -1,3 +1,5 @@
+import { callApi, endpoints } from "../js/api.js";
+
 export class QuizzesAttemptsViewer extends HTMLElement {
   connectedCallback() {
     this.userId = this.getAttribute("user-id");
@@ -18,15 +20,7 @@ export class QuizzesAttemptsViewer extends HTMLElement {
   }
 
   async loadData() {
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz-attempts?studentId=${this.userId}`, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
+    const response = await callApi(`${endpoints.attempts}?studentId=${this.userId}`, "GET");
 
     if (response.ok) {
         const quizzesAttempts = await response.json();

@@ -1,3 +1,5 @@
+import { callApi, endpoints } from "../js/api.js";
+
 export class QuizRunner extends HTMLElement {
   connectedCallback() {
     this.quizAttemptId = this.getAttribute("quiz-attempt-id");
@@ -47,15 +49,7 @@ export class QuizRunner extends HTMLElement {
   }
 
   async loadData() {
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}`, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
+    const response = await callApi(`${endpoints.attempts}/${this.quizAttemptId}`, "GET");
 
     if (response.ok) {
         const quizData = await response.json();
@@ -77,15 +71,7 @@ export class QuizRunner extends HTMLElement {
     Started at: ${startTime}, ${startDate}
     `
 
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quizzes/${quizData.quizId}`, {
-      method: "GET",
-      headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + jwt
-      }
-    });
+    const response = await callApi(`${endpoints.quizzes}/${quizData.quizId}`, "GET");
     if (response.ok) {
       const quizData = await response.json();
       this.quizQuestions = quizData.questions;
@@ -156,16 +142,7 @@ export class QuizRunner extends HTMLElement {
       requestBody.selectedOptionId = answer;
     }
 
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}/answers`, {
-      method: "PUT",
-      headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + jwt
-      },
-      body: JSON.stringify(requestBody)
-    });
+    const response = await callApi(`${endpoints.attempts}/${this.quizAttemptId}/answers`, "PUT", requestBody);
 
     if (response.ok) {
       if (this.currentQuestionIndex < this.quizQuestions.length - 1) {
@@ -185,15 +162,7 @@ export class QuizRunner extends HTMLElement {
   }
 
   async handleCompleteQuiz() {
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}/complete`, {
-      method: "POST",
-      headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + jwt
-      }
-    })
+    const response = await callApi(`${endpoints.attempts}/${this.quizAttemptId}/complete`, "POST");
     if (response.ok) {
       window.location = "../student-dashboard/";
       return;

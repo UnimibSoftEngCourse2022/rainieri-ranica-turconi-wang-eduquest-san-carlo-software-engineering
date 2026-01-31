@@ -1,3 +1,5 @@
+import { callApi, endpoints } from "../js/api.js";
+
 export class AddQuestion extends HTMLElement {
   connectedCallback() {
     this.render();
@@ -162,17 +164,8 @@ export class AddQuestion extends HTMLElement {
 
   async submitData(requestBody) {
     try {
-        const jwt = window.localStorage.getItem("token");
-        const response = await fetch("http://localhost:8080/api/questions", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + jwt
-            },
-            body: JSON.stringify(requestBody)
-        });
-    
+        const response = await callApi(endpoints.questions, "POST", requestBody);
+
         if (response.ok) {
             this.addQuestionResult.innerHTML = `
             <div class="alert alert-success" role="alert">

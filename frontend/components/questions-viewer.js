@@ -1,3 +1,5 @@
+import { callApi, endpoints } from "../js/api.js";
+
 export class QuestionsViewer extends HTMLElement {
   connectedCallback() {
     this.quizId = this.getAttribute("quizId");
@@ -16,20 +18,11 @@ export class QuestionsViewer extends HTMLElement {
   }
 
   async loadData() {
-    const jwt = window.localStorage.getItem("token");
-
-    let questionsEndpoint = "http://localhost:8080/api/questions";
+    let questionsEndpoint = endpoints.questions;
     if (this.authorId) {
         questionsEndpoint += `?authorId=${this.authorId}`
     }
-    const response = await fetch(questionsEndpoint, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
+    const response = await callApi(questionsEndpoint, "GET");
 
     if (response.ok) {
         const questions = await response.json();
@@ -79,15 +72,7 @@ export class QuestionsViewer extends HTMLElement {
   }
 
   async addQuestionToQuiz(questionId) {
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quizzes/${this.quizId}/questions/${questionId}`, {
-      method: "POST",
-      headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-      }
-    });
+    const response = await callApi(`${endpoints.quizzes}/${this.quizId}/questions/${questionId}`, "POST");
 
     const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
     if (response.ok) {
