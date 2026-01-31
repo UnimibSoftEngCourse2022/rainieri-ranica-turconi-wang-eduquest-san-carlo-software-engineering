@@ -144,9 +144,15 @@ export class AddQuestion extends HTMLElement {
     } else {
         const closedOptions = []
         for (let i = 0; i < this.nClosedQuestionOptions; i++) {
-            const text = this.querySelector(`#closed-option-${i}-text`).value
-            const isTrue = this.querySelector(`#closed-option-${i}-is-true`).checked
-            closedOptions.push({text, isTrue})
+            const textInput = this.querySelector(`#closed-option-${i}-text`);
+            const checkbox = this.querySelector(`#closed-option-${i}-is-true`);
+            if (textInput && checkbox) {
+                const text = textInput.value.trim();
+                const isTrue = checkbox.checked;
+                if (text !== "") { 
+                    closedOptions.push({ text, isTrue });
+                }
+            }
         }
         requestBody.closedQuestionOptions = closedOptions
     }

@@ -337,6 +337,14 @@ public class QuizServices {
 			throw new IllegalArgumentException("A closed question must have options!");
 		}
 		
+		int optionsCount = dto.getClosedQuestionOptions().size();
+		if (optionsCount < 2) {
+			throw new IllegalArgumentException("A closed question must have at least 2 options!");
+		}
+		if (optionsCount > 4) {
+			throw new IllegalArgumentException("A closed question cannot have more than 4 options!");
+		}
+		
 		boolean hasCorrectAnswer = false;
 		
 		for (ClosedQuestionOptionDTO optionDTO  : dto.getClosedQuestionOptions()) {
