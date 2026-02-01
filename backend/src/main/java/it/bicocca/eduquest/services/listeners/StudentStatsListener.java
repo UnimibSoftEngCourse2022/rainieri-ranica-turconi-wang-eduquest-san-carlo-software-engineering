@@ -49,6 +49,7 @@ public class StudentStatsListener {
         
         if (stats == null) {
             stats = new StudentStats();
+            ((Student)student).setStats(stats);
         }
 
         stats.updateStats(score, answersInThisQuiz, correctInThisQuiz);

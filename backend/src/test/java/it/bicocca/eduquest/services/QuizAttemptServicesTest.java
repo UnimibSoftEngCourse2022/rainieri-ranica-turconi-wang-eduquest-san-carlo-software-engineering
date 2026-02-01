@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -131,15 +133,15 @@ class QuizAttemptServicesTest {
     void testSaveSingleAnswer_Open_Success_CreateNew() {
         long attemptId = 1L;
         long questionId = 10L;
-        long userId = 50L; // <--- Nuovo parametro
+        long userId = 50L; 
 
         Student student = new Student(); 
-        student.setId(userId); // <--- Setup studente
+        student.setId(userId); 
 
         QuizAttempt attempt = new QuizAttempt();
         attempt.setId(attemptId);
         attempt.setStatus(QuizAttemptStatus.STARTED);
-        attempt.setStudent(student); // <--- Importante!
+        attempt.setStudent(student); 
 
         OpenQuestion question = new OpenQuestion();
         question.setId(questionId);
@@ -155,7 +157,6 @@ class QuizAttemptServicesTest {
         
         when(answersRepository.save(any(Answer.class))).thenAnswer(i -> i.getArgument(0));
 
-        // Passiamo userId al metodo
         AnswerDTO result = quizAttemptServices.saveSingleAnswer(dto, userId);
 
         assertEquals("Risposta aperta", result.getTextOpenAnswer());
@@ -362,5 +363,128 @@ class QuizAttemptServicesTest {
             quizAttemptServices.completeQuizAttempt(attemptId, hackerId)
         );
         assertTrue(ex.getMessage().contains("not your attempt"));
+    }
+    
+    @Test
+    void testGetQuizAttemptById_Success() {
+        long attemptId = 1L;
+        long userId = 11L;
+
+        Student student = new Student(); student.setId(userId); student.setName("Lucky"); student.setSurname("Luke");
+        Quiz quiz = new Quiz(); quiz.setId(5L); quiz.setTitle("Quiz");
+        
+        QuizAttempt attempt = new QuizAttempt(student, quiz);
+        attempt.setId(attemptId);
+
+        when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
+
+        QuizAttemptDTO result = quizAttemptServices.getQuizAttemptById(attemptId, userId);
+
+        assertNotNull(result);
+        assertEquals(attemptId, result.getId());
+    }
+
+    @Test
+    void testGetQuizAttemptById_NotAuthorized() {
+        long attemptId = 1L;
+        long ownerId = 11L;
+        long hackerId = 111L;
+
+        Student owner = new Student(); owner.setId(ownerId);
+        QuizAttempt attempt = new QuizAttempt();
+        attempt.setStudent(owner);
+
+        when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> 
+            quizAttemptServices.getQuizAttemptById(attemptId, hackerId));
+        assertEquals("Not authorized", ex.getMessage());
+    }
+    
+    @Test
+    void testGetQuizAttemptById_NotFound() {
+        when(quizAttemptsRepository.findById(11L)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> quizAttemptServices.getQuizAttemptById(11L, 1L));
+    }
+
+    @Test
+    void testGetQuizAttemptsByUserId_Success() {
+        long userId = 11L;
+        Student student = new Student(); student.setId(userId); student.setName("N"); student.setSurname("S");
+        Quiz quiz = new Quiz(); quiz.setId(1L); quiz.setTitle("T");
+
+        QuizAttempt attempt = new QuizAttempt(student, quiz);
+        
+        Student other = new Student(); other.setId(99L);
+        QuizAttempt otherAttempt = new QuizAttempt(other, quiz);
+
+        when(quizAttemptsRepository.findByStudentId(userId)).thenReturn(Arrays.asList(attempt, otherAttempt));
+
+        List<QuizAttemptDTO> results = quizAttemptServices.getQuizAttemptsByUserId(userId);
+
+        assertEquals(1, results.size()); 
+        assertEquals(userId, results.get(0).getStudentId());
+    }
+
+    @Test
+    void testStartQuiz_UnknownQuestionType() {
+        long userId = 1L; long quizId = 1L;
+        Student student = new Student(); student.setId(userId);
+        Quiz quiz = new Quiz(); quiz.setId(quizId);
+        
+        Question weirdQuestion = new Question() {}; 
+        weirdQuestion.setQuestionType(null); 
+        
+        quiz.setQuestions(Collections.singletonList(weirdQuestion));
+
+        when(usersRepository.findById(userId)).thenReturn(Optional.of(student));
+        when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
+        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(student, quiz, QuizAttemptStatus.STARTED))
+            .thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> quizAttemptServices.startQuiz(quizId, userId));
+    }
+
+    
+    @Test
+    void testUpdateClosedAnswer_NoOptionSelected() {
+        long userId = 1L;
+        Student student = new Student(); student.setId(userId);
+        QuizAttempt attempt = new QuizAttempt(); attempt.setId(1L); attempt.setStatus(QuizAttemptStatus.STARTED); attempt.setStudent(student);
+        
+        ClosedQuestion q = new ClosedQuestion(); q.setId(11L);
+        ClosedAnswer ans = new ClosedAnswer(attempt, q, null);
+
+        when(quizAttemptsRepository.findById(1L)).thenReturn(Optional.of(attempt));
+        when(questionsRepository.findById(11L)).thenReturn(Optional.of(q));
+        when(answersRepository.findByQuizAttemptAndQuestion(attempt, q)).thenReturn(Optional.of(ans));
+
+        AnswerDTO dto = new AnswerDTO();
+        dto.setQuizAttemptId(1L);
+        dto.setQuestionId(11L);
+        dto.setSelectedOptionId(null); 
+        
+        RuntimeException ex = assertThrows(IllegalArgumentException.class, () -> 
+            quizAttemptServices.saveSingleAnswer(dto, userId));
+        assertEquals("You must select an option!", ex.getMessage());
+    }
+
+    @Test
+    void testIsAnswerCorrect_UnknownType() {
+        long attemptId = 1L; long userId = 1L;
+        Student student = new Student(); student.setId(userId); student.setName("A"); student.setSurname("B");
+        Quiz quiz = new Quiz(); quiz.setId(11L); quiz.setTitle("Title");
+        
+        QuizAttempt attempt = new QuizAttempt(student, quiz);
+        attempt.setId(attemptId);
+        attempt.setStatus(QuizAttemptStatus.STARTED);
+
+        Answer weirdAnswer = new Answer() {};
+        attempt.addAnswer(weirdAnswer);
+
+        when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
+
+        assertThrows(IllegalArgumentException.class, () -> 
+            quizAttemptServices.completeQuizAttempt(attemptId, userId));
     }
 }
