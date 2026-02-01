@@ -1,5 +1,7 @@
 import { QuizService } from "../services/quiz-service.js";
 import { Quiz } from "./quiz-item.js"
+import { Alert } from "./shared/alert.js";
+
 
 export class QuizzesViewer extends HTMLElement {
   async connectedCallback() {
@@ -37,9 +39,7 @@ export class QuizzesViewer extends HTMLElement {
                 message = "You don't have any quiz yet! Create one to start!";
             }
             this.innerHTML = `
-            <div class="alert alert-warning" role="alert">
-                ${message}
-            </div>
+            <alert-component type="warning" message="${message}"></alert-component>
             `
         } else {
             let quizzesHTML = ''
@@ -53,9 +53,7 @@ export class QuizzesViewer extends HTMLElement {
     } catch (e) {
         console.log(e);
         this.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Cannot get the quizzes list, please try again later
-        </div>
+        <alert-component type="danger" message="Cannot get the quizzes list, please try again later"></alert-component>
         `
     }
   }

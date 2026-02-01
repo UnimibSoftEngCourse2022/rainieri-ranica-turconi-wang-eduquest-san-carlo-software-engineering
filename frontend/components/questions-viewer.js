@@ -1,5 +1,6 @@
 import { QuestionsService } from "../services/questions-service.js";
 import { QuizService } from "../services/quiz-service.js";
+import { Alert } from "./shared/alert.js";
 
 export class QuestionsViewer extends HTMLElement {
   connectedCallback() {
@@ -33,9 +34,7 @@ export class QuestionsViewer extends HTMLElement {
       this.showQuestions(questions)
     } else {
       this.questions.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Cannot get questions, please try again
-        </div>
+        <alert-component type="danger" message="Cannot get questions, please try again"></alert-component>
         `
     }
   }
@@ -85,9 +84,7 @@ export class QuestionsViewer extends HTMLElement {
     } else {
       const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
       addQuestionResult.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-            Error adding question
-      </div>
+      <alert-component type="danger" message="Error adding question"></alert-component>
       `
     }
   }

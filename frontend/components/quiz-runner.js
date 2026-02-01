@@ -1,5 +1,6 @@
 import { AttemptsService } from "../services/attempts-service.js";
 import { QuizService } from "../services/quiz-service.js";
+import { Alert } from "./shared/alert.js";
 
 export class QuizRunner extends HTMLElement {
   connectedCallback() {
@@ -59,9 +60,7 @@ export class QuizRunner extends HTMLElement {
         this.showAttemptData(attemptData);
     } else {
         this.quizErrorSpace.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Cannot load the test, please try again later
-        </div>
+        <alert-component type="danger" message="Cannot load the test, please try again later"></alert-component>
         `
     }
   }
@@ -82,9 +81,7 @@ export class QuizRunner extends HTMLElement {
       this.updateQuestionsViewer();
     } else {
       this.quizErrorSpace.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-            Cannot load the test, please try again later
-        </div>
+      <alert-component type="danger" message="Cannot load the test, please try again later"></alert-component>
       `
     }
   }
@@ -156,9 +153,7 @@ export class QuizRunner extends HTMLElement {
       }
     } else {
       this.quizErrorSpace.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-        Error sending your answer, please try again later
-      </div>
+      <alert-component type="danger" message="Error sending your answer, please try again later"></alert-component>
       `
     }
   }
@@ -170,9 +165,7 @@ export class QuizRunner extends HTMLElement {
       return;
     } else {
       this.quizErrorSpace.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-        Error trying to complete the quiz, please try again later
-      </div>
+      <alert-component type="danger" message="Error trying to complete the quiz, please try again later"></alert-component>
       `
     }
   }

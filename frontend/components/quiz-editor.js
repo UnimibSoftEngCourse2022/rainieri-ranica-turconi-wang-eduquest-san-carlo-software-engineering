@@ -1,5 +1,6 @@
 import { QuizService } from "../services/quiz-service.js";
 import { QuestionsViewer } from "./questions-viewer.js";
+import { Alert } from "./shared/alert.js";
 
 export class QuizEditor extends HTMLElement {
   connectedCallback() {
@@ -68,9 +69,7 @@ export class QuizEditor extends HTMLElement {
     
         if (quizData.questions.length == 0) {
             this.quizQuestions.innerHTML = `
-            <div class="alert alert-warning" role="alert">
-                This quiz doesn't have any question yet!
-            </div>
+            <alert-component type="info" message="No questions added to the quiz yet"></alert-component>
             `;
         } else {
             let questionsDiv = `
@@ -94,9 +93,7 @@ export class QuizEditor extends HTMLElement {
     } catch (e) {
         console.log(e);
         this.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Error trying to show the quiz, please try again later
-        </div>
+        <alert-component type="danger" message="Error trying to show the quiz, please try again later"></alert-component>
         `
     }    
   }

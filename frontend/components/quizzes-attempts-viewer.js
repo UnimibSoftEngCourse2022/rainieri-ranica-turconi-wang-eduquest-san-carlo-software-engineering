@@ -1,4 +1,5 @@
 import { AttemptsService } from "../services/attempts-service.js";
+import { Alert } from "./shared/alert.js";
 
 export class QuizzesAttemptsViewer extends HTMLElement {
   connectedCallback() {
@@ -26,9 +27,7 @@ export class QuizzesAttemptsViewer extends HTMLElement {
     if (quizzesAttempts) {
         if (quizzesAttempts.length == 0) {
           this.quizzesAttempts.innerHTML = `
-          <div class="alert alert-warning" role="alert">
-            You haven't started a quiz yet!
-          </div>
+          <alert-component type="warning" message="Start a quiz to see your attempts here."></alert-component>
           `
         } else {
           let quizzesAttemptsHTML = `<div class="list-group">`
@@ -40,9 +39,7 @@ export class QuizzesAttemptsViewer extends HTMLElement {
         }
     } else {
         this.quizzesAttempts.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Error trying to access the quizzes attempts, please try again later
-        </div>
+        <alert-component type="danger" message="Error trying to access the quizzes attempts, please try again later"></alert-component>
         `
     }
   };

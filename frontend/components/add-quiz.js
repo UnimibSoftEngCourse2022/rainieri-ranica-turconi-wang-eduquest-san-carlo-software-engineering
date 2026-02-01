@@ -1,4 +1,5 @@
 import { QuizService } from "../services/quiz-service.js";
+import { Alert } from "./shared/alert.js";
 
 export class AddQuiz extends HTMLElement {
   connectedCallback() {
@@ -61,23 +62,19 @@ export class AddQuiz extends HTMLElement {
   }
 
   async submitData(requestBody) {
-    try {
-        const response = await this.quizService.createQuiz(requestBody);
+    const response = await this.quizService.createQuiz(requestBody);
+    if (response) {
         this.addQuizResult.innerHTML = `
-        <div class="alert alert-success" role="alert">
-            Quiz created successfully
-        </div>
+        <alert-component type="success" message="Quiz created successfully"></alert-component>
         `
 
         this.dispatchEvent(new CustomEvent("quiz-created", {
             bubbles: true,
             composed: true
         }))
-    } catch (e) {
+    } else {
         this.addQuizResult.innerHTML = `
-        <div class="alert alert-warning" role="alert">
-            Error during the quiz creation
-        </div>
+        <alert-component type="warning" message="Error during the quiz creation"></alert-component>
         `
     }
   }

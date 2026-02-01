@@ -1,4 +1,5 @@
 import { QuestionsService } from "../services/questions-service.js";
+import { Alert } from "./shared/alert.js";
 
 export class AddQuestion extends HTMLElement {
   connectedCallback() {
@@ -167,15 +168,11 @@ export class AddQuestion extends HTMLElement {
     try {
         const response = await this.questionsService.createQuestion(requestBody);
         this.addQuestionResult.innerHTML = `
-        <div class="alert alert-success" role="alert">
-            Question added successfully
-        </div>
+        <alert-component type="success" message="Question added successfully"></alert-component>
         `;
     } catch (e) {
         this.addQuestionResult.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Error creating question, please check the entered data
-        </div>
+        <alert-component type="danger" message="Error creating question, please check the entered data"></alert-component>
         `;
     }
   }
