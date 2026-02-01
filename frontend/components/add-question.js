@@ -1,13 +1,14 @@
 import { QuestionsService } from "../services/questions-service.js";
+import { BaseComponent } from "./base-component.js";
 import { Alert } from "./shared/alert.js";
 
-export class AddQuestion extends HTMLElement {
-  connectedCallback() {
+export class AddQuestion extends BaseComponent {
+  setupComponent() {
     this.questionsService = new QuestionsService();
     this.render();
-    this.setupEventListeners();
-    this.updateQuestionFields();
 
+    this.updateQuestionFields();
+    
     this.nClosedQuestionOptions = 4;
   }
 
@@ -91,7 +92,7 @@ export class AddQuestion extends HTMLElement {
     `;
   }
 
-  setupEventListeners() {
+  attachEventListeners() {
     this.questionType.addEventListener("change", () => this.updateQuestionFields());
     this.addQuestionForm.addEventListener("submit", (e) => this.handleAddQuestion(e));
   }
@@ -165,14 +166,15 @@ export class AddQuestion extends HTMLElement {
   }
 
   async submitData(requestBody) {
-    try {
-        const response = await this.questionsService.createQuestion(requestBody);
+    const response = await this.questionsService.createQuestion(requestBody);
+    if (response) {
         this.addQuestionResult.innerHTML = `
         <alert-component type="success" message="Question added successfully"></alert-component>
         `;
-    } catch (e) {
+        this.dispatchCustomEvent("question-added");
+    } else {
         this.addQuestionResult.innerHTML = `
-        <alert-component type="danger" message="Error creating question, please check the entered data"></alert-component>
+        <alert-component type="danger" message="Error creating question"></alert-component>
         `;
     }
   }

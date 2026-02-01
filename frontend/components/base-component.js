@@ -10,7 +10,7 @@ export class BaseComponent extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.cleanup();
+        this.cleanUp();
     }
 
     setupComponent() {};
@@ -31,5 +31,24 @@ export class BaseComponent extends HTMLElement {
             element.removeEventListener(event, handler);
         });
         this.listeners = [];
+    }
+
+    renderWithState(renderFunction, loading = false, error = false) {
+        if (loading) {
+            this.innerHTML = `<loading-spinner></loading-spinner>`;
+            return;
+        }
+        if (error) {
+            this.innerHTML = `<alert-component type="error" message="An error occurred. Please try again later."></alert-component>`;
+            return;
+        }
+        this.innerHTML = renderFunction();
+    }
+
+    dispatchCustomEvent(eventName) {
+        this.dispatchEvent(new CustomEvent(eventName, {
+            bubbles: true,
+            composed: true
+        }));
     }
 }

@@ -1,9 +1,10 @@
 import { AttemptsService } from "../services/attempts-service.js";
 import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
 import { Alert } from "./shared/alert.js";
 
-export class QuizRunner extends HTMLElement {
-  connectedCallback() {
+export class QuizRunner extends BaseComponent {
+  setupComponent() {
     this.quizAttemptId = this.getAttribute("quiz-attempt-id");
     this.attemptsService = new AttemptsService();
     this.quizService = new QuizService();
@@ -14,6 +15,14 @@ export class QuizRunner extends HTMLElement {
     this.quizQuestions = [];
     this.currentQuestionIndex = -1;
     this.currentQuestionType;
+  }
+
+  attachEventListeners() {
+    this.addEventListener("click", e => {
+      if (e.target.id === "save-answer-button") {
+        this.handleSaveAnswerToCurrentQuestion();
+      }
+    });
   }
 
   get upperSpace() {

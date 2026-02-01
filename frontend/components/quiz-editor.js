@@ -1,30 +1,30 @@
 import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
 import { QuestionsViewer } from "./questions-viewer.js";
 import { Alert } from "./shared/alert.js";
 
-export class QuizEditor extends HTMLElement {
-  connectedCallback() {
+export class QuizEditor extends BaseComponent {
+  setupComponent() {
     this.quizId = this.getAttribute("id");
     this.quizService = new QuizService();
 
     this.render();
     this.loadData();
+  }
 
-
+  attachEventListeners() {
+    this.addEventListener("click", (e) => {
+        const btn = e.target.closest(".remove-question-from-quiz-button");
+        if (btn) this.removeQuestionFromQuiz(btn.dataset.id);
+    });
     this.addEventListener("question-added-to-quiz", () => this.loadData());
   }
 
-  get quizTitle() {
-    return this.querySelector("#title-input");
-  }
+  get quizTitleInput() { return this.querySelector("#title-input"); }
 
-  get quizDescription() {
-    return this.querySelector("#description-input");
-  }
+  get quizDescriptionInput() { return this.querySelector("#description-input"); }
 
-  get quizQuestions() {
-    return this.querySelector("#questions");
-  }
+  get quizQuestions() { return this.querySelector("#questions"); }
 
   render() {
     this.innerHTML = `
@@ -61,41 +61,26 @@ export class QuizEditor extends HTMLElement {
   }
 
   async loadData() {
-    try {
-        const quizData = await this.quizService.getQuizById(this.quizId);
-        
-        this.quizTitle.value = quizData.title;
-        this.quizDescription.value = quizData.description;
-    
-        if (quizData.questions.length == 0) {
-            this.quizQuestions.innerHTML = `
-            <alert-component type="info" message="No questions added to the quiz yet"></alert-component>
-            `;
-        } else {
-            let questionsDiv = `
-            <h3>Quiz questions</h3>
-            <div class="list-group">
-            `;
-            quizData.questions.forEach(question => {
-                questionsDiv += `
-                <a class="list-group-item list-group">${question.text}<button class="btn remove-question-from-quiz-button" data-id="${question.id}">🗑️</button></a>
-                `
-            });
-            questionsDiv += `</div>`;
-            this.quizQuestions.innerHTML = questionsDiv;
-            this.quizQuestions.querySelectorAll(".remove-question-from-quiz-button").forEach(button => {
-                button.addEventListener("click", (event) => {
-                    const questionId = event.target.getAttribute("data-id");
-                    this.removeQuestionFromQuiz(questionId);
-                })
-            })
-        }
-    } catch (e) {
-        console.log(e);
-        this.innerHTML = `
-        <alert-component type="danger" message="Error trying to show the quiz, please try again later"></alert-component>
-        `
-    }    
+    const quizData = await this.quizService.getQuizById(this.quizId);
+    if (quizData) {        
+        this.quizTitleInput.value = quizData.title;
+        this.quizDescriptionInput.value = quizData.description;
+        this.showQuizQuestions(quizData.questions);
+    } else {
+        this.innerHTML = `<alert-component type="danger" message="Error trying to show the quiz, please try again later"></alert-component>`;
+    }
+  }
+
+  showQuizQuestions(questions) {
+    if (!questions.length) {
+        this.quizQuestions.innerHTML = `<alert-component type="info" message="No questions added to the quiz yet"></alert-component>`;
+        return;
+    }
+
+    const questionsHTML = questions.map(q => `
+        <a class="list-group-item list-group">${q.text}<button class="btn remove-question-from-quiz-button" data-id="${q.id}">🗑️</button></a>
+    `).join('');
+    this.quizQuestions.innerHTML = `<h3>Quiz questions</h3><div class="list-group">${questionsHTML}</div>`;
   }
 
   async removeQuestionFromQuiz(questionId) {

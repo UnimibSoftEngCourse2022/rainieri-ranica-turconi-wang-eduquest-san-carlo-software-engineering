@@ -1,11 +1,15 @@
 import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
 import { Alert } from "./shared/alert.js";
 
-export class AddQuiz extends HTMLElement {
-  connectedCallback() {
+export class AddQuiz extends BaseComponent {
+  setupComponent() {
     this.quizService = new QuizService();
     this.render();
-    document.getElementById("add-quiz-button").addEventListener("click", (e) => this.handleAddQuiz(e));
+  }
+
+  attachEventListeners() {
+    this.addEventListenerWithTracking("#add-quiz-button", "click", (e) => this.handleAddQuiz(e));
   }
 
   get quizTitle() {

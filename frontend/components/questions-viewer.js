@@ -1,9 +1,10 @@
 import { QuestionsService } from "../services/questions-service.js";
 import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
 import { Alert } from "./shared/alert.js";
 
-export class QuestionsViewer extends HTMLElement {
-  connectedCallback() {
+export class QuestionsViewer extends BaseComponent {
+  setupComponent() {
     this.quizId = this.getAttribute("quizId");
     this.authorId = this.getAttribute("authorId");
     this.role = this.getAttribute("role");
@@ -12,6 +13,12 @@ export class QuestionsViewer extends HTMLElement {
     this.quizService = new QuizService();
     this.render();
     this.loadData();
+  }
+
+  attachEventListeners() {
+    document.addEventListener("question-added", () => {
+      this.loadData();
+    });
   }
 
   get questions() {
@@ -35,43 +42,46 @@ export class QuestionsViewer extends HTMLElement {
     } else {
       this.questions.innerHTML = `
         <alert-component type="danger" message="Cannot get questions, please try again"></alert-component>
-        `
+`
     }
   }
 
-  async showQuestions(questions) {
+  showQuestions(questions) {
     let questionsHTML = '';
     questions.forEach(question => {
-        let difficultyBannerHTML = `
-        <span class="badge text-bg-secondary">${question.difficulty}</span></h6>
-        `
-        let answers = ''
-        if (question.questionType == "OPENED") {
-          answers = question.validAnswersOpenQuestion.join(",")
-        } else if (question.questionType == "CLOSED") {
-          answers = []
-          question.closedQuestionOptions.forEach(option => answers.push(option.text))
-        }
+      questionsHTML += this.getQuestionHTML(question);
+    });
+    this.questions.innerHTML = questionsHTML;
 
-        questionsHTML += `
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">${question.text}</h5>
-                ${difficultyBannerHTML} <br>
-                Answers: ${answers} <br>
-                ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
-                <div id="add-question-${question.id}-result"></div>
-            </div>
+    this.querySelectorAll('.add-question-to-quiz-button').forEach(btn => {
+      btn.onclick = () => this.addQuestionToQuiz(btn.getAttribute('data-id'));
+    });
+  }
+
+  getQuestionHTML(question) {
+    let difficultyBannerHTML = `<span class="badge text-bg-secondary">${question.difficulty}</span>`
+
+    let answers = ''
+    if (question.questionType == "OPENED") {
+      answers = question.validAnswersOpenQuestion.join(",")
+    } else if (question.questionType == "CLOSED") {
+      answers = []
+      question.closedQuestionOptions.forEach(option => answers.push(option.text))
+    }
+
+    const questionHTML = `
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">${question.text}</h5>
+            ${difficultyBannerHTML} <br>
+            Answers: ${answers} <br>
+            ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
+            <div id="add-question-${question.id}-result"></div>
         </div>
-        `
-    })
-    this.questions.innerHTML = questionsHTML
-    this.questions.querySelectorAll(".add-question-to-quiz-button").forEach(button => {
-      button.addEventListener("click", (event) => {
-        const questionId = event.target.getAttribute("data-id");
-        this.addQuestionToQuiz(questionId);
-      })
-    })
+    </div>
+    `;
+
+    return questionHTML;
   }
 
   async addQuestionToQuiz(questionId) {

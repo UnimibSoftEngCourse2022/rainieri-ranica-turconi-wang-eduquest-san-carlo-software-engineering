@@ -1,7 +1,8 @@
 import { AttemptsService } from "../services/attempts-service.js";
+import { BaseComponent } from "./base-component.js";
 
-export class Quiz extends HTMLElement {
-  connectedCallback() {
+export class Quiz extends BaseComponent {
+  setupComponent() {
     this.id = this.getAttribute('id');
     this.title = this.getAttribute('title');
     this.description = this.getAttribute('description') || "";
@@ -17,7 +18,7 @@ export class Quiz extends HTMLElement {
       buttonText = "Edit quiz";
     }
     const button = `
-    <a class="quiz-button" data-id=${this.id}>
+    <a class="quiz-button">
       <button class="btn btn-sm btn-primary">${buttonText}</button>
     </a>
     `;
@@ -30,12 +31,10 @@ export class Quiz extends HTMLElement {
     </div>
     `;
 
-    this.querySelectorAll(".quiz-button").forEach(button => {
-      button.addEventListener("click", (event) => {
-        const quizId = event.target.getAttribute("data-id");
-        this.handleQuizButtonClick(quizId);
-      })
-    });
+  }
+  
+  attachEventListeners() {
+    this.addEventListenerWithTracking(".quiz-button", "click", (event) => this.handleQuizButtonClick());
   }
 
   async handleQuizButtonClick() {
@@ -44,11 +43,9 @@ export class Quiz extends HTMLElement {
       return;
     } else if (this.role == "STUDENT") {
       const response = await this.attemptsService.addAttempt(this.id, this.userId);
-      this.dispatchEvent(new CustomEvent("quiz-attempt-started", {
-          bubbles: true,
-          composed: true
-      }))
+      this.dispatchCustomEvent("quiz-attempt-started");
     }
   }
 }
+
 customElements.define('quiz-item', Quiz);
