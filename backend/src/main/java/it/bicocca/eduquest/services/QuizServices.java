@@ -44,18 +44,18 @@ public class QuizServices {
 		Quiz quiz = quizRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Cannot find quiz with ID " + id));
 		List<QuestionDTO> questionsDTO = new ArrayList<>();
 
-		List<String> validAnswersOpenQuestionDTO = new ArrayList<String>();
-		List<ClosedQuestionOptionDTO> closedQuestionOptionsDTO = new ArrayList<ClosedQuestionOptionDTO>();
+		// FIX: Diamond operator <>
+		List<String> validAnswersOpenQuestionDTO = new ArrayList<>();
+		List<ClosedQuestionOptionDTO> closedQuestionOptionsDTO = new ArrayList<>();
 		
 		for (Question question : quiz.getQuestions()) {
-			if (question instanceof OpenQuestion) {		
-				OpenQuestion openQuestion = (OpenQuestion)question;
+			// FIX: Pattern Matching for instanceof
+			if (question instanceof OpenQuestion openQuestion) {		
 				List<OpenQuestionAcceptedAnswer> validAnswersOpenQuestion = openQuestion.getValidAnswers();
 				for (OpenQuestionAcceptedAnswer a : validAnswersOpenQuestion) {
 					validAnswersOpenQuestionDTO.add(a.getText());
 				}
-			} else if (question instanceof ClosedQuestion) {
-				ClosedQuestion closedQuestion = (ClosedQuestion)question;
+			} else if (question instanceof ClosedQuestion closedQuestion) {
 				List<ClosedQuestionOption> optionsClosedQuestion = closedQuestion.getOptions();
 				for (ClosedQuestionOption c : optionsClosedQuestion) {
 					closedQuestionOptionsDTO.add(new ClosedQuestionOptionDTO(c.getId(), c.getText(), c.isTrue()));
@@ -281,9 +281,10 @@ public class QuizServices {
 	}
 	
 	private QuestionDTO convertSingleQuestionToDTO(Question q) {
-		if (q instanceof OpenQuestion) {
+		// FIX: Pattern Matching for instanceof
+		if (q instanceof OpenQuestion openQuestion) {
 			List<String> openAnswerTextString = new ArrayList<>();
-			List<OpenQuestionAcceptedAnswer> openAnswerList = ((OpenQuestion)q).getValidAnswers();
+			List<OpenQuestionAcceptedAnswer> openAnswerList = openQuestion.getValidAnswers();
 			for (OpenQuestionAcceptedAnswer a : openAnswerList) {
 				openAnswerTextString.add(a.getText());
 			}

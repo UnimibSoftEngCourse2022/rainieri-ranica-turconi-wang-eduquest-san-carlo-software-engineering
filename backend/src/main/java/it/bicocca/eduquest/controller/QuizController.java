@@ -47,7 +47,7 @@ public class QuizController {
 	@PostMapping
 	public ResponseEntity<Object> addQuiz(@RequestBody QuizAddDTO quiz, Authentication authentication) {
 		String userIdString = authentication.getName();
-		long userId = Long.valueOf(userIdString).longValue();
+		long userId = Long.parseLong(userIdString);
 		
 		try {
 			return ResponseEntity.ok(quizService.addQuiz(quiz, userId));
@@ -60,7 +60,7 @@ public class QuizController {
 	@PutMapping("/{id}")
 	public ResponseEntity<Object> editQuiz(@PathVariable("id") long quizId, @RequestBody QuizEditDTO quiz, Authentication authentication) {
 		String userIdString = authentication.getName();
-		long userId = Long.valueOf(userIdString).longValue();
+		long userId = Long.parseLong(userIdString);
 		
 		try {
 			return ResponseEntity.ok(quizService.editQuiz(quizId, quiz, userId));
@@ -85,7 +85,7 @@ public class QuizController {
 	@PostMapping("/{quizId}/questions/{questionId}")
 	public ResponseEntity<Object> addQuestionToQuiz(@PathVariable Long quizId, @PathVariable Long questionId, Authentication authentication) {
 		String userIdString = authentication.getName();
-		long userId = Long.valueOf(userIdString).longValue();
+		long userId = Long.parseLong(userIdString);
 		try {
 			return ResponseEntity.ok(quizService.addQuestionToQuiz(quizId, questionId, userId));
 		} catch (RuntimeException e) {
@@ -106,7 +106,7 @@ public class QuizController {
 	@DeleteMapping("/{quizId}/questions/{questionId}")
 	public ResponseEntity<Object> removeQuestionFromQuiz(@PathVariable Long quizId, @PathVariable Long questionId, Authentication authentication) {
 		String userIdString = authentication.getName();
-		long userId = Long.valueOf(userIdString).longValue();
+		long userId = Long.parseLong(userIdString);
 		try {
 			return ResponseEntity.ok(quizService.removeQuestionFromQuiz(quizId, questionId, userId));
 		} catch (RuntimeException e) {
@@ -130,7 +130,7 @@ public class QuizController {
 	@GetMapping("/{quizId}/quiz-for-student")
 	public ResponseEntity<Object> getQuizForStudent(@PathVariable("quizId") long quizId, Authentication authentication) {
 		String userIdString = authentication.getName();
-		long userId = Long.valueOf(userIdString).longValue();
+		long userId = Long.parseLong(userIdString);
 		try {
 			return ResponseEntity.ok(quizService.getQuizForStudent(quizId, userId));
 		} catch (RuntimeException e) {

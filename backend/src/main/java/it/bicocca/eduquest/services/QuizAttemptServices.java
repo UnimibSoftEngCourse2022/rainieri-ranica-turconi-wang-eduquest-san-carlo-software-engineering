@@ -181,11 +181,11 @@ public class QuizAttemptServices {
 		answerDTO.setQuizAttemptId(answer.getQuizAttempt().getId());
 		answerDTO.setQuestionId(answer.getQuestion().getId());
 
-		if (answer instanceof OpenAnswer) {
+		// FIX: Pattern Matching for instanceof
+		if (answer instanceof OpenAnswer openAnswer) {
 			answerDTO.setQuestionType(QuestionType.OPENED);
-			answerDTO.setTextOpenAnswer(((OpenAnswer)answer).getText());
-		} else if (answer instanceof ClosedAnswer) {
-			ClosedAnswer closedAnswer = (ClosedAnswer) answer;
+			answerDTO.setTextOpenAnswer(openAnswer.getText());
+		} else if (answer instanceof ClosedAnswer closedAnswer) {
 			answerDTO.setQuestionType(QuestionType.CLOSED);
 			answerDTO.setSelectedOptionId(closedAnswer.getChosenOption().getId());
 			answerDTO.setSelectedOptionText(closedAnswer.getChosenOption().getText());
@@ -233,8 +233,8 @@ public class QuizAttemptServices {
 	private void updateAnswerContent(Answer answer, Question question, AnswerDTO answerDTO) {
 		if (question instanceof OpenQuestion) {
 			updateOpenAnswer(answer, answerDTO);
-		} else  if (question instanceof ClosedQuestion) {
-			updateClosedAnswer(answer, (ClosedQuestion) question, answerDTO);
+		} else  if (question instanceof ClosedQuestion closedQuestion) { // FIX: Pattern Matching
+			updateClosedAnswer(answer, closedQuestion, answerDTO);
 		} else { 
 			throw new IllegalArgumentException("Not supported question type."); 
 		}
@@ -290,10 +290,11 @@ public class QuizAttemptServices {
 	}
 	
 	private boolean isAnswerCorrect(Answer a) {
-		if (a instanceof ClosedAnswer) {
-			return isClosedAnswerCorrect((ClosedAnswer)a);
-		} else if (a instanceof OpenAnswer) {
-			return isOpenAnswerCorrect((OpenAnswer)a);
+		// FIX: Pattern Matching for instanceof
+		if (a instanceof ClosedAnswer closedA) {
+			return isClosedAnswerCorrect(closedA);
+		} else if (a instanceof OpenAnswer openA) {
+			return isOpenAnswerCorrect(openA);
 		} else { 
 			throw new IllegalArgumentException("Not supported question type."); 
 		}

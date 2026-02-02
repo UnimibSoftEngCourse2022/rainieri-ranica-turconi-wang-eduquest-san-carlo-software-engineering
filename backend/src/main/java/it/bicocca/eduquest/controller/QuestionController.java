@@ -19,7 +19,7 @@ public class QuestionController {
 	@GetMapping
 	public ResponseEntity<Object> getQuestions(@RequestParam(required = false) Long authorId, Authentication authentication) {
 		String userIdString = authentication.getName();
-		long userId = Long.valueOf(userIdString).longValue();
+		long userId = Long.parseLong(userIdString);
 		
 		try {
 			if (authorId != null) {
@@ -35,7 +35,7 @@ public class QuestionController {
 	@PostMapping
 	public ResponseEntity<Object> addQuestion(@RequestBody QuestionAddDTO question, Authentication authentication) {
 		String userIdString = authentication.getName();
-		long userId = Long.valueOf(userIdString).longValue();
+		long userId = Long.parseLong(userIdString);
 		
 		try {
 			return ResponseEntity.ok(quizService.addQuestion(question, userId));
