@@ -51,7 +51,6 @@ export class QuizzesViewer extends HTMLElement {
             this.innerHTML = quizzesHTML;
         }
     } catch (e) {
-        console.log(e);
         this.innerHTML = `
         <alert-component type="danger" message="Cannot get the quizzes list, please try again later"></alert-component>
         `
