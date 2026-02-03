@@ -16,7 +16,7 @@ export class QuizzesViewer extends BaseComponent {
 
   attachEventListeners() {
     document.addEventListener("quiz-created", () => {
-    this.loadData();
+      this.loadData();
     });
   }
 
@@ -37,19 +37,20 @@ export class QuizzesViewer extends BaseComponent {
         if (quizzes.length == 0) {
             this.innerHTML = `<alert-component type="warning" message="There is not quiz to display"></alert-component>`
         } else {
-            let quizzesHTML = ''
+            this.innerHTML = ``;
             quizzes.forEach(quiz => {
-                quizzesHTML += `
-                <quiz-item id="${quiz.id}" title="${quiz.title}" description="${quiz.description}" role="${this.role}" user-id="${this.userId}"></quiz-item>
-                `
-            });
-            this.innerHTML = quizzesHTML;
+              const quizItem = document.createElement("quiz-item");
+
+              quizItem.quizData = quiz;
+              quizItem.role = this.role;
+              quizItem.userId = this.userId;
+
+              this.appendChild(quizItem);
+            })
         }
     } catch (e) {
       console.log(e);
-        this.innerHTML = `
-        <alert-component type="danger" message="Cannot get the quizzes list, please try again later"></alert-component>
-        `
+        this.innerHTML = `<alert-component type="danger" message="Cannot get the quizzes list, please try again later"></alert-component>`
     }
   }
 }

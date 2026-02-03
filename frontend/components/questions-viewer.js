@@ -69,6 +69,8 @@ export class QuestionsViewer extends BaseComponent {
       question.closedQuestionOptions.forEach(option => answers.push(option.text))
     }
 
+    const questionSuccessRate = question.stats.correctAnswer / question.stats.totalAnswers
+
     const questionHTML = `
     <div class="card">
         <div class="card-body">
@@ -77,6 +79,8 @@ export class QuestionsViewer extends BaseComponent {
             Answers: ${answers} <br>
             ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
             <div id="add-question-${question.id}-result"></div>
+            <hr>
+            <p>Number of given answers: ${question.stats.totalAnswers} | Success rate: ${questionSuccessRate * 100}%</p>
         </div>
     </div>
     `;
