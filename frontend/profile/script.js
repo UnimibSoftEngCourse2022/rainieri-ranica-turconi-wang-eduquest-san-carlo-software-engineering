@@ -17,13 +17,20 @@ window.onload = async () => {
     return;
   }
 
+  createSearchBar(pageDiv);
+
   var url = new URL(window.location);
   var searchedUserId = url.searchParams.get("id");
 
   const searchedUserData = await new UsersService().getUserInfoById(searchedUserId);
-
-  createSearchBar(pageDiv);
-
+  if (!searchedUserData) {
+    const alert = document.createElement("alert-component");
+    alert.setAttribute("type", "danger text-center");
+    alert.setAttribute("message", `Cannot find an user with ID '${searchedUserId}'`);
+    pageDiv.appendChild(alert);
+    return;
+  }
+  
   const profileViewer = document.createElement("profile-viewer");
   pageDiv.appendChild(profileViewer);
   profileViewer.userData =  searchedUserData;
@@ -36,8 +43,22 @@ const createSearchBar = (root) => {
   const searchBar = document.createElement("input")
   searchBar.classList.add("form-control")
   searchBar.setAttribute("placeholder", "User ID")
-  
+
   form.appendChild(searchBar);
 
-  root.appendChild(searchBar);
+  root.appendChild(form);
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const newUserId = searchBar.value.trim();
+    if (!newUserId) {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("id", newUserId);
+
+    window.location.href = url.toString();
+  })
 }
