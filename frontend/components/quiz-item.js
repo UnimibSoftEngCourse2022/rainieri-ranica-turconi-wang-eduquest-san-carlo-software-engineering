@@ -35,9 +35,6 @@ export class Quiz extends BaseComponent {
     </a>
     `;
 
-    console.log(this._quizData.quizStats);
-    const stats = 
-
     this.innerHTML = `
       <div class="card my-2" style="border: 1px solid #ccc; padding: 10px;">
         <h3>${this._quizData.title}</h3>
