@@ -10,6 +10,8 @@ export const endpoints = {
     quizzes: `${API_BASE}/quizzes`,
     questions: `${API_BASE}/questions`,
     attempts: `${API_BASE}/quiz-attempts`,
+    missions: `${API_BASE}/missions`,
+    missionsProgresses: `${API_BASE}/missions/progresses`
 }
 
 export const callApi = async(url, method, body = null) => {
