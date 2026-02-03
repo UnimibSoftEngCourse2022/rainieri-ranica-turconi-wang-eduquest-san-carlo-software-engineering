@@ -1,11 +1,20 @@
-export class Quiz extends HTMLElement {
-  connectedCallback() {
+import { AttemptsService } from "../services/attempts-service.js";
+import { BaseComponent } from "./base-component.js";
+
+export class Quiz extends BaseComponent {
+  setupComponent() {
     this.id = this.getAttribute('id');
     this.title = this.getAttribute('title');
     this.description = this.getAttribute('description') || "";
     this.role = this.getAttribute('role') || "STUDENT";
     this.userId = this.getAttribute('user-id');
 
+    this.attemptsService = new AttemptsService();
+
+    this.render();
+  }
+
+  render() {
     let buttonText = "";
     if (this.role === "STUDENT") {
       buttonText = "Run quiz";
@@ -13,7 +22,7 @@ export class Quiz extends HTMLElement {
       buttonText = "Edit quiz";
     }
     const button = `
-    <a class="quiz-button" data-id=${this.id}>
+    <a class="quiz-button">
       <button class="btn btn-sm btn-primary">${buttonText}</button>
     </a>
     `;
@@ -25,13 +34,10 @@ export class Quiz extends HTMLElement {
         ${button}
     </div>
     `;
+  }
 
-    this.querySelectorAll(".quiz-button").forEach(button => {
-      button.addEventListener("click", (event) => {
-        const quizId = event.target.getAttribute("data-id");
-        this.handleQuizButtonClick(quizId);
-      })
-    });
+  attachEventListeners() {
+    this.addEventListenerWithTracking(".quiz-button", "click", (event) => this.handleQuizButtonClick());
   }
 
   async handleQuizButtonClick() {
@@ -39,25 +45,10 @@ export class Quiz extends HTMLElement {
       window.location = `../quiz-editor/?id=${this.id}`;
       return;
     } else if (this.role == "STUDENT") {
-      const jwt = window.localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8080/api/quiz-attempts?quizId=${this.id}&studentId=${this.userId}`, {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-      });
-
-      if (response.ok) {
-        this.dispatchEvent(new CustomEvent("quiz-attempt-started", {
-            bubbles: true,
-            composed: true
-        }))
-      } else {
-        // TODO show an error
-      }
+      const response = await this.attemptsService.addAttempt(this.id, this.userId);
+      this.dispatchCustomEvent("quiz-attempt-started");
     }
   }
 }
+
 customElements.define('quiz-item', Quiz);

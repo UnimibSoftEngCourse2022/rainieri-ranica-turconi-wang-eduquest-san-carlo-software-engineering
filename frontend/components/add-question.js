@@ -1,9 +1,14 @@
-export class AddQuestion extends HTMLElement {
-  connectedCallback() {
-    this.render();
-    this.setupEventListeners();
-    this.updateQuestionFields();
+import { QuestionsService } from "../services/questions-service.js";
+import { BaseComponent } from "./base-component.js";
+import { Alert } from "./shared/alert.js";
 
+export class AddQuestion extends BaseComponent {
+  setupComponent() {
+    this.questionsService = new QuestionsService();
+    this.render();
+
+    this.updateQuestionFields();
+    
     this.nClosedQuestionOptions = 4;
   }
 
@@ -87,7 +92,7 @@ export class AddQuestion extends HTMLElement {
     `;
   }
 
-  setupEventListeners() {
+  attachEventListeners() {
     this.questionType.addEventListener("change", () => this.updateQuestionFields());
     this.addQuestionForm.addEventListener("submit", (e) => this.handleAddQuestion(e));
   }
@@ -161,37 +166,16 @@ export class AddQuestion extends HTMLElement {
   }
 
   async submitData(requestBody) {
-    try {
-        const jwt = window.localStorage.getItem("token");
-        const response = await fetch("http://localhost:8080/api/questions", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + jwt
-            },
-            body: JSON.stringify(requestBody)
-        });
-    
-        if (response.ok) {
-            this.addQuestionResult.innerHTML = `
-            <div class="alert alert-success" role="alert">
-                Question added successfully
-            </div>
-            `;
-        } else {
-            this.addQuestionResult.innerHTML = `
-            <div class="alert alert-danger" role="alert">
-                Error creating question
-            </div>
-            `
-        }
-    } catch (e) {
+    const response = await this.questionsService.createQuestion(requestBody);
+    if (response) {
         this.addQuestionResult.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Error creating question, please try again later
-        </div>
-        `
+        <alert-component type="success" message="Question added successfully"></alert-component>
+        `;
+        this.dispatchCustomEvent("question-added");
+    } else {
+        this.addQuestionResult.innerHTML = `
+        <alert-component type="danger" message="Error creating question"></alert-component>
+        `;
     }
   }
 }

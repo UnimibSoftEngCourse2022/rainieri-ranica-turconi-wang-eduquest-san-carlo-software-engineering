@@ -1,7 +1,15 @@
-export class AddQuiz extends HTMLElement {
-  connectedCallback() {
+import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
+import { Alert } from "./shared/alert.js";
+
+export class AddQuiz extends BaseComponent {
+  setupComponent() {
+    this.quizService = new QuizService();
     this.render();
-    document.getElementById("add-quiz-button").addEventListener("click", (e) => this.handleAddQuiz(e));
+  }
+
+  attachEventListeners() {
+    this.addEventListenerWithTracking("#add-quiz-button", "click", (e) => this.handleAddQuiz(e));
   }
 
   get quizTitle() {
@@ -58,23 +66,10 @@ export class AddQuiz extends HTMLElement {
   }
 
   async submitData(requestBody) {
-        const jwt = window.localStorage.getItem("token");    
-        const response = await fetch("http://localhost:8080/api/quizzes", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        },
-        body: JSON.stringify(requestBody)
-    });
-
-    if (response.ok) {
-        const r = await response.json();
+    const response = await this.quizService.createQuiz(requestBody);
+    if (response) {
         this.addQuizResult.innerHTML = `
-        <div class="alert alert-success" role="alert">
-            Quiz created successfully
-        </div>
+        <alert-component type="success" message="Quiz created successfully"></alert-component>
         `
 
         this.dispatchEvent(new CustomEvent("quiz-created", {
@@ -83,9 +78,7 @@ export class AddQuiz extends HTMLElement {
         }))
     } else {
         this.addQuizResult.innerHTML = `
-        <div class="alert alert-warning" role="alert">
-            Error during the quiz creation
-        </div>
+        <alert-component type="warning" message="Error during the quiz creation"></alert-component>
         `
     }
   }

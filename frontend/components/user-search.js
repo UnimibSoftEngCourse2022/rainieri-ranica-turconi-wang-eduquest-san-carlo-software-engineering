@@ -1,7 +1,10 @@
+import { UsersService } from "../services/users-service.js";
+
 export class UserSearch extends HTMLElement {
  
     connectedCallback() {
       this.renderInitialStructure();
+      this.userService = new UsersService();
       this.attachEvents(); 
     }
 
@@ -69,22 +72,12 @@ export class UserSearch extends HTMLElement {
       if (!id) return; 
   
       try {
-          const response = await fetch(`http://localhost:8080/auth/${id}`, { 
-              method: "GET",
-              headers: {
-                  "Accept": "application/json",
-                  "Content-Type": "application/json",
-                  "Authorization": "Bearer " + jwt
-              }
-          });
-  
-          if (response.ok) {
-              const userData = await response.json();
+          const userData = await this.userService.getUserInfoById(id);
+          
+          if (userData) {
               this.populateForm(userData); 
-          } else if (response.status === 404) {
-              this.showError("User not found");
           } else {
-              this.showError("Server error");
+              this.showError("User not found");
           }
   
       } catch (error) {

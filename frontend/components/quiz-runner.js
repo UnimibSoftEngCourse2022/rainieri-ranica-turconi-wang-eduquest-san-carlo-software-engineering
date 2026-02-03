@@ -1,207 +1,124 @@
-export class QuizRunner extends HTMLElement {
-  connectedCallback() {
+import { AttemptsService } from "../services/attempts-service.js";
+import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
+import { QuestionRunner } from "./question-runner.js";
+import { Alert } from "./shared/alert.js";
+
+export class QuizRunner extends BaseComponent {
+  setupComponent() {
     this.quizAttemptId = this.getAttribute("quiz-attempt-id");
+    this.attemptsService = new AttemptsService();
+    this.quizService = new QuizService();
+
     this.render();
     this.loadData();
 
     this.quizQuestions = [];
     this.currentQuestionIndex = -1;
-    this.currentQuestionType;
   }
-
-  get upperSpace() {
-    return this.querySelector("#quiz-title");
-  }
-
-  get quizErrorSpace() {
-    return this.querySelector("#quiz-error");
-  }
-
-  get questionsViewer() {
-    return this.querySelector("#questions-viewer");
-  }
-
-  get saveAnswerButton() {
-    return this.querySelector("#save-answer-button");
-  }
-
-  get openQuestionAnswer() {
-    return this.querySelector("#open-question-answer");
-  }
-
-  get closedQuestionAnswer() {
-    return this.querySelector('input[type="radio"]:checked');
-  }
-
+  
+  get questionRunner() { return this.querySelector("question-runner"); }
+  
   render() {
     this.innerHTML = `
-    <div class="card text-center">
-        <div class="card-header" style="padding: 20px">
-            <div id="quiz-title"></div>
-        </div>
-        <div class="card-body" id="questions-viewer">
-        </div>
-        <div id="quiz-error"></div>
+    <div class="card text-center container">
+    <div class="card-header" id="quiz-title"></div>
+    <div class="card-body" id="questions-viewer"></div>
+    <question-runner></question-runner>
+    <button class="btn btn-primary" id="next-question-button">Next Question</button>
+    <div id="quiz-error"></div>
     </div>
     `;
+  }  
+
+  attachEventListeners() {
+    this.addEventListenerWithTracking("#next-question-button", "click", () => {
+      this.handleSaveAnswerToCurrentQuestion();
+    })
   }
+
+  get quizHeader() { return this.querySelector("#quiz-title"); }
+  get quizError() { return this.querySelector("#quiz-error"); }
 
   async loadData() {
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}`, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
-
-    if (response.ok) {
-        const quizData = await response.json();
-        this.showQuizData(quizData);
-    } else {
-        this.quizErrorSpace.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Cannot load the test, please try again later
-        </div>
-        `
+    const attemptData = await this.attemptsService.getAttemptById(this.quizAttemptId);
+    if (!attemptData) {
+      this.quizError.innerHTML = "Failed to load quiz attempt data.";
+      return;
     }
+
+    const quizData = await this.quizService.getQuizById(attemptData.quizId);
+    if (!quizData) {
+      this.quizError.innerHTML = "Failed to load quiz data.";
+      return;
+    }
+
+    this.quizQuestions = quizData.questions;
+    this.currentQuestionIndex = 0;
+
+    this.renderHeader(attemptData);
+    this.updateQuestionViewer();
   }
 
-  async showQuizData(quizData) {
-    const [startDate, completeStartTime] = quizData.startedAt.split("T")
+  renderHeader(attemptData) {
+    const [startDate, completeStartTime] = attemptData.startedAt.split("T")
     const [startTime, _] = completeStartTime.split(".")
-    this.upperSpace.innerHTML = `
-    <h4>${quizData.quizTitle}</h4>
-    Started at: ${startTime}, ${startDate}
-    `
-
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quizzes/${quizData.quizId}`, {
-      method: "GET",
-      headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + jwt
-      }
-    });
-    if (response.ok) {
-      const quizData = await response.json();
-      this.quizQuestions = quizData.questions;
-      this.currentQuestionIndex = 0;
-      this.currentQuestionType = quizData.questions[0].questionType;
-      this.updateQuestionsViewer();
-    } else {
-      this.quizErrorSpace.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-            Cannot load the test, please try again later
-        </div>
-      `
-    }
+    this.quizHeader.innerHTML = `<h4>${attemptData.quizTitle}</h4>Started at: ${startTime}, ${startDate}`
   }
 
-  async updateQuestionsViewer() {
-    const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
-    
-    let questionsViewerHTML = `
-    ${this.getQuestionHTML(currentQuestion)} <br>
-    <p>Domanda ${this.currentQuestionIndex + 1}/${this.quizQuestions.length} <br>
-    `
-    
-    this.questionsViewer.innerHTML = questionsViewerHTML;
-    this.saveAnswerButton.addEventListener("click", () => { 
-      this.handleSaveAnswerToCurrentQuestion();
-    });
-  }
-
-  getQuestionHTML(question) {
-    console.log(question);
-    let html = ``;
-    html += `<h1>${question.text}</h1>`;
-    if (question.questionType == "OPENED") {
-      html += `<input class="form-control" placeholder="Write here your answer..." id="open-question-answer"></input><br>`
-    } else if (question.questionType == "CLOSED") {
-      html += `<div class="input-group mb-3">`
-      question.closedQuestionOptions.forEach(option => {
-        html += `
-        <div class="input-group-text">
-            <input class="form-check-input mt-0" name="question-${question.id}" type="radio" value="${option.id}" id="closed-option-${option.id}">
-        </div>
-        <label class="form-control" for="closed-option-${option.id}">${option.text}</label>
-        `
-      })
-      html += `</div>`
-    }
-    html += `<button class="btn btn-primary" id="save-answer-button">Save answer</button><br>`
-    return html;
+  updateQuestionViewer() {
+    this.questionRunner.question = this.quizQuestions[this.currentQuestionIndex];
+    this.questionRunner.render();
   }
 
   async handleSaveAnswerToCurrentQuestion() {
     const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
-
+    
     const requestBody = {
       questionId: currentQuestion.id
     }
+    
+    const answer = this.questionRunner.answer;
 
-    let answer;
-    if (this.currentQuestionType == "OPENED") {
-      answer = this.openQuestionAnswer.value;
-      requestBody.openQuestionAnswer = answer;
-    } else if (this.currentQuestionType == "CLOSED") {
-      if (!this.closedQuestionAnswer) {
-        return;
-      }
-      answer = parseInt(this.closedQuestionAnswer.value);
+    if (answer == null || answer == undefined || answer === "") {
+      this.quizError.innerHTML = `
+      <alert-component type="warning" message="Please provide an answer before proceeding."></alert-component>
+      `
+      return;
+    }
+
+    const currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
+    if (currentQuestionType === "OPENED") {
+      requestBody.openedAnswerText = answer;
+    } else if (currentQuestionType === "CLOSED") {
       requestBody.selectedOptionId = answer;
     }
 
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}/answers`, {
-      method: "PUT",
-      headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + jwt
-      },
-      body: JSON.stringify(requestBody)
-    });
+    const response = await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
 
-    if (response.ok) {
+    if (response) {
       if (this.currentQuestionIndex < this.quizQuestions.length - 1) {
         this.currentQuestionIndex++;
         this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
-        this.updateQuestionsViewer();
+        this.updateQuestionViewer();
       } else {
         this.handleCompleteQuiz();
       }
     } else {
-      this.quizErrorSpace.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-        Error sending your answer, please try again later
-      </div>
+      this.quizError.innerHTML = `
+      <alert-component type="danger" message="Error sending your answer, please try again later"></alert-component>
       `
     }
   }
 
   async handleCompleteQuiz() {
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz-attempts/${this.quizAttemptId}/complete`, {
-      method: "POST",
-      headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + jwt
-      }
-    })
-    if (response.ok) {
+    const response = await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
+    if (response) {
       window.location = "../student-dashboard/";
       return;
     } else {
       this.quizErrorSpace.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-        Error trying to complete the quiz, please try again later
-      </div>
+      <alert-component type="danger" message="Error trying to complete the quiz, please try again later"></alert-component>
       `
     }
   }

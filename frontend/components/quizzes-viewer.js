@@ -1,16 +1,23 @@
+import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
 import { Quiz } from "./quiz-item.js"
+import { Alert } from "./shared/alert.js";
 
-export class QuizzesViewer extends HTMLElement {
-  async connectedCallback() {
+
+export class QuizzesViewer extends BaseComponent {
+  setupComponent() {
     this.role = this.getAttribute('role') || "STUDENT";
     this.userId = this.getAttribute('user-id');
+    this.quizService = new QuizService();
 
     this.render();
     this.loadData();
+  }
 
+  attachEventListeners() {
     document.addEventListener("quiz-created", () => {
-        this.loadData();
-    })
+    this.loadData();
+    });
   }
 
   render() {
@@ -26,19 +33,9 @@ export class QuizzesViewer extends HTMLElement {
   async loadData() {
     this.render();
     try {
-        const quizzes = await this.getQuizzes();
+        const quizzes = await this.quizService.getQuizzes();
         if (quizzes.length == 0) {
-            let message = "";
-            if (this.role == "STUDENT") {
-                message = "There isn't any quiz yet! Wait until your teacher will create one!"
-            } else if (this.role == "TEACHER") {
-                message = "You don't have any quiz yet! Create one to start!";
-            }
-            this.innerHTML = `
-            <div class="alert alert-warning" role="alert">
-                ${message}
-            </div>
-            `
+            this.innerHTML = `<alert-component type="warning" message="There is not quiz to display"></alert-component>`
         } else {
             let quizzesHTML = ''
             quizzes.forEach(quiz => {
@@ -49,39 +46,12 @@ export class QuizzesViewer extends HTMLElement {
             this.innerHTML = quizzesHTML;
         }
     } catch (e) {
-        console.log(e);
+      console.log(e);
         this.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Cannot get the quizzes list, please try again later
-        </div>
+        <alert-component type="danger" message="Cannot get the quizzes list, please try again later"></alert-component>
         `
     }
   }
-
-  async getQuizzes() {
-    let endpoint;
-    if (this.role == "STUDENT") {
-        endpoint = "http://localhost:8080/api/quizzes";
-    } else {
-        endpoint = "http://localhost:8080/api/quizzes?authorId=" + this.userId;
-    }
-
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(endpoint, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
-
-    if (response.ok) {
-        const quizzes = await response.json();
-        return quizzes;
-    } else {
-        return [];
-    }
-  }
 }
+
 customElements.define('quizzes-viewer', QuizzesViewer);

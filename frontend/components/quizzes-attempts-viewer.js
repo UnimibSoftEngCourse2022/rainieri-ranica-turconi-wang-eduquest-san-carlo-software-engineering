@@ -1,9 +1,17 @@
-export class QuizzesAttemptsViewer extends HTMLElement {
-  connectedCallback() {
+import { AttemptsService } from "../services/attempts-service.js";
+import { BaseComponent } from "./base-component.js";
+import { Alert } from "./shared/alert.js";
+
+export class QuizzesAttemptsViewer extends BaseComponent {
+  setupComponent() {
     this.userId = this.getAttribute("user-id");
+    this.attemptsService = new AttemptsService();
     this.render();
     this.loadData();
 
+  }
+
+  attachEventListeners() {
     document.addEventListener("quiz-attempt-started", () => this.loadData());
   }
 
@@ -18,23 +26,12 @@ export class QuizzesAttemptsViewer extends HTMLElement {
   }
 
   async loadData() {
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quiz-attempts?studentId=${this.userId}`, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
+    const quizzesAttempts = await this.attemptsService.getAttemptsByStudentId(this.userId);
 
-    if (response.ok) {
-        const quizzesAttempts = await response.json();
+    if (quizzesAttempts) {
         if (quizzesAttempts.length == 0) {
           this.quizzesAttempts.innerHTML = `
-          <div class="alert alert-warning" role="alert">
-            You haven't started a quiz yet!
-          </div>
+          <alert-component type="warning" message="Start a quiz to see your attempts here."></alert-component>
           `
         } else {
           let quizzesAttemptsHTML = `<div class="list-group">`
@@ -46,9 +43,7 @@ export class QuizzesAttemptsViewer extends HTMLElement {
         }
     } else {
         this.quizzesAttempts.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Error trying to access the quizzes attempts, please try again later
-        </div>
+        <alert-component type="danger" message="Error trying to access the quizzes attempts, please try again later"></alert-component>
         `
     }
   };

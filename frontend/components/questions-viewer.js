@@ -1,10 +1,24 @@
-export class QuestionsViewer extends HTMLElement {
-  connectedCallback() {
+import { QuestionsService } from "../services/questions-service.js";
+import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
+import { Alert } from "./shared/alert.js";
+
+export class QuestionsViewer extends BaseComponent {
+  setupComponent() {
     this.quizId = this.getAttribute("quizId");
     this.authorId = this.getAttribute("authorId");
     this.role = this.getAttribute("role");
+
+    this.questionsService = new QuestionsService();
+    this.quizService = new QuizService();
     this.render();
     this.loadData();
+  }
+
+  attachEventListeners() {
+    document.addEventListener("question-added", () => {
+      this.loadData();
+    });
   }
 
   get questions() {
@@ -16,90 +30,71 @@ export class QuestionsViewer extends HTMLElement {
   }
 
   async loadData() {
-    const jwt = window.localStorage.getItem("token");
-
-    let questionsEndpoint = "http://localhost:8080/api/questions";
+    let questions = null;
     if (this.authorId) {
-        questionsEndpoint += `?authorId=${this.authorId}`
-    }
-    const response = await fetch(questionsEndpoint, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-        }
-    });
-
-    if (response.ok) {
-        const questions = await response.json();
-        this.showQuestions(questions)
+      questions = await this.questionsService.getQuestionByAuthorId(this.authorId);
     } else {
-        this.questions.innerHTML = `
-        <div class="alert alert-danger" role="alert">
-            Cannot get questions, please try again
-        </div>
-        `
+      questions = await this.questionsService.getQuestions();
+    }
+    
+    if (questions != null && questions != undefined) {
+      this.showQuestions(questions)
+    } else {
+      this.questions.innerHTML = `
+        <alert-component type="danger" message="Cannot get questions, please try again"></alert-component>
+`
     }
   }
 
-  async showQuestions(questions) {
+  showQuestions(questions) {
     let questionsHTML = '';
     questions.forEach(question => {
-        let difficultyBannerHTML = `
-        <span class="badge text-bg-secondary">${question.difficulty}</span></h6>
-        `
-        let answers = ''
-        if (question.questionType == "OPENED") {
-          answers = question.validAnswersOpenQuestion.join(",")
-        } else if (question.questionType == "CLOSED") {
-          answers = []
-          question.closedQuestionOptions.forEach(option => answers.push(option.text))
-        }
+      questionsHTML += this.getQuestionHTML(question);
+    });
+    this.questions.innerHTML = questionsHTML;
 
-        questionsHTML += `
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">${question.text}</h5>
-                ${difficultyBannerHTML} <br>
-                Answers: ${answers} <br>
-                ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
-                <div id="add-question-${question.id}-result"></div>
-            </div>
+    this.querySelectorAll('.add-question-to-quiz-button').forEach(btn => {
+      btn.onclick = () => this.addQuestionToQuiz(btn.getAttribute('data-id'));
+    });
+  }
+
+  getQuestionHTML(question) {
+    let difficultyBannerHTML = `<span class="badge text-bg-secondary">${question.difficulty}</span>`
+
+    let answers = ''
+    if (question.questionType == "OPENED") {
+      answers = question.validAnswersOpenQuestion.join(",")
+    } else if (question.questionType == "CLOSED") {
+      answers = []
+      question.closedQuestionOptions.forEach(option => answers.push(option.text))
+    }
+
+    const questionHTML = `
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">${question.text}</h5>
+            ${difficultyBannerHTML} <br>
+            Answers: ${answers} <br>
+            ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
+            <div id="add-question-${question.id}-result"></div>
         </div>
-        `
-    })
-    this.questions.innerHTML = questionsHTML
-    this.questions.querySelectorAll(".add-question-to-quiz-button").forEach(button => {
-      button.addEventListener("click", (event) => {
-        const questionId = event.target.getAttribute("data-id");
-        this.addQuestionToQuiz(questionId);
-      })
-    })
+    </div>
+    `;
+
+    return questionHTML;
   }
 
   async addQuestionToQuiz(questionId) {
-    const jwt = window.localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8080/api/quizzes/${this.quizId}/questions/${questionId}`, {
-      method: "POST",
-      headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + jwt
-      }
-    });
-
-    const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
-    if (response.ok) {
+    const response = await this.quizService.addQuestionToQuiz(this.quizId, questionId);
+    if (response) {
       this.dispatchEvent(new CustomEvent("question-added-to-quiz", {
         bubbles: true,
         composed: true
-      }))
+      }));
     } else {
+      const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
       addQuestionResult.innerHTML = `
-      <div class="alert alert-danger" role="alert">
-            Error adding question
-      </div>
+      <alert-component type="danger" message="Error adding question"></alert-component>
       `
     }
   }
