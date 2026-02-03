@@ -36,11 +36,11 @@ public class Test {
 		this.maxTries = maxTries;
 	}
 
-	public Duration getDuration() {
+	public Duration getMaxDuration() {
 		return maxDuration;
 	}
 
-	public void setDuration(Duration duration) {
+	public void setMaxDuration(Duration duration) {
 		this.maxDuration = duration;
 	}
 
@@ -58,5 +58,13 @@ public class Test {
 
 	public void setQuiz(Quiz quiz) {
 		this.quiz = quiz;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 }

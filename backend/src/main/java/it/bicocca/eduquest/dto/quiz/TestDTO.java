@@ -1,15 +1,13 @@
 package it.bicocca.eduquest.dto.quiz;
 
-import java.time.Duration;
-
 public class TestDTO {
 
 	private long id;        
-    private Duration maxDuration;
+    private long maxDuration;
     private int maxTries;
     private QuizDTO quiz;
     
-    public TestDTO(long id, Duration maxDuration, int maxTries, QuizDTO quiz) {
+    public TestDTO(long id, long maxDuration, int maxTries, QuizDTO quiz) {
     	this.id = id;
         this.maxDuration = maxDuration;
         this.maxTries = maxTries;
@@ -24,11 +22,11 @@ public class TestDTO {
 		this.id = id;
 	}
 
-	public Duration getMaxDuration() {
+	public long getMaxDuration() {
 		return maxDuration;
 	}
 
-	public void setMaxDuration(Duration maxDuration) {
+	public void setMaxDuration(long maxDuration) {
 		this.maxDuration = maxDuration;
 	}
 

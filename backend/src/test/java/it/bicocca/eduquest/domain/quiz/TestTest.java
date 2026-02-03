@@ -16,7 +16,7 @@ class TestTest {
         it.bicocca.eduquest.domain.quiz.Test exam = new it.bicocca.eduquest.domain.quiz.Test(1L, quiz, duration, 3);
 
         assertEquals(quiz, exam.getQuiz());
-        assertEquals(duration, exam.getDuration());
+        assertEquals(duration, exam.getMaxDuration());
         assertEquals(3, exam.getMaxTries());
     }
 
@@ -29,11 +29,11 @@ class TestTest {
         Duration newDuration = Duration.ofMinutes(90);
 
         exam.setQuiz(newQuiz);
-        exam.setDuration(newDuration);
+        exam.setMaxDuration(newDuration);
         exam.setMaxTries(5);
 
         assertEquals(newQuiz, exam.getQuiz());
-        assertEquals(newDuration, exam.getDuration());
+        assertEquals(newDuration, exam.getMaxDuration());
         assertEquals(5, exam.getMaxTries());
     }
 }
