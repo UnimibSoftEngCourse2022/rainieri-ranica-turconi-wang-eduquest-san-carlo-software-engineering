@@ -127,6 +127,7 @@ public class QuizAttemptController {
             return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
 		} catch (RuntimeException e) {
 			String msg = e.getMessage();
+			System.out.println("[ERROR - AttemptController] " + msg);
 			
             // 404 -> attempt not found
             if (msg.contains(CANNOT_FIND_MSG) || msg.contains(NOT_FOUND_MSG)) {

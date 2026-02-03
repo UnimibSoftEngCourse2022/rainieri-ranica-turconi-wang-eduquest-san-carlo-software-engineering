@@ -44,7 +44,7 @@ export class UserSearch extends BaseComponent {
         </table>
         `
 
-        const statsTable = this._userData.studentStats ? `
+        const statsTable = (this._userData.studentStats && this._userData.quizzesCompleted) ? `
         <h4>Stats</h4>
         <table class="table">
             <tbody>

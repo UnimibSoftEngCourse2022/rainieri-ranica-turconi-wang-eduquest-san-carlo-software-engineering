@@ -1,5 +1,6 @@
 package it.bicocca.eduquest.domain.gamification;
 
+import it.bicocca.eduquest.domain.answers.QuizAttempt;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -59,4 +60,7 @@ public abstract class Mission {
 		this.badge = badge;
 	}
 
+	public abstract int getGoal();
+
+	public abstract int getProgress(int currentProgress, QuizAttempt attempt);
 }

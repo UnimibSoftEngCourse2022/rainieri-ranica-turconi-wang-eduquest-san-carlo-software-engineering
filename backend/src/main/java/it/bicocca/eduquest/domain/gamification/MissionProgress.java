@@ -1,5 +1,6 @@
 package it.bicocca.eduquest.domain.gamification;
 
+import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.domain.users.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +30,14 @@ public class MissionProgress {
 
     public MissionProgress() {
     	// Default constructor
+    }
+    
+    public MissionProgress(Mission mission, Student student, int goal) {
+    	this.mission = mission;
+    	this.student = student;
+    	this.goal = goal;
+    	this.currentCount = 0;
+    	this.isCompleted = false;
     }
 
 	public Long getId() {

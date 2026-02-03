@@ -7,6 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import it.bicocca.eduquest.domain.gamification.ChallengeNumberMission;
+import it.bicocca.eduquest.domain.gamification.Mission;
+import it.bicocca.eduquest.domain.gamification.QuizzesNumberMission;
 import it.bicocca.eduquest.domain.quiz.*;
 import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.repository.*;
@@ -19,13 +22,15 @@ public class DatabaseLoader implements CommandLineRunner {
 	private final UsersRepository usersRepository;
     private final QuizRepository quizRepository;
     private final QuestionsRepository questionsRepository;
+    private final MissionsRepository missionsRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DatabaseLoader(UsersRepository usersRepository, QuizRepository quizRepository, QuestionsRepository questionsRepository, PasswordEncoder passwordEncoder) {
+    public DatabaseLoader(UsersRepository usersRepository, QuizRepository quizRepository, QuestionsRepository questionsRepository, PasswordEncoder passwordEncoder, MissionsRepository missionsRepository) {
         this.usersRepository = usersRepository;
         this.quizRepository = quizRepository;
         this.questionsRepository = questionsRepository;
         this.passwordEncoder = passwordEncoder;
+        this.missionsRepository = missionsRepository;
     }
 
     @Override
@@ -76,6 +81,9 @@ public class DatabaseLoader implements CommandLineRunner {
         
         quiz2.addQuestion(q2);
         quizRepository.save(quiz2);
+        
+        Mission mission = new QuizzesNumberMission(1);
+        missionsRepository.save(mission);
 
         logger.info("Quizzes created and populated!");
         logger.info("The database is ready!");
