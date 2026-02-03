@@ -63,7 +63,7 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = "1")
     void shouldGetQuizById_Success() throws Exception {
-        QuizDTO mockQuiz = new QuizDTO(1L, "Title test", "Description", 1L, Collections.emptyList(), new QuizStatsDTO(0, 0));
+        QuizDTO mockQuiz = new QuizDTO(1L, "Title test", "Description", 1L, Collections.emptyList(), null);
         
         when(quizService.getQuizById(1L)).thenReturn(mockQuiz);
 
