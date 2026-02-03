@@ -2,6 +2,8 @@ package it.bicocca.eduquest.domain.quiz;
 
 import java.time.Duration;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -11,13 +13,16 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "tests")
 public class Test {
+	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	@ManyToOne
 	@JoinColumn(name = "quiz_id")
 	private Quiz quiz;
-	private Duration duration;
+	
+	private Duration maxDuration;
 	private int maxTries;
 	
 	public Test() {
@@ -27,16 +32,16 @@ public class Test {
 	public Test(long id, Quiz quiz, Duration duration, int maxTries) {
 		this.id = id;
 		this.quiz = quiz;
-		this.duration = duration;
+		this.maxDuration = duration;
 		this.maxTries = maxTries;
 	}
 
 	public Duration getDuration() {
-		return duration;
+		return maxDuration;
 	}
 
 	public void setDuration(Duration duration) {
-		this.duration = duration;
+		this.maxDuration = duration;
 	}
 
 	public int getMaxTries() {
