@@ -9,4 +9,5 @@ import it.bicocca.eduquest.domain.quiz.Question;
 
 public interface MissionsProgressesRepository extends JpaRepository<MissionProgress, Long> {
 	List<MissionProgress> findByMissionId(long authorId);
+	List<MissionProgress> findByStudentId(long studentId);
 }
