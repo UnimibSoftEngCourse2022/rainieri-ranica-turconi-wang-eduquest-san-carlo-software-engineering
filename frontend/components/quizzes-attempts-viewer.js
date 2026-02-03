@@ -1,13 +1,17 @@
 import { AttemptsService } from "../services/attempts-service.js";
+import { BaseComponent } from "./base-component.js";
 import { Alert } from "./shared/alert.js";
 
-export class QuizzesAttemptsViewer extends HTMLElement {
-  connectedCallback() {
+export class QuizzesAttemptsViewer extends BaseComponent {
+  setupComponent() {
     this.userId = this.getAttribute("user-id");
     this.attemptsService = new AttemptsService();
     this.render();
     this.loadData();
 
+  }
+
+  attachEventListeners() {
     document.addEventListener("quiz-attempt-started", () => this.loadData());
   }
 

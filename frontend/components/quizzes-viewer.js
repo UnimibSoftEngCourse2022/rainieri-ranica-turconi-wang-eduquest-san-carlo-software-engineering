@@ -1,20 +1,23 @@
 import { QuizService } from "../services/quiz-service.js";
+import { BaseComponent } from "./base-component.js";
 import { Quiz } from "./quiz-item.js"
 import { Alert } from "./shared/alert.js";
 
 
-export class QuizzesViewer extends HTMLElement {
-  async connectedCallback() {
+export class QuizzesViewer extends BaseComponent {
+  setupComponent() {
     this.role = this.getAttribute('role') || "STUDENT";
     this.userId = this.getAttribute('user-id');
     this.quizService = new QuizService();
 
     this.render();
     this.loadData();
+  }
 
+  attachEventListeners() {
     document.addEventListener("quiz-created", () => {
-        this.loadData();
-    })
+    this.loadData();
+    });
   }
 
   render() {
@@ -32,15 +35,7 @@ export class QuizzesViewer extends HTMLElement {
     try {
         const quizzes = await this.quizService.getQuizzes();
         if (quizzes.length == 0) {
-            let message = "";
-            if (this.role == "STUDENT") {
-                message = "There isn't any quiz yet! Wait until your teacher will create one!"
-            } else if (this.role == "TEACHER") {
-                message = "You don't have any quiz yet! Create one to start!";
-            }
-            this.innerHTML = `
-            <alert-component type="warning" message="${message}"></alert-component>
-            `
+            this.innerHTML = `<alert-component type="warning" message="There is not quiz to display"></alert-component>`
         } else {
             let quizzesHTML = ''
             quizzes.forEach(quiz => {
@@ -51,10 +46,12 @@ export class QuizzesViewer extends HTMLElement {
             this.innerHTML = quizzesHTML;
         }
     } catch (e) {
+      console.log(e);
         this.innerHTML = `
         <alert-component type="danger" message="Cannot get the quizzes list, please try again later"></alert-component>
         `
     }
   }
 }
+
 customElements.define('quizzes-viewer', QuizzesViewer);

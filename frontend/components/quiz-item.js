@@ -11,6 +11,10 @@ export class Quiz extends BaseComponent {
 
     this.attemptsService = new AttemptsService();
 
+    this.render();
+  }
+
+  render() {
     let buttonText = "";
     if (this.role === "STUDENT") {
       buttonText = "Run quiz";
@@ -30,9 +34,8 @@ export class Quiz extends BaseComponent {
         ${button}
     </div>
     `;
-
   }
-  
+
   attachEventListeners() {
     this.addEventListenerWithTracking(".quiz-button", "click", (event) => this.handleQuizButtonClick());
   }
