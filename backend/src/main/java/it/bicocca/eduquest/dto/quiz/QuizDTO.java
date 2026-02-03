@@ -8,13 +8,15 @@ public class QuizDTO {
 	private final String description;
 	private final long teacherAuthorId;
 	private final List<QuestionDTO> questions;
+	private final QuizStatsDTO quizStats;
 	
-	public QuizDTO(long id, String title, String description, long teacherAuthorId, List<QuestionDTO> questions) {
+	public QuizDTO(long id, String title, String description, long teacherAuthorId, List<QuestionDTO> questions, QuizStatsDTO quizStats) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.teacherAuthorId = teacherAuthorId;
 		this.questions = questions;
+		this.quizStats = quizStats;
 	}
 
 	public long getId() {
@@ -35,5 +37,9 @@ public class QuizDTO {
 	
 	public List<QuestionDTO> getQuestions() {
 		return questions;
+	}
+	
+	public QuizStatsDTO getQuizStats() {
+		return quizStats;
 	}
 }

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.bicocca.eduquest.dto.quiz.QuizAddDTO;
 import it.bicocca.eduquest.dto.quiz.QuizDTO;
 import it.bicocca.eduquest.dto.quiz.QuizEditDTO;
+import it.bicocca.eduquest.dto.quiz.QuizStatsDTO;
 import it.bicocca.eduquest.security.JwtUtils; 
 import it.bicocca.eduquest.services.QuizServices;
 
@@ -62,7 +63,7 @@ public class QuizControllerTest {
     @Test
     @WithMockUser(username = "1")
     void shouldGetQuizById_Success() throws Exception {
-        QuizDTO mockQuiz = new QuizDTO(1L, "Title test", "Description", 1L, Collections.emptyList());
+        QuizDTO mockQuiz = new QuizDTO(1L, "Title test", "Description", 1L, Collections.emptyList(), new QuizStatsDTO(0, 0));
         
         when(quizService.getQuizById(1L)).thenReturn(mockQuiz);
 

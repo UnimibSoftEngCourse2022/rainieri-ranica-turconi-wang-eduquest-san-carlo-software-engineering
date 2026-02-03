@@ -18,7 +18,8 @@ export class QuizRunner extends BaseComponent {
   }
   
   get questionRunner() { return this.querySelector("question-runner"); }
-  
+  get quizErrorSpace() { return this.querySelector("quiz-error"); }
+
   render() {
     this.innerHTML = `
     <div class="card text-center container">

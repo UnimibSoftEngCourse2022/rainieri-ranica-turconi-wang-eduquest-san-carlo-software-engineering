@@ -13,4 +13,16 @@ export class UsersService {
             appStore.updateAppState({ loading: false, error: true });
         }
     }
+
+    async getMyUserInfo() {
+        appStore.updateAppState({ loading: true });
+        try {
+            const response = await callApi(`${endpoints.users}/me`, "GET");
+            const userData = await response.json();
+            appStore.updateAppState({ loading: false });
+            return userData;
+        } catch (e) {
+            appStore.updateAppState({ loading: false, error: true });
+        }
+    }
 }

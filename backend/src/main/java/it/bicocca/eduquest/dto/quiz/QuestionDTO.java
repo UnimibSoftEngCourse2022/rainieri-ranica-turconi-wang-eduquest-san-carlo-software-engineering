@@ -17,8 +17,10 @@ public class QuestionDTO {
 	
 	private final long authorId;
 	
+	private final QuestionStatsDTO stats;
+	
 	@SuppressWarnings("java:S107")
-	public QuestionDTO(long id, String text, Difficulty difficulty, String topic, QuestionType questionType, List<String> validAnswersOpenQuestion, List<ClosedQuestionOptionDTO> closedQuestionOptions, long authorId) {
+	public QuestionDTO(long id, String text, Difficulty difficulty, String topic, QuestionType questionType, List<String> validAnswersOpenQuestion, List<ClosedQuestionOptionDTO> closedQuestionOptions, long authorId, QuestionStatsDTO stats) {
 		this.id = id;
 		this.text = text;
 		this.difficulty = difficulty;
@@ -27,6 +29,11 @@ public class QuestionDTO {
 		this.validAnswersOpenQuestion = validAnswersOpenQuestion;
 		this.closedQuestionOptions = closedQuestionOptions;
 		this.authorId = authorId;
+		this.stats = stats;
+	}
+
+	public QuestionStatsDTO getStats() {
+		return stats;
 	}
 
 	public long getAuthorId() {

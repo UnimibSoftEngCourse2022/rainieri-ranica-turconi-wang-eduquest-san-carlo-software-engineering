@@ -13,6 +13,7 @@
         />
     </head>
     <body>
+        <navbar-item></navbar-item>
         <div class="container my-5" id="page" style="display: none">
             <h1 id="title">Student dashboard</h1>
 
@@ -41,6 +42,9 @@
             
             <hr>
 
+            <div class="container text-center my-5" id="quizzes-attempts">
+            </div>
+
             <div class="container text-center my-5" id="quizzes">
                 <h1>All the quizzes</h1>
             </div>
@@ -48,10 +52,6 @@
             <div class="container text-center my-5" id="quizzes">
                 <h1>Your questions</h1>
                 <questions-viewer role="STUDENT"></questions-viewer>
-            </div>
-
-            <div class="container text-center my-5" id="quizzes-attempts">
-                
             </div>
         </div>
 
@@ -64,6 +64,7 @@
         <script type="module" src="../components/questions-viewer.js"></script>
         <script type="module" src="../components/add-question.js"></script>
         <script type="module" src="../components/quizzes-attempts-viewer.js"></script>
+        <script type="module" src="../components/shared/navbar.js"></script>
         <script type="module" src="script.js"></script>
     </body>
 </html>

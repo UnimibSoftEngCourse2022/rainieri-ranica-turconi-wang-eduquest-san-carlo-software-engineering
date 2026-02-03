@@ -128,7 +128,6 @@ public class QuizAttemptServices {
 	
 	
 	public QuizAttemptDTO completeQuizAttempt(long quizAttemptId, long requestUserId) {
-		
 		QuizAttempt quizAttempt = getValidQuizAttempt(quizAttemptId);
 		
 		if (!quizAttempt.getStudent().getId().equals(requestUserId)) {
@@ -158,14 +157,17 @@ public class QuizAttemptServices {
 		List<QuestionDTO> safeQuestions = new ArrayList<>();
 		
 		for (Question question : questions) {
+			QuestionStats stats = question.getStats();
+			QuestionStatsDTO questionStatsDTO = new QuestionStatsDTO(stats.getAverageSuccess(), stats.getTotalAnswers(), stats.getCorrectAnswer());
+
 			if (question.getQuestionType() == QuestionType.OPENED) {
-				safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, null, question.getAuthor().getId()));   
+				safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, null, question.getAuthor().getId(), questionStatsDTO));   
 	        } else if (question.getQuestionType() == QuestionType.CLOSED) {
 	            List<ClosedQuestionOptionDTO> safeOptions = new ArrayList<>();
 	            for (ClosedQuestionOption optionDTO : ((ClosedQuestion)question).getOptions()) {
 	                safeOptions.add(new ClosedQuestionOptionDTO(optionDTO.getId(), optionDTO.getText(), false)); 
 	            }
-	            safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, safeOptions, question.getAuthor().getId()));
+	            safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, safeOptions, question.getAuthor().getId(), questionStatsDTO));
 	        } else { 
 				throw new IllegalArgumentException("Not supported question type."); 
 			}

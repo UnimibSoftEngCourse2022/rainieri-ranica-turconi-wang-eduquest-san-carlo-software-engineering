@@ -29,7 +29,7 @@ public class QuizStatsListener {
         QuizStats quizStats = quiz.getStats();
         
         if (attempt.getScore() >= 0) {
-             quizStats.updateStats(attempt.getScore());
+        	quizStats.updateStats(attempt.getScore());
         }
 
         quizRepository.save(quiz);

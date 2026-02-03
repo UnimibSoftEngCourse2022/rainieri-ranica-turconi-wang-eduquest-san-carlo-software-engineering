@@ -8,6 +8,7 @@ import it.bicocca.eduquest.domain.answers.*;
 import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.domain.events.QuizCompletedEvent;
 import it.bicocca.eduquest.repository.UsersRepository;
+import org.hibernate.Hibernate;
 
 @Component
 public class StudentStatsListener {
@@ -22,7 +23,7 @@ public class StudentStatsListener {
     @Transactional
     public void handleUserStatsUpdate(QuizCompletedEvent event) {
         QuizAttempt attempt = event.getAttempt();
-        User student = attempt.getStudent();
+        User student = (User)Hibernate.unproxy(attempt.getStudent());
 
         double score;
 

@@ -125,10 +125,9 @@ public class QuizAttemptController {
 			return ResponseEntity.ok(quizAttemptServices.completeQuizAttempt(quizAttemptId, loggedId));	
 		} catch (NullPointerException e) {
             return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
-            
 		} catch (RuntimeException e) {
 			String msg = e.getMessage();
-
+			
             // 404 -> attempt not found
             if (msg.contains(CANNOT_FIND_MSG) || msg.contains(NOT_FOUND_MSG)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);

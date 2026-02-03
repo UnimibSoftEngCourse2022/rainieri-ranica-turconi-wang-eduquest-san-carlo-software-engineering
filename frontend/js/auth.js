@@ -6,7 +6,7 @@ export const verifyUser = async (role) => {
   if (response.ok) {
     const userData = await response.json();
 
-    if (userData.role != role) {
+    if (role && userData.role != role) {
       return false;
     } else {
       return userData;
