@@ -1,5 +1,6 @@
 package it.bicocca.eduquest.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import it.bicocca.eduquest.domain.users.Role;
 import it.bicocca.eduquest.domain.users.Student;
+import it.bicocca.eduquest.domain.users.StudentStats;
 import it.bicocca.eduquest.domain.users.Teacher;
 import it.bicocca.eduquest.domain.users.User;
+import it.bicocca.eduquest.dto.user.StudentStatsDTO;
 import it.bicocca.eduquest.dto.user.UserInfoDTO;
 import it.bicocca.eduquest.dto.user.UserLoginDTO;
 import it.bicocca.eduquest.dto.user.UserLoginResponseDTO;
@@ -50,7 +53,8 @@ public class UserServices {
         		savedUser.getName(),
         		savedUser.getSurname(),
         		savedUser.getEmail(),
-        		savedUser.getRole()
+        		savedUser.getRole(),
+        		null
         	);
     }
     
@@ -71,12 +75,20 @@ public class UserServices {
     	User user = usersRepository.findById(id)
     			.orElseThrow(() -> new IllegalArgumentException("User not found"));
     	
+    	StudentStatsDTO statsDTO = null;
+    	if (user instanceof Student) {
+    		Student student = (Student)user;
+    		StudentStats stats = student.getStats();
+    		statsDTO = new StudentStatsDTO(stats.getQuizzesCompleted(), stats.getTotalAnswerGiven(), stats.getTotalCorrectAnswers(), stats.getAverageQuizzesScore());
+    	}
+    	
     	return new UserInfoDTO(
         		user.getId(),
         		user.getName(),
         		user.getSurname(),
         		user.getEmail(),
-        		user.getRole()
+        		user.getRole(),
+        		statsDTO
         	);
     }
     
@@ -86,15 +98,16 @@ public class UserServices {
     }
 
 	public List<UserInfoDTO> getAllUsers() {
-		return usersRepository.findAll()
-				.stream()
-				.map(user -> new UserInfoDTO(
-								user.getId(),
-								user.getName(),
-								user.getSurname(),
-								user.getEmail(),
-								user.getRole()
-								))
-				.toList();
+		List<UserInfoDTO> users = new ArrayList<UserInfoDTO>();
+		for (User user : usersRepository.findAll()) {
+			StudentStatsDTO statsDTO = null;
+			if (user instanceof Student) {
+				StudentStats stats = ((Student)user).getStats();
+				statsDTO = new StudentStatsDTO(stats.getQuizzesCompleted(), stats.getTotalAnswerGiven(), stats.getTotalCorrectAnswers(), stats.getAverageQuizzesScore());
+			}
+			UserInfoDTO userInfo = new UserInfoDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getRole(), statsDTO);
+			users.add(userInfo);
+		}
+		return users;
 	}
 }
