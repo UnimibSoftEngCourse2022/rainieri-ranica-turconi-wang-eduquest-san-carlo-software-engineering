@@ -41,7 +41,7 @@ public class GamificationServices {
         Student student = ((Student)Hibernate.unproxy(quizAttempt.getStudent()));
 		this.fillMissingMissionProgress(student);
         
-        for (MissionProgress missionProgress : missionsProgressesRepository.findAll()) {
+        for (MissionProgress missionProgress : missionsProgressesRepository.findByStudentId(student.getId())) {
         	if (missionProgress.isCompleted()) {
         		continue;
         	}
@@ -59,7 +59,7 @@ public class GamificationServices {
     // Creates the instances of MissionProgress for each mission in the DB, if the Student doesn't have one yet
     private void fillMissingMissionProgress(Student student) {
     	for (Mission mission : missionsRepository.findAll()) {
-        	List<MissionProgress> missionProgress = missionsProgressesRepository.findByMissionId(mission.getId());
+        	List<MissionProgress> missionProgress = missionsProgressesRepository.findByMissionIdAndStudentId(mission.getId(), student.getId());
         	if (missionProgress.size() == 0) {
         		MissionProgress progress = new MissionProgress(mission, student, mission.getGoal());
         		missionsProgressesRepository.save(progress);
