@@ -51,6 +51,8 @@ public class DatabaseLoader implements CommandLineRunner {
         
         Student student = new Student("Luigi", "Bianchi", "l.bianchi@campus.unimib.it", criptedPassword);
         usersRepository.save(student);
+        
+        Student student1 = new Student("Carlo", "Massi", "c.massi@campus.unimib.it", criptedPassword);
 
         logger.info("Users created: Teacher ID={}, Student ID={}", teacher.getId(), student.getId());
 

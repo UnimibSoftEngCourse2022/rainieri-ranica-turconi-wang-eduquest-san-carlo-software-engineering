@@ -4,14 +4,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.bicocca.eduquest.services.GamificationServices;
 import it.bicocca.eduquest.services.MissionsServices;
 import it.bicocca.eduquest.services.RankingServices;
+import it.bicocca.eduquest.services.ChallengeServices;
+import it.bicocca.eduquest.dto.gamification.*;
 
 @RestController
 @RequestMapping("/api/gamification")
@@ -20,11 +23,13 @@ public class GamificationController {
 	private MissionsServices missionsServices;
 	private GamificationServices gamificationServices;
 	private RankingServices rankingServices;
+	private ChallengeServices challengeServices;
 	
-	public GamificationController(MissionsServices missionsServices, GamificationServices gamificationServices, RankingServices rankingServices) {
+	public GamificationController(MissionsServices missionsServices, GamificationServices gamificationServices, RankingServices rankingServices, ChallengeServices challengeServices) {
 		this.missionsServices = missionsServices;
 		this.gamificationServices = gamificationServices;
 		this.rankingServices = rankingServices;
+		this.challengeServices = challengeServices;
 	}
 	
 	@GetMapping("/missions/")
@@ -65,4 +70,39 @@ public class GamificationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
         }
 	}
+	
+	@GetMapping("/challenges")
+	public ResponseEntity<Object> getChallengesByUserId(Authentication authentication) {
+		try {
+			long studentId = Long.parseLong(authentication.getName());
+			return ResponseEntity.ok(challengeServices.getChallengesByUserId(studentId));
+		} catch (RuntimeException e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/challenges")
+	public ResponseEntity<Object> createChallenge(@RequestBody ChallengeCreateDTO challengeCreateDTO, Authentication authentication) {
+		String userIdString = authentication.getName();
+		long userId = Long.parseLong(userIdString);
+		
+		try {
+			return ResponseEntity.ok(challengeServices.createChallenge(userId, challengeCreateDTO));
+		} catch(RuntimeException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/challenges/refresh-status")
+    public ResponseEntity<Object> forceExpiryCheck() {
+        try {
+            challengeServices.markExpiredChallenges();
+            return ResponseEntity.ok("Deadline check successfully completed.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+	
 }
