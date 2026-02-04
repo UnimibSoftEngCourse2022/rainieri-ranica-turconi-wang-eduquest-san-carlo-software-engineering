@@ -10,7 +10,7 @@ export class Navbar extends BaseComponent {
     async render() {
       const user = await this.usersService.getMyUserInfo();
       if (!user) {
-        window.location = `../login/`;
+        window.location = `../../`;
         return;
       }
 
@@ -52,7 +52,7 @@ export class Navbar extends BaseComponent {
 
     handleLogout() {
       window.localStorage.removeItem("token");
-      window.location = `../login`;
+      window.location = `../`;
     }
 }
 customElements.define('navbar-item', Navbar);

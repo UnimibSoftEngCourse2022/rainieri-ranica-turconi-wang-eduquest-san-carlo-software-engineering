@@ -45,33 +45,34 @@ export class UserSearch extends BaseComponent {
         </table>
         `
 
-        const roundAverageQuizzesScore = roundWithTwoDecimals(this._userData.studentStats.averageQuizzesScore);
-
-        const statsTable = (this._userData.studentStats && this._userData.studentStats.quizzesCompleted) ? `
-        <h4>Stats</h4>
-        <table class="table">
-            <tbody>
-                <tr>
-                    <th scope="row">Completed quizzes</th>
-                    <td>${this._userData.studentStats.quizzesCompleted}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Average quizzes score</th>
-                    <td>${roundAverageQuizzesScore}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Number of answers given</th>
-                    <td>${this._userData.studentStats.totalAnswerGiven}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Percentage of correct answers</th>
-                    <td>${Math.round(this._userData.studentStats.totalCorrectAnswers / this._userData.studentStats.totalAnswerGiven * 100)}%</td>
-                </tr>
-            </tbody>
-        </table>
-        ` : `
-        <alert-component type="warning" message="This user hasn't completed a quiz yet!"></alert-component>
-        `
+        let statsTable = ``;
+        if (this._userData.role == "STUDENT") {
+            statsTable = (this._userData.studentStats && this._userData.studentStats.quizzesCompleted) ? `
+            <h4>Stats</h4>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th scope="row">Completed quizzes</th>
+                        <td>${this._userData.studentStats.quizzesCompleted}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Average quizzes score</th>
+                        <td>${roundWithTwoDecimals(this._userData.studentStats.averageQuizzesScore)}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Number of answers given</th>
+                        <td>${this._userData.studentStats.totalAnswerGiven}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Percentage of correct answers</th>
+                        <td>${Math.round(this._userData.studentStats.totalCorrectAnswers / this._userData.studentStats.totalAnswerGiven * 100)}%</td>
+                    </tr>
+                </tbody>
+            </table>
+            ` : `
+            <alert-component type="warning" message="This user hasn't completed a quiz yet!"></alert-component>
+            `
+        }
 
         return `
         <div class="text-center my-5">

@@ -11,7 +11,7 @@ public class NoErrorQuizMission extends Mission {
 	public NoErrorQuizMission(int nQuizzes) {
 		this.numberOfQuizzes = nQuizzes;
 		this.title = "" + numberOfQuizzes + " quizzes without errors";
-		this.description = "Complete " + numberOfQuizzes + " without any error to achieve this mission";
+		this.description = "Complete " + numberOfQuizzes + " quizzes without any error to achieve this mission";
 	}
 	
 	public int getProgress(int currentProgress, QuizAttempt attempt) {

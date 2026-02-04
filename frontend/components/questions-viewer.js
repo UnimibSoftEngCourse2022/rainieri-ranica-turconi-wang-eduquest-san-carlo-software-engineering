@@ -26,7 +26,7 @@ export class QuestionsViewer extends BaseComponent {
   }
 
   render() {
-    this.innerHTML = `<div id="questions" class="container"></div>`;
+    this.innerHTML = `<div id="questions" class="row g-4"></div>`;
   }
 
   async loadData() {
@@ -47,18 +47,16 @@ export class QuestionsViewer extends BaseComponent {
   }
 
   showQuestions(questions) {
-    let questionsHTML = '';
     questions.forEach(question => {
-      questionsHTML += this.getQuestionHTML(question);
+      this.questions.appendChild(this.getQuestionElement(question));
     });
-    this.questions.innerHTML = questionsHTML;
 
     this.querySelectorAll('.add-question-to-quiz-button').forEach(btn => {
       btn.onclick = () => this.addQuestionToQuiz(btn.getAttribute('data-id'));
     });
   }
 
-  getQuestionHTML(question) {
+  getQuestionElement(question) {
     let difficultyBannerHTML = `<span class="badge text-bg-secondary">${question.difficulty}</span>`
 
     let answers = ''
@@ -71,21 +69,21 @@ export class QuestionsViewer extends BaseComponent {
 
     const questionSuccessRate = question.stats.correctAnswer / question.stats.totalAnswers
 
-    const questionHTML = `
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">${question.text}</h5>
-            ${difficultyBannerHTML} <br>
-            Answers: ${answers} <br>
-            ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
-            <div id="add-question-${question.id}-result"></div>
-            <hr>
-            <p>Number of given answers: ${question.stats.totalAnswers} | Success rate: ${questionSuccessRate * 100}%</p>
-        </div>
+    const questionElement = document.createElement("div");
+    questionElement.classList.add("card", "col-12", "col-md-6", "col-lg-4");
+    questionElement.innerHTML = `
+    <div class="card-body">
+        <h5 class="card-title">${question.text}</h5>
+        ${difficultyBannerHTML} <br>
+        Answers: ${answers} <br>
+        ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
+        <div id="add-question-${question.id}-result"></div>
+        <hr>
+        <p>Number of given answers: ${question.stats.totalAnswers} | Success rate: ${questionSuccessRate * 100}%</p>
     </div>
     `;
 
-    return questionHTML;
+    return questionElement;
   }
 
   async addQuestionToQuiz(questionId) {

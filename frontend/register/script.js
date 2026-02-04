@@ -1,10 +1,10 @@
+import { UsersService } from "../services/users-service.js";
+
 const NAME_INPUT_TAG_ID = "name-input";
 const SURNAME_INPUT_TAG_ID = "surname-input";
 const EMAIL_INPUT_TAG_ID = "email-input";
 const PASSWORD_INPUT_TAG_ID = "password-input";
 const REGISTER_RESULT_TAG_ID = "register-result";
-
-const REGISTER_ENDPOINT_URL = "http://localhost:8080/auth/register";
 
 const REGISTER_SUCCESS_DIV =
   "<div class='alert alert-success' role='alert'>Registration has completed successfully! Now you can <a href='../login/'>login</a></div>";
@@ -13,7 +13,8 @@ const REGISTER_ERROR_DIV =
 const REGISTER_CONNECTION_ERROR_DIV =
   "<div class='alert alert-danger' role='alert'>Connection to the server failed, please try again later</div>";
 
-const handleRegisterSubmit = async (event) => {
+const registerForm = document.getElementById("register-form");
+registerForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const name = document.getElementById(NAME_INPUT_TAG_ID).value;
@@ -32,20 +33,17 @@ const handleRegisterSubmit = async (event) => {
     role,
   };
 
-  try {
-    const response = await fetch(REGISTER_ENDPOINT_URL, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
+  const usersService = new UsersService();
 
-    if (response.ok) {
+  console.log(requestBody);
+  try {
+    const response = await usersService.register(requestBody);
+
+    console.log(response);
+    if (response) {
       resultContainer.innerHTML = REGISTER_SUCCESS_DIV;
     } else {
       resultContainer.innerHTML = REGISTER_ERROR_DIV;
     }
   } catch (error) {}
-};
+});

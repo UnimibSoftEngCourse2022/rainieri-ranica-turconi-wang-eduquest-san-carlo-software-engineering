@@ -36,6 +36,7 @@ window.onload = async () => {
         }
 
         document.getElementById("quizzes-container").innerHTML = `
+        <h1>All quizzes</h1>
         <quizzes-viewer user-id=${userData.id} role="TEACHER"></quizzes-viewer>
         `
     } else {

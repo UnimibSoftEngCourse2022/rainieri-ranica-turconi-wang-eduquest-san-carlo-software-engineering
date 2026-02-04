@@ -7,11 +7,8 @@ export class UsersService {
         try {
             const response = await callApi(`${endpoints.users}/${userId}`, "GET");
             const userData = await response.json();
-            appStore.updateAppState({ loading: false });
             return userData;
-        } catch (e) {
-            appStore.updateAppState({ loading: false, error: true });
-        }
+        } catch (e) {}
     }
 
     async getMyUserInfo() {
@@ -19,10 +16,15 @@ export class UsersService {
         try {
             const response = await callApi(`${endpoints.users}/me`, "GET");
             const userData = await response.json();
-            appStore.updateAppState({ loading: false });
             return userData;
-        } catch (e) {
-            appStore.updateAppState({ loading: false, error: true });
-        }
+        } catch (e) {}
+    }
+
+    async register(userData) {
+        try {
+            const response = await callApi(`${endpoints.auth.register}`, "POST", userData);
+            const responseData = await response.json();
+            return responseData;
+        } catch (e) {}
     }
 }
