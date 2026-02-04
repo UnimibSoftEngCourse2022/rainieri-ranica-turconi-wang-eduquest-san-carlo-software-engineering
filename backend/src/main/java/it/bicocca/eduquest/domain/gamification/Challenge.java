@@ -46,7 +46,7 @@ public class Challenge {
     private ChallengeStatus status;
 
 	public Challenge() {
-
+		this.status = ChallengeStatus.ACTIVE;
 	}
 	
 	public Challenge(User challenger, User opponent, Quiz quiz, int durationInHours) {
