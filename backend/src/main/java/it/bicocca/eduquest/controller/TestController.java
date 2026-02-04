@@ -32,6 +32,11 @@ public class TestController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<Object> getAllTests() {
+        return ResponseEntity.ok(testServices.getAllTests());
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<Object> getTestById(@PathVariable Long id) {
         try {
@@ -44,5 +49,17 @@ public class TestController {
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<Object> getTestsByTeacher(@PathVariable Long teacherId) {
         return ResponseEntity.ok(testServices.getTestsByTeacherId(teacherId));
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteTest(@PathVariable Long id) {
+        try {
+            testServices.deleteTest(id);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore durante l'eliminazione: " + e.getMessage());
+        }
     }
 }

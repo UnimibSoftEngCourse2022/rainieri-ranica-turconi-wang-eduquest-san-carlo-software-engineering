@@ -1,7 +1,9 @@
 import { verifyUser } from "../js/auth.js";
 import { Quiz } from "../components/quiz-item.js";
 import { QuizzesViewer } from "../components/quizzes-viewer.js";
+import { TestsViewer } from "../components/tests-viewer.js";
 import { AddQuiz } from "../components/add-quiz.js";
+import { AddTest } from "../components/add-test.js";
 
 
 const LOGIN_PAGE = "../login/index.html";
@@ -38,6 +40,11 @@ window.onload = async () => {
         document.getElementById("quizzes-container").innerHTML = `
         <h1>All quizzes</h1>
         <quizzes-viewer user-id=${userData.id} role="TEACHER"></quizzes-viewer>
+        `
+
+        document.getElementById("tests-container").innerHTML = `
+        <h1>All tests</h1>
+        <tests-viewer user-id=${userData.id} role="TEACHER"></tests-viewer>
         `
     } else {
         window.location.href = LOGIN_PAGE;

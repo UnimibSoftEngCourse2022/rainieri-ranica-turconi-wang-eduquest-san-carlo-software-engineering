@@ -23,7 +23,7 @@ public class TestServices {
     private final TestRepository testRepository;
     private final QuizRepository quizRepository;
     private final UsersRepository usersRepository;
-    private final QuizServices quizServices; // Per riutilizzare la conversione Quiz -> QuizDTO
+    private final QuizServices quizServices;
 
     public TestServices(TestRepository testRepository, QuizRepository quizRepository, 
                         UsersRepository usersRepository, QuizServices quizServices) {
@@ -49,8 +49,8 @@ public class TestServices {
         }
         
         Duration duration = null;
-        if (dto.getMaxDurationMinutes() != null) {
-            duration = Duration.ofMillis(dto.getMaxDurationMinutes());
+        if (dto.getMaxDurationMinutes() != null && dto.getMaxDurationMinutes() > 0) {
+            duration = Duration.ofMinutes(dto.getMaxDurationMinutes());
         }
 
         Test test = new Test();
@@ -60,18 +60,14 @@ public class TestServices {
         
         Test savedTest = testRepository.save(test);
 
-        QuizDTO quizDTO = quizServices.getQuizById(quiz.getId());
-
-        return new TestDTO(savedTest.getId(), savedTest.getMaxDuration().toMinutes(), savedTest.getMaxTries(), quizDTO);
+        return convertToDTO(savedTest);
     }
     
     public TestDTO getTestById(long testId) {
         Test test = testRepository.findById(testId)
                 .orElseThrow(() -> new IllegalArgumentException("Cannot find Test with ID " + testId));
         
-        QuizDTO quizDTO = quizServices.getQuizById(test.getQuiz().getId());
-        
-        return new TestDTO(test.getId(), test.getMaxDuration().toMinutes(), test.getMaxTries(), quizDTO);
+        return convertToDTO(test);
     }
 
     public List<TestDTO> getTestsByTeacherId(long teacherId) {
@@ -80,10 +76,37 @@ public class TestServices {
 
         for (Test test : allTests) {
             if (test.getQuiz().getAuthor().getId().equals(teacherId)) {
-                QuizDTO quizDTO = quizServices.getQuizById(test.getQuiz().getId());
-                result.add(new TestDTO(test.getId(), test.getMaxDuration().toMinutes(), test.getMaxTries(), quizDTO));
+                result.add(convertToDTO(test));
             }
         }
         return result;
+    }
+
+    public List<TestDTO> getAllTests() {
+        List<Test> allTests = testRepository.findAll();
+        List<TestDTO> result = new ArrayList<>();
+
+        for (Test test : allTests) {
+            result.add(convertToDTO(test));
+        }
+        return result;
+    }
+
+    private TestDTO convertToDTO(Test test) {
+        QuizDTO quizDTO = quizServices.getQuizById(test.getQuiz().getId());
+        
+        long durationMinutes = 0;
+        if (test.getMaxDuration() != null) {
+            durationMinutes = test.getMaxDuration().toMinutes();
+        }
+
+        return new TestDTO(test.getId(), durationMinutes, test.getMaxTries(), quizDTO);
+    }
+    
+    public void deleteTest(long testId) {
+        if (!testRepository.existsById(testId)) {
+            throw new IllegalArgumentException("Test with ID " + testId + " not found.");
+        }
+        testRepository.deleteById(testId);
     }
 }
