@@ -16,6 +16,7 @@ export class Navbar extends BaseComponent {
 
       const homeUrl = user.role == "TEACHER" ? `../teacher-dashboard` : `../student-dashboard`;
       const profileUrl = `../profile/?id=${user.id}`
+      const rankingsUrl = `../rankings/`
 
       this.innerHTML = `
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -31,6 +32,9 @@ export class Navbar extends BaseComponent {
               </li>
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href=${profileUrl}>Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href=${rankingsUrl}>Rankings</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="#" id="logout-button">Logout</a>

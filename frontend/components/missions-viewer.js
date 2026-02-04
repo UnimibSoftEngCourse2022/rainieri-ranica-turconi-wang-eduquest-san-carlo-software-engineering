@@ -1,16 +1,17 @@
 import { UsersService } from "../services/users-service.js";
 import { BaseComponent } from "./base-component.js";
-import { MissionsService } from "../services/missions-service.js";
+import { GamificationService } from "../services/gamification-service.js";
 import { Alert } from "./shared/alert.js";
 
 export class MissionsViewer extends BaseComponent {
     setupComponent() {
-        this.missionsService = new MissionsService();
+        this.GamificationService = new GamificationService();
         this.render();
     }
 
     async render() {
-        const missionsProgresses = await this.missionsService.getUserMissionsProgresses();
+        const missionsProgresses = await this.GamificationService.getUserMissionsProgresses();
+        console.log(missionsProgresses);
         if (missionsProgresses.length == 0) {
             this.innerHTML = `<alert-component type="warning" message="Complete your first quiz to see the missions!"></alert-component>`
             return;
