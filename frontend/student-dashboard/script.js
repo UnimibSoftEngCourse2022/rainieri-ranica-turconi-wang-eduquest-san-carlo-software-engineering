@@ -1,12 +1,9 @@
 import { verifyUser } from "../js/auth.js";
-import { QuizzesViewer } from "../components/quizzes-viewer.js"
+import { QuizzesViewer } from "../components/quizzes-viewer.js";
+import { TestsViewer } from "../components/tests-viewer.js";
 
 const LOGIN_PAGE = "../login/index.html";
 const STUDENT_ROLE = "STUDENT";
-const ALL_QUIZZES_ENDPOINT = "http://localhost:8080/api/quizzes";
-
-const errorDiv = "<div class='alert alert-danger' role='alert'>An error occurred during the loading of quizzes. Please try again later.</div>";
-const emptyQuizListDiv = "<div class='alert alert-info' role='alert'>No quizzes available at the moment. Check back later!</div>";
 
 let userData = null;
 
@@ -26,6 +23,11 @@ window.onload = async () => {
     document.getElementById("quizzes").innerHTML = `
     <h1>All quizzes</h1>
     <quizzes-viewer role="STUDENT" user-id="${userData.id}"></quizzes-viewer>
+    `
+
+    document.getElementById("tests-container").innerHTML = `
+    <h1>All tests</h1>
+    <tests-viewer role="STUDENT" user-id="${userData.id}"></tests-viewer>
     `
 
     document.getElementById("quizzes-attempts").innerHTML = `

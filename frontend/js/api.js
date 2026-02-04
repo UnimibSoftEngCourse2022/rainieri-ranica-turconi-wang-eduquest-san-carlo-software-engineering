@@ -9,6 +9,7 @@ export const endpoints = {
     users: `${API_BASE}/users`,
     quizzes: `${API_BASE}/quizzes`,
     questions: `${API_BASE}/questions`,
+    tests: `${API_BASE}/tests`,
     attempts: `${API_BASE}/quiz-attempts`,
     missions: `${API_BASE}/gamification/missions`,
     missionsProgresses: `${API_BASE}/gamification/missions/progresses`,

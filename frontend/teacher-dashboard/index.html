@@ -21,12 +21,16 @@
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-quiz-modal">
                     Add quiz
                 </button>
+                
+                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#add-test-modal">
+                    Add test
+                </button>
 
-                <div class="modal fade" id="add-quiz-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="add-quiz-modal" tabindex="-1" aria-labelledby="addQuizLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Add quiz</h1>
+                            <h1 class="modal-title fs-5" id="addQuizLabel">Add quiz</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -36,14 +40,28 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-question-modal">
-                    Add question
-                </button>
-                <div class="modal fade" id="add-question-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="add-test-modal" tabindex="-1" aria-labelledby="addTestLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Add question</h1>
+                            <h1 class="modal-title fs-5" id="addTestLabel">Create New Test</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <add-test></add-test>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#add-question-modal">
+                    Add question
+                </button>
+                <div class="modal fade" id="add-question-modal" tabindex="-1" aria-labelledby="addQuestionLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addQuestionLabel">Add question</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -60,7 +78,11 @@
                 </div>
 
                 <div class="container my-5" id="quizzes-container">
-                    <h1>Your quizzes</h1>
+                    <h1>All quizzes</h1>
+                </div>
+
+                <div class="container my-5" id="tests-container">
+                    <h1>All tests</h1>
                 </div>
             </div>
         </div>
@@ -73,6 +95,9 @@
         
         <script type="module" src="../components/add-question.js"></script>
         <script type="module" src="../components/quizzes-viewer.js"></script>
+        <script type="module" src="../components/tests-viewer.js"></script>
+        <script type="module" src="../components/add-quiz.js"></script>
+        <script type="module" src="../components/add-test.js"></script>
         <script type="module" src="../components/shared/navbar.js"></script>
         <script type="module" src="../components/user-search.js"></script>
         <script type="module" src="script.js"></script>
