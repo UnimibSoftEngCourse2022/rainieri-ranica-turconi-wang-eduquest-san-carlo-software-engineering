@@ -21,4 +21,14 @@ export class GamificationService {
 
         }
     }
+
+    async getRankingByAverageScore() {
+        try {
+            const response = await callApi(endpoints.rankings.byAverageScore, "GET");
+            const attempts = await response.json();
+            return attempts;
+        } catch (e) {
+
+        }
+    }
 }

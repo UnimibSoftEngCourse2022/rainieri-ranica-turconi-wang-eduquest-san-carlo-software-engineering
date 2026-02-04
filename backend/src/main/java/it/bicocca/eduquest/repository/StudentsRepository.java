@@ -13,5 +13,8 @@ import it.bicocca.eduquest.domain.users.User;
 @Repository
 public interface StudentsRepository extends JpaRepository<Student, Long> {
 	@Query("SELECT s FROM Student s ORDER BY s.stats.quizzesCompleted DESC")
-    List<Student> getRanking();
+    List<Student> getRankingByCompletedQuizzes();
+	
+	@Query("SELECT s FROM Student s ORDER BY s.stats.averageQuizzesScore DESC")
+    List<Student> getRankingByAverageScore();
 }

@@ -56,4 +56,13 @@ public class GamificationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
         }
 	}
+	
+	@GetMapping("/ranking/averageScore")
+	public ResponseEntity<Object> getRankingByAverageScore(Authentication authentication) {
+		try {
+            return ResponseEntity.ok(rankingServices.getRankingByAverageQuizzesScore());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
+        }
+	}
 }

@@ -1,5 +1,6 @@
 import { BaseComponent } from "./base-component.js";
 import { GamificationService } from "../services/gamification-service.js"
+import { Alert } from "./shared/alert.js";
 
 export class RankingViewer extends BaseComponent {
     setupComponent() {
@@ -18,9 +19,6 @@ export class RankingViewer extends BaseComponent {
       <h4 id="ranking-title"></h4>
       <table class="table">
         <tbody id="ranking-table">
-          <th>Position</th>
-          <th>Name and Surname</th>
-          <th>Value</th>
         </tbody>
       </table>
       `
@@ -30,13 +28,28 @@ export class RankingViewer extends BaseComponent {
       let ranking = [];
       let rankingTitleHTML = ``;
 
-      if (this._rankingType === "QUIZZES_NUMBER") {
-        ranking = await this.gamificationService.getRankingByCompletedQuizzes();
-        rankingTitleHTML = `<h4>Number of completed quizzes</h4>`;
-      }
-      
       const rankingTable = this.querySelector("#ranking-table");
       const rankingTitle = this.querySelector("#ranking-title");
+
+      if (this._rankingType === "quizzes-number") {
+        ranking = await this.gamificationService.getRankingByCompletedQuizzes();
+        rankingTitleHTML = `<h4>Number of completed quizzes</h4>`;
+      } else if (this._rankingType === "average-score") {
+        ranking = await this.gamificationService.getRankingByAverageScore();
+        rankingTitleHTML = `<h4>Average score</h4>`;
+      } else {
+        ranking = [];
+        rankingTitle.innerHTML = ``;
+        rankingTable.innerHTML = ``;
+        return;
+      }
+
+      rankingTable.innerHTML = `
+      <th>Position</th>
+      <th>Name and Surname</th>
+      <th>Value</th>
+      `;
+
       rankingTitle.innerHTML = rankingTitleHTML;
 
       let currentPosition = 1;

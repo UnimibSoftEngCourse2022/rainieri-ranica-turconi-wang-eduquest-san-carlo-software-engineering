@@ -3,8 +3,6 @@ import { verifyUser } from "../js/auth.js";
 
 const LOGIN_PAGE = "/login/";
 
-const TEACHER_ROLE = "TEACHER";
-
 let userData = null;
 
 window.onload = async () => {
@@ -18,5 +16,12 @@ window.onload = async () => {
   }
 
   const rankingElement = document.querySelector("ranking-viewer");
-  rankingElement.rankingType = "QUIZZES_NUMBER";
+
+  const rankingButtons = document.querySelectorAll('button[id^="button-"]');
+  rankingButtons.forEach(button => {
+    const rankingType = button.id.replace('button-', '');
+    button.addEventListener("click", () => {
+      rankingElement.rankingType = rankingType;
+    })
+  })
 };
