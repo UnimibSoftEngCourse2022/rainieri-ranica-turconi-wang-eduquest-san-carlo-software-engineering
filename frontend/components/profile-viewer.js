@@ -1,5 +1,6 @@
 import { UsersService } from "../services/users-service.js";
 import { BaseComponent } from "./base-component.js";
+import { roundWithTwoDecimals } from "../js/utils.js"
 
 export class UserSearch extends BaseComponent {
     setupComponent() {
@@ -44,7 +45,9 @@ export class UserSearch extends BaseComponent {
         </table>
         `
 
-        const statsTable = (this._userData.studentStats && this._userData.quizzesCompleted) ? `
+        const roundAverageQuizzesScore = roundWithTwoDecimals(this._userData.studentStats.averageQuizzesScore);
+
+        const statsTable = (this._userData.studentStats && this._userData.studentStats.quizzesCompleted) ? `
         <h4>Stats</h4>
         <table class="table">
             <tbody>
@@ -53,8 +56,8 @@ export class UserSearch extends BaseComponent {
                     <td>${this._userData.studentStats.quizzesCompleted}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Average quizzes score (in percentage)</th>
-                    <td>${this._userData.studentStats.averageQuizzesScore * 100}%</td>
+                    <th scope="row">Average quizzes score</th>
+                    <td>${roundAverageQuizzesScore}</td>
                 </tr>
                 <tr>
                     <th scope="row">Number of answers given</th>
@@ -62,7 +65,7 @@ export class UserSearch extends BaseComponent {
                 </tr>
                 <tr>
                     <th scope="row">Percentage of correct answers</th>
-                    <td>${this._userData.studentStats.totalCorrectAnswers / this._userData.studentStats.totalAnswerGiven * 100}%</td>
+                    <td>${Math.round(this._userData.studentStats.totalCorrectAnswers / this._userData.studentStats.totalAnswerGiven * 100)}%</td>
                 </tr>
             </tbody>
         </table>

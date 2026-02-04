@@ -42,7 +42,12 @@ public class GamificationServices {
 		this.fillMissingMissionProgress(student);
         
         for (MissionProgress missionProgress : missionsProgressesRepository.findAll()) {
-        	Mission mission = missionProgress.getMission();
+        	if (missionProgress.isCompleted()) {
+        		continue;
+        	}
+
+        	Mission mission = missionProgress.getMission();        	
+        	
         	missionProgress.setCurrentCount(mission.getProgress(missionProgress.getCurrentCount(), quizAttempt));
         	if (missionProgress.getCurrentCount() == missionProgress.getGoal()) {
         		missionProgress.setCompleted(true);

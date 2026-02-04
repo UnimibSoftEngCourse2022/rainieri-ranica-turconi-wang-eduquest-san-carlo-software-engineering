@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.bicocca.eduquest.domain.gamification.ChallengeNumberMission;
 import it.bicocca.eduquest.domain.gamification.Mission;
+import it.bicocca.eduquest.domain.gamification.NoErrorQuizMission;
 import it.bicocca.eduquest.domain.gamification.QuizzesNumberMission;
 import it.bicocca.eduquest.domain.quiz.*;
 import it.bicocca.eduquest.domain.users.*;
@@ -82,9 +83,18 @@ public class DatabaseLoader implements CommandLineRunner {
         quiz2.addQuestion(q2);
         quizRepository.save(quiz2);
         
-        Mission mission = new QuizzesNumberMission(1);
-        missionsRepository.save(mission);
+        Mission mission1 = new QuizzesNumberMission(1);
+        missionsRepository.save(mission1);
 
+        Mission mission2 = new QuizzesNumberMission(5);
+        missionsRepository.save(mission2);
+
+        Mission mission3 = new NoErrorQuizMission(1);
+        missionsRepository.save(mission3);
+        
+        Mission mission4 = new NoErrorQuizMission(5);
+        missionsRepository.save(mission4);        
+        
         logger.info("Quizzes created and populated!");
         logger.info("The database is ready!");
     }
