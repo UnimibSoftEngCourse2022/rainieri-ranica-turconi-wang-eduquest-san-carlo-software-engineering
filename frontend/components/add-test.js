@@ -7,6 +7,8 @@ export class AddTest extends BaseComponent {
   setupComponent() {
     this.quizService = new QuizService();
     this.testsService = new TestsService();
+    this.quizzes = [];
+    this.render();
     this.loadQuizzes(); 
   }
 
@@ -15,29 +17,17 @@ export class AddTest extends BaseComponent {
       this.render();
   }
 
-  attachEventListeners() {
-    this.addEventListenerWithTracking("#add-test-button", "click", (e) => this.handleAddTest(e));
-  }
-
-  get quizSelect() {
-    return this.querySelector("#test-quiz-select");
-  }
-
-  get timeLimitInput() {
-    return this.querySelector("#test-time-input");
-  }
-
-  get maxAttemptsInput() {
-    return this.querySelector("#test-attempts-input");
-  }
-
-  get addTestResult() {
-    return document.getElementById("add-test-result");
-  }
+  get quizSelect() { return this.querySelector("#test-quiz-select"); }
+  get timeLimitInput() { return this.querySelector("#test-time-input"); }
+  get maxAttemptsInput() { return this.querySelector("#test-attempts-input"); }
+  get addTestResult() { return document.getElementById("add-test-result"); }
 
   render() {
-    const options = this.quizzes ? this.quizzes.map(q => `<option value="${q.id}">${q.title}</option>`).join('') : '';
+    const options = this.quizzes.length > 0 
+        ? this.quizzes.map(q => `<option value="${q.id}">${q.title}</option>`).join('') 
+        : '<option disabled>Loading quizzes...</option>';
 
+    // --- MODIFICATO QUI SOTTO: placeholder="0" invece di value="0" ---
     this.innerHTML = `
     <div class="mb-3">
         <label for="test-quiz-select" class="form-label">Select Quiz</label>
@@ -49,12 +39,12 @@ export class AddTest extends BaseComponent {
 
     <div class="mb-3">
         <label for="test-time-input" class="form-label">Time Limit (minutes)</label>
-        <input type="number" class="form-control" id="test-time-input" min="1" placeholder="60" />
+        <input type="number" class="form-control" id="test-time-input" min="1" placeholder="0" />
     </div>
 
     <div class="mb-3">
         <label for="test-attempts-input" class="form-label">Max Attempts</label>
-        <input type="number" class="form-control" id="test-attempts-input" min="1" placeholder="3" />
+        <input type="number" class="form-control" id="test-attempts-input" min="1" placeholder="0" />
     </div>
 
     <div class="modal-footer">
@@ -63,22 +53,35 @@ export class AddTest extends BaseComponent {
     </div>
     <div id="add-test-result" class="container"></div>
     `;
+
+    this.attachEventListeners();
+  }
+
+  attachEventListeners() {
+    const btn = this.querySelector("#add-test-button");
+    if (btn) {
+        btn.onclick = (e) => this.handleAddTest(e);
+    }
   }
 
   async handleAddTest(event) {
-    const quizId = this.quizSelect.value;
+    event.preventDefault();
+
+    const quizId = this.quizSelect ? this.quizSelect.value : null;
     const timeLimit = this.timeLimitInput.value;
     const maxAttempts = this.maxAttemptsInput.value;
     
-    if (!quizId || !timeLimit || !maxAttempts) {
+    // Controllo rigoroso: se l'utente non scrive nulla, timeLimit è una stringa vuota ""
+    // e quindi entra nell'if mostrando l'errore "Please fill all fields".
+    if (!quizId || timeLimit === "" || maxAttempts === "") {
         this.addTestResult.innerHTML = `<alert-component type="warning" message="Please fill all fields"></alert-component>`;
         return;
     }
 
     const requestBody = {
-        quizId: quizId,
-        timeLimit: parseInt(timeLimit),
-        maxAttempts: parseInt(maxAttempts)
+        quizId: parseInt(quizId),
+        maxDurationMinutes: parseInt(timeLimit),
+        maxTries: parseInt(maxAttempts)
     };
     
     this.submitData(requestBody);

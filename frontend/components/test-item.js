@@ -23,7 +23,10 @@ export class TestItem extends BaseComponent {
   }
 
   render() {
-    const title = this._testData.quizTitle || `Test #${this._testData.id}`;
+    const title = this._testData.quiz ? this._testData.quiz.title : `Test #${this._testData.id}`;
+    const quizId = this._testData.quiz ? this._testData.quiz.id : 'N/A';
+    const duration = this._testData.maxDuration;
+    const tries = this._testData.maxTries;
     
     let actionButton = "";
     
@@ -42,12 +45,12 @@ export class TestItem extends BaseComponent {
         <h3>${title}</h3>
         
         <div class="mb-2 text-muted">
-            <small>Configured for Quiz ID: ${this._testData.quizId}</small>
+            <small>Configured for Quiz ID: ${quizId}</small>
         </div>
 
         <p>
-            <strong>Time Limit:</strong> ${this._testData.timeLimit} min<br>
-            <strong>Max Attempts:</strong> ${this._testData.maxAttempts}
+            <strong>Time Limit:</strong> ${duration} min<br>
+            <strong>Max Attempts:</strong> ${tries}
         </p>
 
         <div class="mt-2">
