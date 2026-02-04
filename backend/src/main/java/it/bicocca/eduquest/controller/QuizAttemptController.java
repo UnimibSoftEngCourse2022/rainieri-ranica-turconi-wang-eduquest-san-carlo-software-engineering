@@ -60,7 +60,6 @@ public class QuizAttemptController {
         }
     }
 	
-	
 	@PostMapping
     public ResponseEntity<Object> startQuiz(@RequestParam Long quizId, @RequestParam Long studentId, Authentication authentication) {
 		String loggedIdString = authentication.getName();
@@ -88,6 +87,16 @@ public class QuizAttemptController {
             return ResponseEntity.badRequest().body(msg);
         }
     }
+	
+	@GetMapping("/{attemptId}/session")
+	public ResponseEntity<Object> getQuizAttemptSession(@PathVariable long attemptId) {
+		try {
+			return ResponseEntity.ok(quizAttemptServices.getQuizSession(attemptId));
+		} catch (RuntimeException e) {
+			System.out.println(e.getMessage());
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
 	
 	@PutMapping("/{attemptId}/answers") 
 	public ResponseEntity<Object> saveSingleAnswer(@PathVariable Long attemptId, @RequestBody AnswerDTO answerDTO, Authentication authentication) {

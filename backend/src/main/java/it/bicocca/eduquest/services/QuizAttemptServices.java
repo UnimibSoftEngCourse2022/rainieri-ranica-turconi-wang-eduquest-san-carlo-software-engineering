@@ -104,6 +104,21 @@ public class QuizAttemptServices {
 		return new QuizSessionDTO(quizAttempt.getId(), quiz.getTitle(), quiz.getDescription(), safeQuestionsDTO, existingAnswersDTO);
 	}
 	
+	public QuizSessionDTO getQuizSession(long quizAttemptId) {
+		QuizAttempt quizAttempt = quizAttemptsRepository.findById(quizAttemptId).orElseThrow(() -> new IllegalArgumentException("Cannot find a quiz attempt with the given ID"));
+		
+		long quizId = quizAttempt.getId();
+		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Cannot find a quiz with the given ID"));
+		
+		List<QuestionDTO> safeQuestionsDTO = convertQuestionsToSafeDTOs(quiz.getQuestions());
+		List<AnswerDTO> existingAnswersDTO = new ArrayList<>();
+		for (Answer a : quizAttempt.getAnswers()) {
+			existingAnswersDTO.add(convertAnswerToDTO(a));
+		}
+		
+		return new QuizSessionDTO(quizAttempt.getId(), quiz.getTitle(), quiz.getDescription(), safeQuestionsDTO, existingAnswersDTO);
+	}
+	
 
 	public AnswerDTO saveSingleAnswer(AnswerDTO answerDTO, long requestUserId) {
 		QuizAttempt quizAttempt = getValidQuizAttempt(answerDTO.getQuizAttemptId());

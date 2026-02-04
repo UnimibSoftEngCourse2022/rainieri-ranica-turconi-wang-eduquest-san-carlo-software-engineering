@@ -6,6 +6,9 @@ import { Alert } from "./shared/alert.js";
 
 export class QuizRunner extends BaseComponent {
   setupComponent() {
+    this.sessionData = null;
+    this.quizAttemptData = null;
+
     this.quizAttemptId = this.getAttribute("quiz-attempt-id");
     this.attemptsService = new AttemptsService();
     this.quizService = new QuizService();
@@ -42,33 +45,47 @@ export class QuizRunner extends BaseComponent {
   get quizError() { return this.querySelector("#quiz-error"); }
 
   async loadData() {
-    const attemptData = await this.attemptsService.getAttemptById(this.quizAttemptId);
-    if (!attemptData) {
+    this.sessionData = await this.attemptsService.getAttemptSessionById(this.quizAttemptId);
+    if (!this.sessionData) {
       this.quizError.innerHTML = "Failed to load quiz attempt data.";
       return;
     }
 
-    const quizData = await this.quizService.getQuizById(attemptData.quizId);
-    if (!quizData) {
-      this.quizError.innerHTML = "Failed to load quiz data.";
+    this.attemptData = await this.attemptsService.getAttemptById(this.sessionData.attemptId);
+    if (!this.attemptData) {
+      this.quizError.innerHTML = "Failed to load quiz attempt data.";
       return;
     }
 
-    this.quizQuestions = quizData.questions;
+    this.quizQuestions = this.sessionData.questions;
     this.currentQuestionIndex = 0;
 
-    this.renderHeader(attemptData);
+    this.renderHeader(this.sessionData);
     this.updateQuestionViewer();
   }
 
-  renderHeader(attemptData) {
-    const [startDate, completeStartTime] = attemptData.startedAt.split("T")
+  renderHeader() {
+    const [startDate, completeStartTime] = this.attemptData.startedAt.split("T")
     const [startTime, _] = completeStartTime.split(".")
-    this.quizHeader.innerHTML = `<h4>${attemptData.quizTitle}</h4>Started at: ${startTime}, ${startDate}`
+    this.quizHeader.innerHTML = `<h4>${this.attemptData.quizTitle}</h4>Started at: ${startTime}, ${startDate}`
   }
 
   updateQuestionViewer() {
-    this.questionRunner.question = this.quizQuestions[this.currentQuestionIndex];
+    const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
+    this.questionRunner.question = currentQuestion;
+
+    this.questionRunner.answer = null;
+    this.sessionData.existingAnswers.forEach(answer => {
+      if (answer.questionId == currentQuestion.id) {
+        let answerValue = ``;
+        if (answer.questionType == "OPENED") {
+          answerValue = answer.textOpenAnswer;
+        } else if (answer.questionType == "CLOSED") {
+          answerValue = answer.selectedOptionId;
+        }
+        this.questionRunner.answer = answerValue;
+      }
+    })
     this.questionRunner.render();
   }
 

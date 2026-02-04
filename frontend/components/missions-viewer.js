@@ -11,7 +11,6 @@ export class MissionsViewer extends BaseComponent {
 
     async render() {
         const missionsProgresses = await this.GamificationService.getUserMissionsProgresses();
-        console.log(missionsProgresses);
         if (missionsProgresses.length == 0) {
             this.innerHTML = `<alert-component type="warning" message="Complete your first quiz to see the missions!"></alert-component>`
             return;

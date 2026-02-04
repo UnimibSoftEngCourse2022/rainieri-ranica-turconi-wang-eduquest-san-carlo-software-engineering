@@ -34,7 +34,6 @@ export class QuizzesViewer extends BaseComponent {
     this.render();
     try {
         const quizzes = await this.quizService.getQuizzes();
-        console.log(quizzes);
         if (quizzes.length == 0) {
             this.innerHTML = `<alert-component type="warning" message="There is not quiz to display"></alert-component>`
         } else {
