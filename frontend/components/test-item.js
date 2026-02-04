@@ -24,10 +24,14 @@ export class TestItem extends BaseComponent {
 
   render() {
     const title = this._testData.quiz ? this._testData.quiz.title : `Test #${this._testData.id}`;
-    const quizId = this._testData.quiz ? this._testData.quiz.id : 'N/A';
+    
     const duration = this._testData.maxDuration;
     const tries = this._testData.maxTries;
     
+    const stats = this._testData.quiz && this._testData.quiz.quizStats 
+        ? this._testData.quiz.quizStats 
+        : { averageScore: 0, totalAttempts: 0 };
+
     let actionButton = "";
     
     if (this._role === "STUDENT") {
@@ -44,10 +48,6 @@ export class TestItem extends BaseComponent {
       <div class="card my-2" style="border: 1px solid #ccc; padding: 10px;">
         <h3>${title}</h3>
         
-        <div class="mb-2 text-muted">
-            <small>Configured for Quiz ID: ${quizId}</small>
-        </div>
-
         <p>
             <strong>Time Limit:</strong> ${duration} min<br>
             <strong>Max Attempts:</strong> ${tries}
@@ -56,6 +56,9 @@ export class TestItem extends BaseComponent {
         <div class="mt-2">
             ${actionButton}
         </div>
+
+        <hr>
+        Average score: ${stats.averageScore} | Total attempts: ${stats.totalAttempts}
     </div>
     `;
   }
