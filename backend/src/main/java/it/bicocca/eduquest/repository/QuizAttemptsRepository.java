@@ -16,7 +16,7 @@ import it.bicocca.eduquest.domain.users.User;
 
 @Repository
 public interface QuizAttemptsRepository extends JpaRepository<QuizAttempt, Long> {
-	// Check whether there is already a STARTED attempt for this student and this quiz
+	
 	Optional<QuizAttempt> findByStudentAndQuizAndStatus(User student, Quiz quiz, QuizAttemptStatus status);
 	List<QuizAttempt> findByStudentId(Long studentId);
 	
@@ -26,4 +26,9 @@ public interface QuizAttemptsRepository extends JpaRepository<QuizAttempt, Long>
     
     @Query("SELECT COALESCE(AVG(qa.score), 0.0) FROM QuizAttempt qa WHERE qa.test = :test")
     Double getAverageScoreByTest(@Param("test") Test test);
+
+    long countByQuizAndTestIsNull(Quiz quiz);
+
+    @Query("SELECT COALESCE(AVG(qa.score), 0.0) FROM QuizAttempt qa WHERE qa.quiz = :quiz AND qa.test IS NULL")
+    Double getAverageScoreByQuizAndTestIsNull(@Param("quiz") Quiz quiz);
 }

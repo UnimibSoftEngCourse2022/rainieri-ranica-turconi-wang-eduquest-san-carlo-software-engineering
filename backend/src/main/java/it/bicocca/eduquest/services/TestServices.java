@@ -14,6 +14,7 @@ import it.bicocca.eduquest.dto.quiz.QuizDTO;
 import it.bicocca.eduquest.dto.quiz.TestAddDTO;
 import it.bicocca.eduquest.dto.quiz.TestDTO;
 import it.bicocca.eduquest.repository.QuizRepository;
+import it.bicocca.eduquest.repository.QuizAttemptsRepository; 
 import it.bicocca.eduquest.repository.TestRepository;
 import it.bicocca.eduquest.repository.UsersRepository;
 
@@ -24,13 +25,16 @@ public class TestServices {
     private final QuizRepository quizRepository;
     private final UsersRepository usersRepository;
     private final QuizServices quizServices;
+    private final QuizAttemptsRepository quizAttemptsRepository; 
 
     public TestServices(TestRepository testRepository, QuizRepository quizRepository, 
-                        UsersRepository usersRepository, QuizServices quizServices) {
+                        UsersRepository usersRepository, QuizServices quizServices,
+                        QuizAttemptsRepository quizAttemptsRepository) {
         this.testRepository = testRepository;
         this.quizRepository = quizRepository;
         this.usersRepository = usersRepository;
         this.quizServices = quizServices;
+        this.quizAttemptsRepository = quizAttemptsRepository;
     }
 
     public TestDTO createTest(TestAddDTO dto, long teacherId) {
@@ -99,8 +103,16 @@ public class TestServices {
         if (test.getMaxDuration() != null) {
             durationMinutes = test.getMaxDuration().toMinutes();
         }
+        
+        Double avg = quizAttemptsRepository.getAverageScoreByTest(test);
+        long totalAttempts = quizAttemptsRepository.countByTest(test);
 
-        return new TestDTO(test.getId(), durationMinutes, test.getMaxTries(), quizDTO);
+        TestDTO dto = new TestDTO(test.getId(), durationMinutes, test.getMaxTries(), quizDTO);
+        
+        dto.setTestAverageScore(avg);
+        dto.setTestTotalAttempts((int) totalAttempts);
+        
+        return dto;
     }
     
     public void deleteTest(long testId) {

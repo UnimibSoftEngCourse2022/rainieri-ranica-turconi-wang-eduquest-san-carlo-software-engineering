@@ -1,49 +1,71 @@
 package it.bicocca.eduquest.dto.quiz;
 
 public class TestDTO {
-
-	private long id;        
+    private long id;
     private long maxDuration;
     private int maxTries;
     private QuizDTO quiz;
     
+    private Double testAverageScore;
+    private int testTotalAttempts;
+
     public TestDTO(long id, long maxDuration, int maxTries, QuizDTO quiz) {
-    	this.id = id;
+        this.id = id;
         this.maxDuration = maxDuration;
         this.maxTries = maxTries;
         this.quiz = quiz;
+        this.testAverageScore = 0.0;
+        this.testTotalAttempts = 0;
     }
 
-	public long getId() {
-		return id;
-	}
+    public TestDTO() {
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public long getMaxDuration() {
-		return maxDuration;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public void setMaxDuration(long maxDuration) {
-		this.maxDuration = maxDuration;
-	}
+    public long getMaxDuration() {
+        return maxDuration;
+    }
 
-	public int getMaxTries() {
-		return maxTries;
-	}
+    public void setMaxDuration(long maxDuration) {
+        this.maxDuration = maxDuration;
+    }
 
-	public void setMaxTries(int maxTries) {
-		this.maxTries = maxTries;
-	}
+    public int getMaxTries() {
+        return maxTries;
+    }
 
-	public QuizDTO getQuiz() {
-		return quiz;
-	}
+    public void setMaxTries(int maxTries) {
+        this.maxTries = maxTries;
+    }
 
-	public void setQuiz(QuizDTO quiz) {
-		this.quiz = quiz;
-	}
-    
+    public QuizDTO getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(QuizDTO quiz) {
+        this.quiz = quiz;
+    }
+
+    public Double getTestAverageScore() {
+        return testAverageScore;
+    }
+
+    public void setTestAverageScore(Double testAverageScore) {
+        this.testAverageScore = testAverageScore;
+    }
+
+    public int getTestTotalAttempts() {
+        return testTotalAttempts;
+    }
+
+    public void setTestTotalAttempts(int testTotalAttempts) {
+        this.testTotalAttempts = testTotalAttempts;
+    }
 }
