@@ -66,7 +66,7 @@ public class QuizAttemptControllerTest {
     @Test
     @WithMockUser(username = "1")
     void startQuiz_NotFound() throws Exception {
-        when(quizAttemptServices.startQuiz(99L, 1L))
+        when(quizAttemptServices.startQuiz(99L, 1L, null))
             .thenThrow(new RuntimeException("Cannot find quiz"));
 
         mockMvc.perform(post("/api/quiz-attempts")
@@ -237,7 +237,7 @@ public class QuizAttemptControllerTest {
     @Test
     @WithMockUser(username = "1")
     void startQuiz_Forbidden_TeacherCannotStart() throws Exception {
-        when(quizAttemptServices.startQuiz(10L, 1L))
+        when(quizAttemptServices.startQuiz(10L, 1L, null))
             .thenThrow(new RuntimeException("Teacher cannot start quiz"));
 
         mockMvc.perform(post("/api/quiz-attempts")

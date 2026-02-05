@@ -291,7 +291,8 @@ class QuizServicesTest {
         Teacher author = new Teacher(); author.setId(userId);
         Quiz quiz = new Quiz(quizId, "T", "D", author);
         Question question = new OpenQuestion(); question.setId(qId); question.setAuthor(author); question.setQuestionType(QuestionType.OPENED);
-
+        question.setDifficulty(Difficulty.EASY);
+        
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
         when(questionsRepository.findById(qId)).thenReturn(Optional.of(question));
         when(quizRepository.save(any(Quiz.class))).thenReturn(quiz);
