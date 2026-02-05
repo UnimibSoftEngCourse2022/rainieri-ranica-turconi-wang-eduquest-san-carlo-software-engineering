@@ -70,6 +70,29 @@ public class Quiz {
 		this.stats = new QuizStats();
 	}
 	
+	public void recalculateDifficulty() {
+		if (questions == null || questions.isEmpty()) {
+			this.difficulty = Difficulty.UNDEFINED;
+			return;
+		}
+		
+		double totalDifficultyValue = 0;
+		for (Question q : questions) {
+			totalDifficultyValue += getDifficultyValue(q.getDifficulty());
+		}
+		
+		double averageDifficultyValue = totalDifficultyValue/questions.size();
+		
+		if (averageDifficultyValue <= 1.5) {
+            this.difficulty = Difficulty.EASY;
+        } else if (averageDifficultyValue <= 2.5) {
+            this.difficulty = Difficulty.MEDIUM;
+        } else {
+            this.difficulty = Difficulty.HARD;
+        }
+				
+	}
+ 	
 	public Long getId() {
 		return id;
 	}
@@ -140,6 +163,14 @@ public class Quiz {
 	
 	public void removeQuestion(Question question) {
 		this.questions.remove(question);
+	}
+	
+	private int getDifficultyValue(Difficulty difficulty) {
+		switch(difficulty) {
+			case HARD: return 3;
+			case MEDIUM: return 2;
+			default: return 1;
+		}
 	}
 
 }

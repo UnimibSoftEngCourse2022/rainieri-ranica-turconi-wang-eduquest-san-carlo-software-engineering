@@ -72,7 +72,7 @@ public class QuizServices {
 			questionsDTO.add(questionDTO);
 		}
 
-		return new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO, statsDTO);
+		return new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO, statsDTO, quiz.getDifficulty());
 	}
 	
 	public List<QuizDTO> getAllQuizzes() {
@@ -82,7 +82,7 @@ public class QuizServices {
 		for (Quiz quiz : quizzes) {
 			List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 			QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
-			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO, statsDTO);
+			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO, statsDTO, quiz.getDifficulty());
 			quizzesDTO.add(quizDTO);
 		}
 		
@@ -99,7 +99,7 @@ public class QuizServices {
 			}
 			List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 			QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
-			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO, statsDTO);
+			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO, statsDTO, quiz.getDifficulty());
 			quizzesDTO.add(quizDTO);
 		}
 		
@@ -127,7 +127,7 @@ public class QuizServices {
 		Quiz savedQuiz = quizRepository.save(quiz);
 		
 		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
-		return new QuizDTO(savedQuiz.getId(), savedQuiz.getTitle(), savedQuiz.getDescription(), savedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO);
+		return new QuizDTO(savedQuiz.getId(), savedQuiz.getTitle(), savedQuiz.getDescription(), savedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO, quiz.getDifficulty());
 	}
 	
 	public QuizDTO editQuiz(long quizId, QuizEditDTO quizEditDTO, long userIdFromRequest) {
@@ -151,7 +151,7 @@ public class QuizServices {
 		
 		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
 		
-		return new QuizDTO(updatedQuiz.getId(), updatedQuiz.getTitle(), updatedQuiz.getDescription(), updatedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO); 
+		return new QuizDTO(updatedQuiz.getId(), updatedQuiz.getTitle(), updatedQuiz.getDescription(), updatedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO, quiz.getDifficulty()); 
 	}
 	
 	public List<QuestionDTO> getAllQuestions(long requestUserId) {
@@ -235,13 +235,15 @@ public class QuizServices {
 		
 		quiz.addQuestion(question);
 		
+		quiz.recalculateDifficulty();
+		
 		quizRepository.save(quiz);
 		
 		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
 		
 		List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 		
-		return new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), userIdFromRequest, questionsDTO, statsDTO); 
+		return new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), userIdFromRequest, questionsDTO, statsDTO, quiz.getDifficulty()); 
 	}
 	
 	public QuizDTO removeQuestionFromQuiz(long quizId, long questionId, long userIdFromRequest) {
@@ -256,11 +258,13 @@ public class QuizServices {
 		
 		quiz.removeQuestion(question);
 		
+		quiz.recalculateDifficulty();
+		
 		quizRepository.save(quiz);
 		
 		List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 		
-		return new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), userIdFromRequest, questionsDTO, statsDTO);
+		return new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), userIdFromRequest, questionsDTO, statsDTO, quiz.getDifficulty());
 	}
 	
 	public QuizDTO getQuizForStudent(long quizId, long userIdFromRequest) {
@@ -288,7 +292,7 @@ public class QuizServices {
 	        }
 		}
 		
-		return new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), studentQuestions, statsDTO);
+		return new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), studentQuestions, statsDTO, quiz.getDifficulty());
 	}
 	
 	private List<QuestionDTO> convertQuestionsToDTOs (List<Question> questions) {

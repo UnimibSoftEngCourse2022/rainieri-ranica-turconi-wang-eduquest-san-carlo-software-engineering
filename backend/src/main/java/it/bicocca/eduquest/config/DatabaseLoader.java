@@ -98,7 +98,11 @@ public class DatabaseLoader implements CommandLineRunner {
         missionsRepository.save(mission3);
         
         Mission mission4 = new NoErrorQuizMission(5);
-        missionsRepository.save(mission4);        
+        missionsRepository.save(mission4);
+        
+        // TODO aggiungere missioni tipo "completa 4 quiz difficili/facili/... rispondendo correttamente ad almeno 80% delle domande"
+        
+        // TODO aggiungere missioni tipo "rispondi correttamente a n* domande difficili/facili/..."
         
         logger.info("Quizzes created and populated!");
         logger.info("The database is ready!");
