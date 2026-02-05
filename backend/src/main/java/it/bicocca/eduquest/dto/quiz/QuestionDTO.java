@@ -1,7 +1,7 @@
 package it.bicocca.eduquest.dto.quiz;
 
 import java.util.List;
-
+import it.bicocca.eduquest.dto.multimedia.*;
 import it.bicocca.eduquest.domain.quiz.Difficulty;
 
 public class QuestionDTO {
@@ -18,6 +18,8 @@ public class QuestionDTO {
 	private final long authorId;
 	
 	private final QuestionStatsDTO stats;
+	
+	private MultimediaDTO multimedia;
 	
 	@SuppressWarnings("java:S107")
 	public QuestionDTO(long id, String text, Difficulty difficulty, String topic, QuestionType questionType, List<String> validAnswersOpenQuestion, List<ClosedQuestionOptionDTO> closedQuestionOptions, long authorId, QuestionStatsDTO stats) {
@@ -66,6 +68,14 @@ public class QuestionDTO {
 
 	public List<ClosedQuestionOptionDTO> getClosedQuestionOptions() {
 		return closedQuestionOptions;
+	}
+
+	public MultimediaDTO getMultimedia() {
+		return multimedia;
+	}
+
+	public void setMultimedia(MultimediaDTO multimedia) {
+		this.multimedia = multimedia;
 	}
 	
 }

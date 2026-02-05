@@ -1,7 +1,7 @@
 package it.bicocca.eduquest.dto.quiz;
 
 import java.util.List;
-
+import it.bicocca.eduquest.domain.multimedia.*;
 import it.bicocca.eduquest.domain.quiz.Difficulty;
 
 public class QuestionAddDTO {
@@ -13,6 +13,9 @@ public class QuestionAddDTO {
 	
 	private List<String> validAnswersOpenQuestion;
 	private List<ClosedQuestionOptionDTO> closedQuestionOptions;
+	
+	private MultimediaType multimediaType;
+    private String multimediaUrl;
 
 	public QuestionAddDTO() {
 		
@@ -74,6 +77,22 @@ public class QuestionAddDTO {
 
 	public void setClosedQuestionOptions(List<ClosedQuestionOptionDTO> closedQuestionOptions) {
 		this.closedQuestionOptions = closedQuestionOptions;
+	}
+
+	public MultimediaType getMultimediaType() {
+		return multimediaType;
+	}
+
+	public String getMultimediaUrl() {
+		return multimediaUrl;
+	}
+
+	public void setMultimediaType(MultimediaType multimediaType) {
+		this.multimediaType = multimediaType;
+	}
+
+	public void setMultimediaUrl(String multimediaUrl) {
+		this.multimediaUrl = multimediaUrl;
 	}
 	
 }

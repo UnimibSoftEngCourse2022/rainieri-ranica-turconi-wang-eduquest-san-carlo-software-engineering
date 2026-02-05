@@ -38,7 +38,7 @@ public class MultimediaService {
             return (String) uploadResult.get("secure_url");
 
         } catch (IOException e) {
-            throw new RuntimeException("Errore durante il caricamento del file multimediale su Cloudinary", e);
+            throw new RuntimeException("Error while uploading the media file to Cloudinary", e);
         }
     }
 }

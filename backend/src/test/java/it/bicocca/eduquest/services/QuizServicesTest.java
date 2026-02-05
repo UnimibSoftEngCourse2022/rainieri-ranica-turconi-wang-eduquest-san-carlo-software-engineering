@@ -226,7 +226,7 @@ class QuizServicesTest {
             return q;
         });
 
-        QuestionDTO result = quizServices.addQuestion(dto, userId);
+        QuestionDTO result = quizServices.addQuestion(dto, userId, null); // TODO fix this test
 
         assertEquals(500L, result.getId());
         assertEquals(QuestionType.OPENED, result.getQuestionType());
@@ -256,7 +256,7 @@ class QuizServicesTest {
             return q;
         });
 
-        QuestionDTO result = quizServices.addQuestion(dto, userId);
+        QuestionDTO result = quizServices.addQuestion(dto, userId, null); // TODO fix this test
 
         assertEquals(600L, result.getId());
         assertEquals(QuestionType.CLOSED, result.getQuestionType());
@@ -269,20 +269,20 @@ class QuizServicesTest {
         when(usersRepository.findById(1L)).thenReturn(Optional.of(new Teacher()));
         
         QuestionAddDTO dto1 = new QuestionAddDTO(); dto1.setText("");
-        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto1, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto1, 1L, null)); // TODO fix this test
 
         QuestionAddDTO dto2 = new QuestionAddDTO(); dto2.setText("Ok"); dto2.setTopic(null);
-        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto2, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto2, 1L, null)); // TODO fix this test
 
         QuestionAddDTO dto3 = new QuestionAddDTO(); dto3.setText("Ok"); dto3.setTopic("Topic"); 
-        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto3, 1L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto3, 1L, null)); // TODO fix this test
     }
     
     @Test
     void testAddQuestion_UserNotFound() {
         when(usersRepository.findById(99L)).thenReturn(Optional.empty());
         QuestionAddDTO dto = new QuestionAddDTO();
-        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 99L));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 99L, null)); // TODO fix this test
     }
 
     @Test

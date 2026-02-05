@@ -27,6 +27,9 @@ import it.bicocca.eduquest.dto.quiz.QuizStatsDTO;
 import it.bicocca.eduquest.repository.QuestionsRepository;
 import it.bicocca.eduquest.repository.QuizRepository;
 import it.bicocca.eduquest.repository.UsersRepository;
+import org.springframework.web.multipart.MultipartFile;
+import it.bicocca.eduquest.domain.multimedia.*;
+import it.bicocca.eduquest.dto.multimedia.*;
 
 @Service
 public class QuizServices {
@@ -36,11 +39,13 @@ public class QuizServices {
 	private final QuizRepository quizRepository;
 	private final UsersRepository usersRepository;
 	private final QuestionsRepository questionsRepository;
+	private final MultimediaService multimediaService;
 	
-	public QuizServices(QuizRepository quizRepository, UsersRepository usersRepository, QuestionsRepository questionsRepository) {
+	public QuizServices(QuizRepository quizRepository, UsersRepository usersRepository, QuestionsRepository questionsRepository, MultimediaService multimediaService) {
 		this.quizRepository = quizRepository;
 		this.usersRepository = usersRepository;
 		this.questionsRepository = questionsRepository;
+		this.multimediaService = multimediaService;
 	}
 	
 	public QuizDTO getQuizById(long id) {
@@ -199,7 +204,7 @@ public class QuizServices {
 	}
 	
 	// Refactored method to reduce Cognitive Complexity
-	public QuestionDTO addQuestion(QuestionAddDTO questionAddDTO, long userIdFromRequest) {
+	public QuestionDTO addQuestion(QuestionAddDTO questionAddDTO, long userIdFromRequest, MultipartFile file) {
 		User user = usersRepository.findById(userIdFromRequest).orElseThrow(() -> new IllegalArgumentException("Cannot find a user with the given ID"));
 		
 		validateQuestionInput(questionAddDTO);
@@ -211,6 +216,34 @@ public class QuizServices {
 			question = createClosedQuestion(questionAddDTO, user);
 		} else { 
 			throw new IllegalArgumentException("Not supported question type."); 
+		}
+		
+		if (file != null && !file.isEmpty()) {
+		    String url;
+		    if (questionAddDTO.getMultimediaType() == MultimediaType.AUDIO) {
+		    	url = multimediaService.uploadMedia(file, "eduquest_audios");
+		    	AudioSupport audioSupport = new AudioSupport();
+		    	audioSupport.setUrl(url);
+		    	question.setMultimedia(audioSupport);
+		    } else if (questionAddDTO.getMultimediaType() == MultimediaType.IMAGE) {
+		    	url = multimediaService.uploadMedia(file, "eduquest_images");
+		    	ImageSupport imageSupport = new ImageSupport();
+		    	imageSupport.setUrl(url);
+		    	question.setMultimedia(imageSupport);
+		    } else if (questionAddDTO.getMultimediaType() == MultimediaType.VIDEO) {
+		    	url = multimediaService.uploadMedia(file, "eduquest_videos");
+		    	VideoSupport videoSupport = new VideoSupport();
+		    	videoSupport.setYoutube(false);
+		    	videoSupport.setUrl(url);
+		    	question.setMultimedia(videoSupport);
+		    } else {
+		    	throw new IllegalArgumentException("Not supported multimedia type.");
+		    }
+		} else if (questionAddDTO.getMultimediaType() == MultimediaType.VIDEO && questionAddDTO.getMultimediaUrl() != null) {
+			VideoSupport videoSupport = new VideoSupport();
+			videoSupport.setYoutube(true);
+			videoSupport.setUrl(questionAddDTO.getMultimediaUrl());
+			question.setMultimedia(videoSupport);
 		}
 		
 		Question savedQuestion = questionsRepository.save(question);
@@ -304,17 +337,18 @@ public class QuizServices {
 	}
 	
 	private QuestionDTO convertSingleQuestionToDTO(Question q) {
-		// FIX: Pattern Matching for instanceof
 		QuestionStats stats = q.getStats();
 		QuestionStatsDTO questionStatsDTO = new QuestionStatsDTO(stats.getAverageSuccess(), stats.getTotalAnswers(), stats.getCorrectAnswer());
-
+		
+		QuestionDTO questionDTO;
+		
 		if (q instanceof OpenQuestion openQuestion) {
 			List<String> openAnswerTextString = new ArrayList<>();
 			List<OpenQuestionAcceptedAnswer> openAnswerList = openQuestion.getValidAnswers();
 			for (OpenQuestionAcceptedAnswer a : openAnswerList) {
 				openAnswerTextString.add(a.getText());
 			}
-			return new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), openAnswerTextString, null, q.getAuthor().getId(), questionStatsDTO);
+			questionDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), openAnswerTextString, null, q.getAuthor().getId(), questionStatsDTO);
 		} else {
 			List<ClosedQuestionOptionDTO> optionDTOList = new ArrayList<>();
 			List<ClosedQuestionOption> optionList = ((ClosedQuestion)q).getOptions();
@@ -322,8 +356,26 @@ public class QuizServices {
 				ClosedQuestionOptionDTO optionDTO = new ClosedQuestionOptionDTO(o.getId(), o.getText(), o.isTrue());
 				optionDTOList.add(optionDTO);
 			}
-			return new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), null, optionDTOList, q.getAuthor().getId(), questionStatsDTO);
+			questionDTO = new QuestionDTO(q.getId(), q.getText(), q.getDifficulty(), q.getTopic(), q.getQuestionType(), null, optionDTOList, q.getAuthor().getId(), questionStatsDTO);
 		}
+		
+		if (q.getMultimedia() != null) {
+	        MultimediaSupport media = q.getMultimedia();
+	        
+	        MultimediaDTO mediaDTO = new MultimediaDTO();
+	        mediaDTO.setUrl(media.getUrl());
+	        mediaDTO.setType(media.getType());
+
+	        if (media instanceof VideoSupport) {
+	            mediaDTO.setIsYoutube(((VideoSupport) media).isYoutube());
+	        } else {
+	            mediaDTO.setIsYoutube(false);
+	        }
+
+	        questionDTO.setMultimedia(mediaDTO);
+	    }
+
+	    return questionDTO;
 	}
 	
 	// --- Private Helpers for addQuestion ---

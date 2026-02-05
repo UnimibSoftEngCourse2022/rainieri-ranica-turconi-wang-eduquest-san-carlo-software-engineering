@@ -2,19 +2,8 @@ package it.bicocca.eduquest.domain.quiz;
 
 import it.bicocca.eduquest.domain.users.User;
 import it.bicocca.eduquest.dto.quiz.QuestionType;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import it.bicocca.eduquest.domain.multimedia.*;
 
 @Entity
 @Table(name = "questions")
@@ -39,6 +28,10 @@ public abstract class Question {
 	
 	@Embedded
 	private QuestionStats stats;
+	
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "multimedia_id", referencedColumnName = "id")
+    private MultimediaSupport multimedia;
 
     /*
     @ManyToOne
@@ -101,6 +94,14 @@ public abstract class Question {
 
 	public void setStats(QuestionStats stats) {
 		this.stats = stats;
+	}
+
+	public MultimediaSupport getMultimedia() {
+		return multimedia;
+	}
+
+	public void setMultimedia(MultimediaSupport multimedia) {
+		this.multimedia = multimedia;
 	}
     
 }
