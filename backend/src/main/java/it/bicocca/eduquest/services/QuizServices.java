@@ -25,6 +25,7 @@ import it.bicocca.eduquest.dto.quiz.QuizDTO;
 import it.bicocca.eduquest.dto.quiz.QuizEditDTO;
 import it.bicocca.eduquest.dto.quiz.QuizStatsDTO;
 import it.bicocca.eduquest.repository.QuestionsRepository;
+import it.bicocca.eduquest.repository.QuizAttemptsRepository; 
 import it.bicocca.eduquest.repository.QuizRepository;
 import it.bicocca.eduquest.repository.UsersRepository;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,25 +41,34 @@ public class QuizServices {
 	private final UsersRepository usersRepository;
 	private final QuestionsRepository questionsRepository;
 	private final MultimediaService multimediaService;
+	private final QuizAttemptsRepository quizAttemptsRepository;
 	
-	public QuizServices(QuizRepository quizRepository, UsersRepository usersRepository, QuestionsRepository questionsRepository, MultimediaService multimediaService) {
+	public QuizServices(QuizRepository quizRepository, UsersRepository usersRepository, 
+			QuestionsRepository questionsRepository, MultimediaService multimediaService,
+			QuizAttemptsRepository quizAttemptsRepository) { 
 		this.quizRepository = quizRepository;
 		this.usersRepository = usersRepository;
 		this.questionsRepository = questionsRepository;
 		this.multimediaService = multimediaService;
+		this.quizAttemptsRepository = quizAttemptsRepository;
+	}
+	
+	private QuizStatsDTO calculateQuizOnlyStats(Quiz quiz) {
+		Double avg = quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quiz);
+		long count = quizAttemptsRepository.countByQuizAndTestIsNull(quiz);
+		return new QuizStatsDTO(avg, (int) count);
 	}
 	
 	public QuizDTO getQuizById(long id) {
 		Quiz quiz = quizRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Cannot find quiz with ID " + id));
-		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
-		List<QuestionDTO> questionsDTO = new ArrayList<>();
 		
-		// FIX: Diamond operator <>
+		QuizStatsDTO statsDTO = calculateQuizOnlyStats(quiz);
+		
+		List<QuestionDTO> questionsDTO = new ArrayList<>();
 		List<String> validAnswersOpenQuestionDTO = new ArrayList<>();
 		List<ClosedQuestionOptionDTO> closedQuestionOptionsDTO = new ArrayList<>();
 		
 		for (Question question : quiz.getQuestions()) {
-			// FIX: Pattern Matching for instanceof
 			if (question instanceof OpenQuestion openQuestion) {		
 				List<OpenQuestionAcceptedAnswer> validAnswersOpenQuestion = openQuestion.getValidAnswers();
 				for (OpenQuestionAcceptedAnswer a : validAnswersOpenQuestion) {
@@ -82,11 +92,13 @@ public class QuizServices {
 	
 	public List<QuizDTO> getAllQuizzes() {
 		List<Quiz> quizzes = quizRepository.findAll();
-		
 		List<QuizDTO> quizzesDTO = new ArrayList<>();
+		
 		for (Quiz quiz : quizzes) {
 			List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
-			QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
+			
+			QuizStatsDTO statsDTO = calculateQuizOnlyStats(quiz);
+			
 			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO, statsDTO, quiz.getDifficulty());
 			quizzesDTO.add(quizDTO);
 		}
@@ -96,14 +108,16 @@ public class QuizServices {
 	
 	public List<QuizDTO> getQuizzesByAuthorId(long authorId) {
 		List<Quiz> quizzes = quizRepository.findAll();
-		
 		List<QuizDTO> quizzesDTO = new ArrayList<>();
+		
 		for (Quiz quiz : quizzes) {
 			if (quiz.getAuthor().getId() != authorId) {
 				continue;
 			}
 			List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
-			QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
+			
+			QuizStatsDTO statsDTO = calculateQuizOnlyStats(quiz);
+			
 			QuizDTO quizDTO = new QuizDTO(quiz.getId(), quiz.getTitle(), quiz.getDescription(), quiz.getAuthor().getId(), questionsDTO, statsDTO, quiz.getDifficulty());
 			quizzesDTO.add(quizDTO);
 		}
@@ -127,11 +141,9 @@ public class QuizServices {
 		Teacher author = (Teacher) user;
 		
 		Quiz quiz = new Quiz(quizAddDTO.getTitle(), quizAddDTO.getDescription(), author);
-		quizRepository.save(quiz);
-		
 		Quiz savedQuiz = quizRepository.save(quiz);
 		
-		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
+		QuizStatsDTO statsDTO = new QuizStatsDTO(0.0, 0); // Quiz nuovo = 0 stats
 		return new QuizDTO(savedQuiz.getId(), savedQuiz.getTitle(), savedQuiz.getDescription(), savedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO, quiz.getDifficulty());
 	}
 	
@@ -154,7 +166,7 @@ public class QuizServices {
 		
 		Quiz updatedQuiz = quizRepository.save(quiz);
 		
-		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
+		QuizStatsDTO statsDTO = calculateQuizOnlyStats(updatedQuiz);
 		
 		return new QuizDTO(updatedQuiz.getId(), updatedQuiz.getTitle(), updatedQuiz.getDescription(), updatedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO, quiz.getDifficulty()); 
 	}
@@ -203,7 +215,6 @@ public class QuizServices {
 	    return questionsDTO;
 	}
 	
-	// Refactored method to reduce Cognitive Complexity
 	public QuestionDTO addQuestion(QuestionAddDTO questionAddDTO, long userIdFromRequest, MultipartFile file) {
 		User user = usersRepository.findById(userIdFromRequest).orElseThrow(() -> new IllegalArgumentException("Cannot find a user with the given ID"));
 		
@@ -250,7 +261,7 @@ public class QuizServices {
 		
 		return convertSingleQuestionToDTO(savedQuestion);
 	}
-	
+
 	public QuizDTO addQuestionToQuiz (long quizId, long questionId, long userIdFromRequest) {
 		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
 		
@@ -267,12 +278,10 @@ public class QuizServices {
 		}
 		
 		quiz.addQuestion(question);
-		
 		quiz.recalculateDifficulty();
-		
 		quizRepository.save(quiz);
 		
-		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
+		QuizStatsDTO statsDTO = calculateQuizOnlyStats(quiz);
 		
 		List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 		
@@ -281,7 +290,6 @@ public class QuizServices {
 	
 	public QuizDTO removeQuestionFromQuiz(long quizId, long questionId, long userIdFromRequest) {
 		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
-		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
 		
 		Question question = questionsRepository.findById(questionId).orElseThrow(() -> new IllegalArgumentException("Cannot find a question with the given ID"));
 		
@@ -290,10 +298,10 @@ public class QuizServices {
 		}
 		
 		quiz.removeQuestion(question);
-		
 		quiz.recalculateDifficulty();
-		
 		quizRepository.save(quiz);
+		
+		QuizStatsDTO statsDTO = calculateQuizOnlyStats(quiz);
 		
 		List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(quiz.getQuestions());
 		
@@ -307,10 +315,10 @@ public class QuizServices {
 		}
 		
 		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
-		QuizStatsDTO statsDTO = new QuizStatsDTO(quiz.getStats().getAverageScore(), quiz.getStats().getTotalAttempts());
+		
+		QuizStatsDTO statsDTO = calculateQuizOnlyStats(quiz);
 		
 		List<QuestionDTO> fullQuestions = convertQuestionsToDTOs(quiz.getQuestions());
-		
 		List<QuestionDTO> studentQuestions = new ArrayList<>();
 		
 		for (QuestionDTO qDTO : fullQuestions) {
@@ -361,25 +369,19 @@ public class QuizServices {
 		
 		if (q.getMultimedia() != null) {
 	        MultimediaSupport media = q.getMultimedia();
-	        
 	        MultimediaDTO mediaDTO = new MultimediaDTO();
 	        mediaDTO.setUrl(media.getUrl());
 	        mediaDTO.setType(media.getType());
-
 	        if (media instanceof VideoSupport) {
 	            mediaDTO.setIsYoutube(((VideoSupport) media).isYoutube());
 	        } else {
 	            mediaDTO.setIsYoutube(false);
 	        }
-
 	        questionDTO.setMultimedia(mediaDTO);
 	    }
-
 	    return questionDTO;
 	}
 	
-	// --- Private Helpers for addQuestion ---
-
 	private void validateQuestionInput(QuestionAddDTO dto) {
 		if (dto.getText() == null || dto.getText().trim().isEmpty()) {
 			throw new IllegalArgumentException("The question's text cannot be empty!");
@@ -391,7 +393,6 @@ public class QuizServices {
 
 	private Question createOpenQuestion(QuestionAddDTO dto, User author) {
 		OpenQuestion question = new OpenQuestion(dto.getText(), dto.getTopic(), author, dto.getDifficulty());
-		
 		boolean hasAnswers = false;
 		if (dto.getValidAnswersOpenQuestion() != null) {
 			for (String text : dto.getValidAnswersOpenQuestion()) {
@@ -402,7 +403,6 @@ public class QuizServices {
 				hasAnswers = true;
 			}
 		}
-		
 		if (!hasAnswers) {
 			throw new IllegalArgumentException("You must enter at least one accepted correct answer!");
 		}
@@ -411,11 +411,9 @@ public class QuizServices {
 
 	private Question createClosedQuestion(QuestionAddDTO dto, User author) {
 		ClosedQuestion question = new ClosedQuestion(dto.getText(), dto.getTopic(), author, dto.getDifficulty());
-		
 		if (dto.getClosedQuestionOptions() == null || dto.getClosedQuestionOptions().isEmpty()) {
 			throw new IllegalArgumentException("A closed question must have options!");
 		}
-		
 		int optionsCount = dto.getClosedQuestionOptions().size();
 		if (optionsCount < 2) {
 			throw new IllegalArgumentException("A closed question must have at least 2 options!");
@@ -423,21 +421,16 @@ public class QuizServices {
 		if (optionsCount > 4) {
 			throw new IllegalArgumentException("A closed question cannot have more than 4 options!");
 		}
-		
 		boolean hasCorrectAnswer = false;
-		
 		for (ClosedQuestionOptionDTO optionDTO  : dto.getClosedQuestionOptions()) {
 			if (optionDTO.getText() == null || optionDTO.getText().trim().isEmpty()) {
 				throw new IllegalArgumentException("The text of an option cannot be empty!");
 			}
-			
 			question.addOption(new ClosedQuestionOption(optionDTO.getText(), optionDTO.isTrue()));
-			
 			if (optionDTO.isTrue()) {
 				hasCorrectAnswer = true;
 			}
 		} 
-		
 		if (!hasCorrectAnswer) {
 			throw new IllegalArgumentException("You must select at least one correct answer for the closed question!");
 		}
