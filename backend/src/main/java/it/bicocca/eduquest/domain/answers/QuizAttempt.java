@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.bicocca.eduquest.domain.quiz.Quiz;
+import it.bicocca.eduquest.domain.quiz.Test;
 import it.bicocca.eduquest.domain.users.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -34,6 +35,10 @@ public class QuizAttempt {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_id", nullable = true) 
+    private Test test;
     
     private int score;
     private int maxScore;
@@ -81,6 +86,14 @@ public class QuizAttempt {
         this.id = id;
     }
 
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
+    }
+    
     public int getScore() {
         return score;
     }

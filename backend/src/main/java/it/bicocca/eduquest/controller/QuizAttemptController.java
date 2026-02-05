@@ -61,7 +61,8 @@ public class QuizAttemptController {
     }
 	
 	@PostMapping
-    public ResponseEntity<Object> startQuiz(@RequestParam Long quizId, @RequestParam Long studentId, Authentication authentication) {
+    public ResponseEntity<Object> startQuiz(@RequestParam Long quizId, 
+            @RequestParam(value = "testId", required = false) Long testId, @RequestParam Long studentId, Authentication authentication) {
 		String loggedIdString = authentication.getName();
         Long loggedId = Long.valueOf(loggedIdString);
         
@@ -69,7 +70,7 @@ public class QuizAttemptController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You cannot start a quiz of someone else!");
         }
 		try {
-            return ResponseEntity.ok(quizAttemptServices.startQuiz(quizId, studentId));     
+            return ResponseEntity.ok(quizAttemptServices.startQuiz(quizId, studentId, testId));     
         } catch (RuntimeException e) {
         	String msg = e.getMessage();
 

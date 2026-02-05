@@ -8,6 +8,7 @@ import it.bicocca.eduquest.repository.AnswersRepository;
 import it.bicocca.eduquest.repository.QuestionsRepository;
 import it.bicocca.eduquest.repository.QuizAttemptsRepository;
 import it.bicocca.eduquest.repository.QuizRepository;
+import it.bicocca.eduquest.repository.TestRepository;
 import it.bicocca.eduquest.repository.UsersRepository;
 import it.bicocca.eduquest.domain.quiz.*;
 import it.bicocca.eduquest.domain.users.*;
@@ -18,6 +19,7 @@ import it.bicocca.eduquest.dto.quizAttempt.*;
 import it.bicocca.eduquest.dto.quiz.*;
 import java.util.Optional;
 import java.util.List;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -28,16 +30,18 @@ public class QuizAttemptServices {
 	private final QuizRepository quizRepository;
 	private final UsersRepository usersRepository;
 	private final QuestionsRepository questionsRepository;
+	private final TestRepository testRepository;
 	private final ApplicationEventPublisher eventPublisher;
 	
 	public QuizAttemptServices(AnswersRepository answersRepository, QuizAttemptsRepository quizAttemptsRepository,
-			QuizRepository quizRepository, UsersRepository usersRepository, QuestionsRepository questionsRepository,
+			QuizRepository quizRepository, UsersRepository usersRepository, QuestionsRepository questionsRepository, TestRepository testRepository,
 			ApplicationEventPublisher eventPublisher) {
 		this.answersRepository = answersRepository;
 		this.quizAttemptsRepository = quizAttemptsRepository;
 		this.quizRepository = quizRepository;
 		this.usersRepository = usersRepository;
 		this.questionsRepository = questionsRepository;
+		this.testRepository = testRepository;
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -71,6 +75,10 @@ public class QuizAttemptServices {
 	}
 	
 	public QuizSessionDTO startQuiz(long quizId, long studentId) {
+        return startQuiz(quizId, studentId, null);
+    }
+	
+	public QuizSessionDTO startQuiz(long quizId, long studentId, Long testId) {
 		// FIX: RuntimeException -> IllegalArgumentException
 		User user = usersRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("Cannot find a student with the given ID"));
 		
@@ -91,6 +99,18 @@ public class QuizAttemptServices {
 			quizAttempt = existingAttemptOpt.get(); 
 		} else {
 			quizAttempt = new QuizAttempt(user, quiz);
+			
+			if (testId != null) {
+				Test test = testRepository.findById(testId)
+						.orElseThrow(() -> new IllegalArgumentException("Test not found with ID " + testId));
+				
+				long attemptsDone = quizAttemptsRepository.countByStudentAndTest(user, test);
+				if (test.getMaxTries() > 0 && attemptsDone >= test.getMaxTries()) {
+					throw new IllegalStateException("Max attempts reached for this test (" + test.getMaxTries() + ")");
+				}
+				
+				quizAttempt.setTest(test);
+			}
 			quizAttemptsRepository.save(quizAttempt);
 		}
 		
@@ -224,6 +244,18 @@ public class QuizAttemptServices {
 			// FIX: RuntimeException -> IllegalStateException
 			throw new IllegalStateException("You cannot edit a quiz that has already been submitted or has expired!");
 		}
+		
+		if (quizAttempt.getTest() != null && quizAttempt.getTest().getMaxDuration() != null) {
+			long limitMinutes = quizAttempt.getTest().getMaxDuration().toMinutes();
+			
+			if (limitMinutes > 0) {
+				long elapsedMinutes = Duration.between(quizAttempt.getStartedAt(), LocalDateTime.now()).toMinutes();
+				if (elapsedMinutes > limitMinutes + 2) {
+					throw new IllegalStateException("Time limit exceeded for this test!");
+				}
+			}
+		}
+		
 		return quizAttempt;
 	}
 

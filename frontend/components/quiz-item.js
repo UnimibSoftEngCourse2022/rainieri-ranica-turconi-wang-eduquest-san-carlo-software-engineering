@@ -55,8 +55,7 @@ export class Quiz extends BaseComponent {
       window.location = `../quiz-editor/?id=${this._quizData.id}`;
       return;
     } else if (this._role == "STUDENT") {
-      const response = await this.attemptsService.addAttempt(this._quizData.id, this._userId);
-      this.dispatchCustomEvent("quiz-attempt-started");
+      window.location.href = `?view=runner&quizId=${this._quizData.id}`;
     }
   }
 }

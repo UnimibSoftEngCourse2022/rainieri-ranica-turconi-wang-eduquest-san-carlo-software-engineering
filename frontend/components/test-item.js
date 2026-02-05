@@ -28,9 +28,8 @@ export class TestItem extends BaseComponent {
     const duration = this._testData.maxDuration;
     const tries = this._testData.maxTries;
     
-    const stats = this._testData.quiz && this._testData.quiz.quizStats 
-        ? this._testData.quiz.quizStats 
-        : { averageScore: 0, totalAttempts: 0 };
+    const avgScore = this._testData.testAverageScore || 0;
+    const totalAttempts = this._testData.testTotalAttempts || 0;
 
     let actionButton = "";
     
@@ -58,7 +57,7 @@ export class TestItem extends BaseComponent {
         </div>
 
         <hr>
-        Average score: ${stats.averageScore} | Total attempts: ${stats.totalAttempts}
+        Average score: ${avgScore} | Total attempts: ${totalAttempts}
     </div>
     `;
   }
@@ -83,7 +82,7 @@ export class TestItem extends BaseComponent {
           }
       }
     } else if (action === "run" && this._role === "STUDENT") {
-      console.log("Starting test attempt for test ID:", this._testData.id);
+      window.location.href = `?view=runner&quizId=${this._testData.quiz.id}&testId=${this._testData.id}`;
     }
   }
 }

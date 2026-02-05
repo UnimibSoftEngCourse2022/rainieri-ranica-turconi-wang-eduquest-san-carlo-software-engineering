@@ -3,56 +3,44 @@ import { appStore } from "../js/store.js";
 
 export class AttemptsService {
     async getAttemptById(quizAttemptId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}/${quizAttemptId}`, "GET");
-            const attempts = await response.json();
-            return attempts;
-        } catch (e) {
-        }
+        const response = await callApi(`${endpoints.attempts}/${quizAttemptId}`, "GET");
+        return await response.json();
     }
 
     async getAttemptSessionById(quizAttemptId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}/${quizAttemptId}/session`, "GET");
-            const attempts = await response.json();
-            return attempts;
-        } catch (e) {
-        }
+        const response = await callApi(`${endpoints.attempts}/${quizAttemptId}/session`, "GET");
+        return await response.json();
     }
 
     async getAttemptsByStudentId(studentId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}?studentId=${studentId}`, "GET");
-            const attempts = await response.json();
-            return attempts;
-        } catch (e) {
-        }
+        const response = await callApi(`${endpoints.attempts}?studentId=${studentId}`, "GET");
+        return await response.json();
     }
 
-    async addAttempt(quizId, userId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}?quizId=${quizId}&studentId=${userId}`, "POST");
-            const quizzes = await response.json();
-            return quizzes;
-        } catch (e) {
+    async addAttempt(quizId, userId, testId = null) {
+        let url = `${endpoints.attempts}?quizId=${quizId}&studentId=${userId}`;
+        
+        if (testId) {
+            url += `&testId=${testId}`;
         }
+
+        const response = await callApi(url, "POST");
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+        }
+
+        return await response.json();
     }
 
     async saveAttemptAnswer(attemptId, answer) {
-        try {
-            const response = await callApi(`${endpoints.attempts}/${attemptId}/answers`, "PUT", answer);
-            const r = await response.json();
-            return r;
-        } catch (e) {
-        }
+        const response = await callApi(`${endpoints.attempts}/${attemptId}/answers`, "PUT", answer);
+        return await response.json();
     }
 
     async completeAttemptAnswer(attemptId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}/${attemptId}/complete`, "POST");
-            const r = await response.json();
-            return r;
-        } catch (e) {
-        }
+        const response = await callApi(`${endpoints.attempts}/${attemptId}/complete`, "POST");
+        return await response.json();
     }
 }
