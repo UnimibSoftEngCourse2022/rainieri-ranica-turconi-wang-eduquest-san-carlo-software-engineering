@@ -11,5 +11,5 @@ eduquest:
 # cloudinary
 cloudinary:
   cloud_name: duh7h2j8v
-  api_key: 899276221797397
-  api_secret: cQnQwrxo4J7tMgKQQyFMNmnyGNU
+  api_key: ${CLOUDINARY_API_KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}
