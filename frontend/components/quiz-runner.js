@@ -237,7 +237,7 @@ export class QuizRunner extends BaseComponent {
 
     const currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
     if (currentQuestionType === "OPENED") {
-      requestBody.openedAnswerText = answer;
+      requestBody.textOpenAnswer = answer;
     } else if (currentQuestionType === "CLOSED") {
       requestBody.selectedOptionId = answer;
     }

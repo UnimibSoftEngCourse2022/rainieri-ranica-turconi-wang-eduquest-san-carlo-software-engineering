@@ -287,6 +287,9 @@ class QuizAttemptServicesTest {
     void testCompleteQuizAttempt_Scoring() {
         long attemptId = 1L;
         
+        long q2Id = 102L;
+        long q3Id = 103L;
+        
         Student student = new Student(); 
         student.setId(10L); // ID settato
         student.setName("Mario"); 
@@ -301,15 +304,20 @@ class QuizAttemptServicesTest {
         attempt.setStatus(QuizAttemptStatus.STARTED);
 
         ClosedQuestion q1 = new ClosedQuestion();
+        q1.setId(101L);
         ClosedQuestionOption optCorrect = new ClosedQuestionOption("A", true);
         ClosedAnswer a1 = new ClosedAnswer(attempt, q1, optCorrect);
         
         OpenQuestion q2 = new OpenQuestion();
+        q2.setId(q2Id);
+        q2.setQuestionType(QuestionType.OPENED);
         OpenQuestionAcceptedAnswer valid = new OpenQuestionAcceptedAnswer("Paris");
         q2.addAnswer(valid);
         OpenAnswer a2 = new OpenAnswer(attempt, q2, " paris "); 
 
         OpenQuestion q3 = new OpenQuestion();
+        q3.setId(q3Id);
+        q3.setQuestionType(QuestionType.OPENED);
         OpenQuestionAcceptedAnswer validQ3 = new OpenQuestionAcceptedAnswer("Rome");
         q3.addAnswer(validQ3); 
         OpenAnswer a3 = new OpenAnswer(attempt, q3, "Berlin");
@@ -317,6 +325,9 @@ class QuizAttemptServicesTest {
         attempt.setAnswers(Arrays.asList(a1, a2, a3));
 
         when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
+        
+        when(questionsRepository.findById(q2Id)).thenReturn(Optional.of(q2));
+        when(questionsRepository.findById(q3Id)).thenReturn(Optional.of(q3));
 
         // Passiamo l'ID corretto (10L)
         QuizAttemptDTO result = quizAttemptServices.completeQuizAttempt(attemptId, 10L);

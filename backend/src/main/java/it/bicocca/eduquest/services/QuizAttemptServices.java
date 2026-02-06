@@ -23,8 +23,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import it.bicocca.eduquest.dto.multimedia.*;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class QuizAttemptServices {
 	private final AnswersRepository answersRepository;
 	private final QuizAttemptsRepository quizAttemptsRepository;
@@ -373,16 +375,34 @@ public class QuizAttemptServices {
 	}
 	
 	private boolean isOpenAnswerCorrect(OpenAnswer openA) {
-		OpenQuestion openQ = (OpenQuestion) Hibernate.unproxy(openA.getQuestion());
-		String studentText = openA.getText();
+		long questionId = openA.getQuestion().getId();
+		Question question = questionsRepository.findById(questionId)
+				.orElseThrow(() -> new IllegalStateException("Question not found"));
 		
-		if (studentText != null && openQ.getValidAnswers() != null) {
-			for (OpenQuestionAcceptedAnswer validAnswer : openQ.getValidAnswers()) {
-				if (studentText.trim().equalsIgnoreCase(validAnswer.getText().trim())) {
+		question = (Question) Hibernate.unproxy(question);
+
+		if (question.getQuestionType() != QuestionType.OPENED) {
+			return false;
+		}
+		
+		OpenQuestion openQ;
+		if (question instanceof OpenQuestion) {
+			openQ = (OpenQuestion) question;
+		} else {
+			openQ = (OpenQuestion) question; 
+		}
+		
+		String studentText = openA.getText();
+
+		
+		if (openQ.getValidAnswers() != null) {
+			for (OpenQuestionAcceptedAnswer ans : openQ.getValidAnswers()) {
+				if (studentText != null && studentText.trim().equalsIgnoreCase(ans.getText().trim())) {
 					return true;
 				}
 			}
 		}
+		
 		return false;
 	}
 }
