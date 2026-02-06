@@ -238,8 +238,11 @@ export class AddQuestion extends BaseComponent {
         this.addQuestionResult.innerHTML = `
         <alert-component type="success" message="Question added successfully"></alert-component>
         `;
-        this.addQuestionForm.reset(); // Pulisce il form dopo l'invio
+        this.addQuestionForm.reset(); 
         this.dispatchCustomEvent("question-added");
+        setTimeout(() => {
+            this.addQuestionResult.innerHTML = "";
+        }, 3000);
     } else {
         this.addQuestionResult.innerHTML = `
         <alert-component type="danger" message="Error creating question"></alert-component>
