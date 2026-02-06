@@ -32,8 +32,16 @@ export class AddQuestion extends BaseComponent {
     return this.querySelector("#difficulty-input");
   }
 
-  get questionImage() {
-    return this.querySelector("#image-input");
+  get mediaTypeSelect() { 
+    return this.querySelector("#media-type-select"); 
+  }
+
+  get mediaFileInput() { 
+    return this.querySelector("#media-file-input");
+  }
+
+  get mediaUrlInput() {
+    return this.querySelector("#media-url-input");
   }
 
   get validAnswers() {
@@ -58,16 +66,22 @@ export class AddQuestion extends BaseComponent {
                     id="text-input"
                 />
             </div>
-            <div class="mb-3">
-                <label for="image-input" class="form-label">
-                    Image (Optional)
-                </label>
-                <input
-                    type="file"
-                    class="form-control"
-                    id="image-input"
-                    accept="image/*"
-                />
+            <div class="mb-3 p-3 border rounded bg-light text-start">
+                <label class="form-label fw-bold">Multimedia (Optional)</label>
+                
+                <div class="input-group mb-2">
+                    <select class="form-select" id="media-type-select" style="max-width: 140px;">
+                        <option value="NONE" selected>None</option>
+                        <option value="IMAGE">Image</option>
+                        <option value="VIDEO">Video</option>
+                        <option value="YOUTUBE">YouTube</option>
+                    </select>
+
+                    <input type="file" class="form-control" id="media-file-input" disabled>
+                    
+                    <input type="text" class="form-control" id="media-url-input" placeholder="Paste YouTube link here..." style="display: none;">
+                </div>
+                <div class="form-text" id="media-help-text">Select a media type to attach content.</div>
             </div>
             <div class="mb-3">
                 <label for="topic-input" class="form-label">
@@ -110,6 +124,9 @@ export class AddQuestion extends BaseComponent {
   attachEventListeners() {
     this.questionType.addEventListener("change", () => this.updateQuestionFields());
     this.addQuestionForm.addEventListener("submit", (e) => this.handleAddQuestion(e));
+    if (this.mediaTypeSelect) {
+        this.mediaTypeSelect.addEventListener("change", () => this.updateMediaFields());
+    }
   }
 
   updateQuestionFields() {
@@ -152,14 +169,34 @@ export class AddQuestion extends BaseComponent {
     const topic = this.questionTopic.value;
     const difficulty = this.questionDifficulty.value;
     const questionType = this.questionType.value.toUpperCase();
+    const mediaType = this.mediaTypeSelect.value;
+    const fileInput = this.mediaFileInput;
+    const urlInput = this.mediaUrlInput;
 
     const requestBody = {
         text, topic, difficulty, questionType
     }
 
-    const fileInput = this.questionImage;
-    if (fileInput && fileInput.files.length > 0) {
-        requestBody.multimediaType = "IMAGE"; 
+    let fileToSend = null;
+
+    if (mediaType !== "NONE") {
+        if (mediaType === "YOUTUBE") {
+            const rawLink = urlInput.value.trim();
+            if (rawLink) {
+                requestBody.multimediaType = "VIDEO";
+                requestBody.isYoutube = true;
+                requestBody.multimediaUrl = this.convertToEmbedUrl(rawLink);
+            }
+        } 
+        else if (mediaType === "VIDEO" && fileInput.files.length > 0) {
+            requestBody.multimediaType = "VIDEO";
+            requestBody.isYoutube = false;
+            fileToSend = fileInput.files[0];
+        }
+        else if (mediaType === "IMAGE" && fileInput.files.length > 0) {
+            requestBody.multimediaType = "IMAGE";
+            fileToSend = fileInput.files[0];
+        }
     }
 
     if (questionType == "OPENED") {
@@ -188,8 +225,8 @@ export class AddQuestion extends BaseComponent {
         type: "application/json"
     }))
 
-    if (fileInput && fileInput.files.length > 0) {
-        formData.append("file", fileInput.files[0]);
+    if (fileToSend) {
+        formData.append("file", fileToSend);
     }
 
     this.submitData(formData);
@@ -201,13 +238,51 @@ export class AddQuestion extends BaseComponent {
         this.addQuestionResult.innerHTML = `
         <alert-component type="success" message="Question added successfully"></alert-component>
         `;
-        // this.addQuestionForm.reset(); // Pulisce il form dopo l'invio
+        this.addQuestionForm.reset(); // Pulisce il form dopo l'invio
         this.dispatchCustomEvent("question-added");
     } else {
         this.addQuestionResult.innerHTML = `
         <alert-component type="danger" message="Error creating question"></alert-component>
         `;
     }
+  }
+
+  updateMediaFields() {
+    const type = this.mediaTypeSelect.value;
+    const fileInput = this.mediaFileInput;
+    const urlInput = this.mediaUrlInput;
+
+    fileInput.value = "";
+    urlInput.value = "";
+
+    if (type === "NONE") {
+        fileInput.style.display = "block";
+        fileInput.disabled = true;
+        urlInput.style.display = "none";
+    } 
+    else if (type === "YOUTUBE") {
+        fileInput.style.display = "none";
+        urlInput.style.display = "block";
+    } 
+    else {
+        urlInput.style.display = "none";
+        fileInput.style.display = "block";
+        fileInput.disabled = false;
+        
+        fileInput.accept = (type === "IMAGE") ? "image/*" : "video/*";
+    }
+  }
+
+  convertToEmbedUrl(url) {
+      if (!url) return null;
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+      const match = url.match(regExp);
+
+      if (match && match[2].length === 11) {
+          return `https://www.youtube.com/embed/${match[2]}`;
+      } else {
+          return url;
+      }
   }
 }
 
