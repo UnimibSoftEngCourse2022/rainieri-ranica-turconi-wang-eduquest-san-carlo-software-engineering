@@ -196,12 +196,13 @@ export class AddQuestion extends BaseComponent {
   }
 
   async submitData(formData) {
+    this.addQuestionResult.innerHTML = `<loading-spinner></loading-spinner>`;
     const response = await this.questionsService.createQuestion(formData);
     if (response) {
         this.addQuestionResult.innerHTML = `
         <alert-component type="success" message="Question added successfully"></alert-component>
         `;
-        // this.addQuestionForm.reset(); // Pulisce il form dopo l'invio
+        this.addQuestionForm.reset(); // Pulisce il form dopo l'invio
         this.dispatchCustomEvent("question-added");
     } else {
         this.addQuestionResult.innerHTML = `

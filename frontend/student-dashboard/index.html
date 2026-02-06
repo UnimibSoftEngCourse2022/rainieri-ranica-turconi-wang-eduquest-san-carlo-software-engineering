@@ -52,6 +52,27 @@
                 <missions-viewer></missions-viewer>
             </div>
 
+            <div class="container text-center my-5" id="missions">
+                <h1>Your challenges</h1>
+                 <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#add-challenge-modal">
+                    Add a challenge
+                </button>
+                <div class="modal fade" id="add-challenge-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add question</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <add-challenge></add-challenge>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <challenges-viewer></challenges-viewer>
+            </div>
+
             <div class="container text-center my-5" id="questions-container">
                 <h1>Your questions</h1>
                 <questions-viewer role="STUDENT"></questions-viewer>
@@ -71,6 +92,8 @@
         <script type="module" src="../components/tests-viewer.js"></script>
         <script type="module" src="../components/missions-viewer.js"></script>
         <script type="module" src="../components/quiz-runner.js"></script>        
+        <script type="module" src="../components/challenges-viewer.js"></script>  
+        <script type="module" src="../components/add-challenge.js"></script>  
         <script type="module" src="../components/shared/navbar.js"></script>
         <script type="module" src="script.js"></script>
     </body>

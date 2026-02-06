@@ -31,4 +31,25 @@ export class GamificationService {
 
         }
     }
+
+    async getMyChallenges() {
+        try {
+            const response = await callApi(endpoints.challenges, "GET");
+            const challenges = await response.json();
+            return challenges;
+        } catch (e) {
+
+        }
+    }
+
+    async addChallenge(opponentId, quizId, durationInHours) {
+        try {
+            const requestBody = {opponentId, quizId, durationInHours};
+            const response = await callApi(endpoints.challenges, "POST", requestBody);
+            const challenges = await response.json();
+            return challenges;
+        } catch (e) {
+
+        }
+    }
 }

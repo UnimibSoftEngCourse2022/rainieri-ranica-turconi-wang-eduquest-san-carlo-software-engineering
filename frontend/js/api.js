@@ -16,7 +16,8 @@ export const endpoints = {
     rankings: {
         byCompletedQuizzes: `${API_BASE}/gamification/ranking/quizzesCompleted`,
         byAverageScore: `${API_BASE}/gamification/ranking/averageScore`
-    }
+    },
+    challenges: `${API_BASE}/gamification/challenges`
 }
 
 export const callApi = async(url, method, body = null) => {
