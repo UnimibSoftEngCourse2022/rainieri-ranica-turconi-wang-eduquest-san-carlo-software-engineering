@@ -19,15 +19,47 @@ export class QuestionRunner extends BaseComponent {
     questionContainer.innerHTML = `<h4>${this._question.text}</h4>`
     
     if (this._question.multimedia && this._question.multimedia.url) {
+        const media = this._question.multimedia;
         const mediaContainer = document.createElement("div");
         mediaContainer.classList.add("text-center", "my-3");
 
-        mediaContainer.innerHTML = `
-            <img src="${this._question.multimedia.url}" 
-                 class="img-fluid rounded shadow-sm" 
-                 style="max-height: 350px; object-fit: contain;" 
-                 alt="Question Image">
-        `;
+        let mediaHtml = "";
+
+        if (media.type === "IMAGE") {
+            mediaHtml = `
+                <img src="${media.url}" 
+                     class="img-fluid rounded shadow-sm" 
+                     style="max-height: 400px; object-fit: contain;" 
+                     alt="Question Image">
+            `;
+        } 
+        
+        else if (media.type === "VIDEO") {
+            
+            if (media.isYoutube) {
+                mediaHtml = `
+                    <div class="ratio ratio-16x9 mx-auto" style="max-width: 800px;">
+                        <iframe src="${media.url}" 
+                                title="YouTube video player" 
+                                allowfullscreen
+                                class="rounded shadow-sm">
+                        </iframe>
+                    </div>
+                `;
+            } 
+
+            else {
+                mediaHtml = `
+                    <video controls class="rounded shadow-sm" style="max-width: 100%; max-height: 400px;">
+                        <source src="${media.url}" type="video/mp4">
+                        <source src="${media.url}" type="video/webm">
+                        Your browser does not support the video tag.
+                    </video>
+                `;
+            }
+        }
+
+        mediaContainer.innerHTML = mediaHtml;
         questionContainer.appendChild(mediaContainer);
     }
 
