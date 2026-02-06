@@ -12,6 +12,15 @@ public class QuizDTO {
 	private final QuizStatsDTO quizStats;
 	private final Difficulty difficulty;
 	
+	public QuizDTO() {
+		this.title = "";
+		this.description = "";
+		this.teacherAuthorId = 0;
+		this.questions = null;
+		this.quizStats = null;
+		this.difficulty = null;
+    }
+
 	public QuizDTO(long id, String title, String description, long teacherAuthorId, List<QuestionDTO> questions, QuizStatsDTO quizStats, Difficulty difficulty) {
 		this.id = id;
 		this.title = title;
@@ -24,6 +33,10 @@ public class QuizDTO {
 
 	public long getId() {
 		return this.id;
+	}
+	
+	public void setId(long id) {
+		this.id = id;
 	}
 	
 	public String getTitle() {
