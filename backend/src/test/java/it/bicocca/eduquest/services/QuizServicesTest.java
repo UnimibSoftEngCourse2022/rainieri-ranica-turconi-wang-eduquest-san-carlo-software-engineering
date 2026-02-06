@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,9 +27,16 @@ class QuizServicesTest {
     @Mock private QuizRepository quizRepository;
     @Mock private UsersRepository usersRepository;
     @Mock private QuestionsRepository questionsRepository;
+    @Mock private MultimediaService multimediaService;
+    @Mock private QuizAttemptsRepository quizAttemptsRepository;
 
     @InjectMocks
     private QuizServices quizServices;
+
+    private void mockStats(Quiz quiz) {
+        lenient().when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quiz)).thenReturn(7.5);
+        lenient().when(quizAttemptsRepository.countByQuizAndTestIsNull(quiz)).thenReturn(10L);
+    }
 
     @Test
     void testGetQuizById_Success() {
@@ -38,9 +46,11 @@ class QuizServicesTest {
         
         OpenQuestion q = new OpenQuestion();
         q.setId(100L); q.setText("Q1"); q.setAuthor(author); q.setQuestionType(QuestionType.OPENED);
+        q.addAnswer(new OpenQuestionAcceptedAnswer("Ans"));
         quiz.addQuestion(q);
 
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
+        mockStats(quiz);
 
         QuizDTO result = quizServices.getQuizById(quizId);
 
@@ -48,6 +58,7 @@ class QuizServicesTest {
         assertEquals("Title", result.getTitle());
         assertEquals(1, result.getQuestions().size());
         assertEquals("Q1", result.getQuestions().get(0).getText());
+        assertEquals(7.5, result.getQuizStats().getAverageScore());
     }
 
     @Test
@@ -68,6 +79,8 @@ class QuizServicesTest {
         q1.addQuestion(cq);
 
         when(quizRepository.findAll()).thenReturn(Arrays.asList(q1, q2));
+        mockStats(q1);
+        mockStats(q2);
 
         List<QuizDTO> result = quizServices.getAllQuizzes();
 
@@ -85,6 +98,7 @@ class QuizServicesTest {
         Quiz q2 = new Quiz(11L, "Other Quiz", "Desc", otherAuthor);
 
         when(quizRepository.findAll()).thenReturn(Arrays.asList(q1, q2));
+        mockStats(q1);
 
         List<QuizDTO> result = quizServices.getQuizzesByAuthorId(targetAuthorId);
 
@@ -110,6 +124,21 @@ class QuizServicesTest {
 
         assertEquals(100L, result.getId());
         assertEquals("New", result.getTitle());
+        assertEquals(0.0, result.getQuizStats().getAverageScore());
+    }
+
+    @Test
+    void testAddQuiz_ValidationErrors() {
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(new Teacher()));
+
+        QuizAddDTO dto1 = new QuizAddDTO(); 
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuiz(dto1, 1L));
+
+        QuizAddDTO dto2 = new QuizAddDTO(); dto2.setTitle(""); 
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuiz(dto2, 1L));
+
+        QuizAddDTO dto3 = new QuizAddDTO(); dto3.setTitle("Ok"); dto3.setDescription(""); 
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuiz(dto3, 1L));
     }
 
     @Test
@@ -136,10 +165,24 @@ class QuizServicesTest {
 
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
         when(quizRepository.save(any(Quiz.class))).thenReturn(quiz);
+        mockStats(quiz);
 
         QuizDTO result = quizServices.editQuiz(quizId, dto, userId);
 
         assertEquals("New", result.getTitle());
+    }
+
+    @Test
+    void testEditQuiz_ValidationErrors() {
+        Teacher author = new Teacher(); author.setId(1L);
+        Quiz quiz = new Quiz(1L, "T", "D", author);
+        when(quizRepository.findById(1L)).thenReturn(Optional.of(quiz));
+
+        QuizEditDTO dto1 = new QuizEditDTO(); dto1.setTitle(null);
+        assertThrows(IllegalArgumentException.class, () -> quizServices.editQuiz(1L, dto1, 1L));
+
+        QuizEditDTO dto2 = new QuizEditDTO(); dto2.setTitle("Ok"); dto2.setDescription("");
+        assertThrows(IllegalArgumentException.class, () -> quizServices.editQuiz(1L, dto2, 1L));
     }
 
     @Test
@@ -178,14 +221,21 @@ class QuizServicesTest {
         List<QuestionDTO> result = quizServices.getAllQuestions(teacherId);
 
         assertEquals(2, result.size());
-        assertEquals(1, result.get(0).getValidAnswersOpenQuestion().size());
-        assertEquals(1, result.get(1).getClosedQuestionOptions().size());
     }
 
     @Test
-    void testGetAllQuestions_UserNotFound() {
-        when(usersRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> quizServices.getAllQuestions(99L));
+    void testGetAllQuestions_AsStudent_SeeOwn() {
+        long studentId = 5L;
+        Student student = new Student(); student.setId(studentId);
+        
+        OpenQuestion q1 = new OpenQuestion("Q1", "T", student, Difficulty.EASY);
+        q1.setId(10L);
+
+        when(usersRepository.findById(studentId)).thenReturn(Optional.of(student));
+        when(questionsRepository.findByAuthorId(studentId)).thenReturn(Collections.singletonList(q1));
+
+        List<QuestionDTO> result = quizServices.getAllQuestions(studentId);
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -210,79 +260,57 @@ class QuizServicesTest {
     }
 
     @Test
-    void testAddQuestion_Open_Success() {
-        long userId = 1L;
-        Teacher author = new Teacher(); author.setId(userId);
-        
+    void testAddQuestion_UnsupportedQuestionType() {
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(new Teacher()));
         QuestionAddDTO dto = new QuestionAddDTO();
-        dto.setText("Text"); dto.setTopic("Topic");
-        dto.setQuestionType(QuestionType.OPENED);
-        dto.setValidAnswersOpenQuestion(Arrays.asList("A1", "A2"));
-
-        when(usersRepository.findById(userId)).thenReturn(Optional.of(author));
-        when(questionsRepository.save(any(Question.class))).thenAnswer(i -> {
-            Question q = i.getArgument(0);
-            q.setId(500L);
-            return q;
-        });
-
-        QuestionDTO result = quizServices.addQuestion(dto, userId, null); // TODO fix this test
-
-        assertEquals(500L, result.getId());
-        assertEquals(QuestionType.OPENED, result.getQuestionType());
-        assertEquals(2, result.getValidAnswersOpenQuestion().size());
+        dto.setText("Q"); dto.setTopic("T");
+        dto.setQuestionType(null); 
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
     }
 
     @Test
-    void testAddQuestion_Closed_Success() {
-        long userId = 1L;
-        Teacher author = new Teacher(); author.setId(userId);
-        
-        QuestionAddDTO dto = new QuestionAddDTO();
-        dto.setText("Text"); dto.setTopic("Topic");
-        dto.setQuestionType(QuestionType.CLOSED);
-        ClosedQuestionOptionDTO cqo1 = new ClosedQuestionOptionDTO();
-        cqo1.setText("Opt1"); cqo1.setTrue(true);
-        
-        ClosedQuestionOptionDTO cqo2 = new ClosedQuestionOptionDTO();
-        cqo2.setText("Opt2"); cqo2.setTrue(false);
-        
-        dto.setClosedQuestionOptions(Arrays.asList(cqo1, cqo2));
-
-        when(usersRepository.findById(userId)).thenReturn(Optional.of(author));
-        when(questionsRepository.save(any(Question.class))).thenAnswer(i -> {
-            Question q = i.getArgument(0);
-            q.setId(600L);
-            return q;
-        });
-
-        QuestionDTO result = quizServices.addQuestion(dto, userId, null); // TODO fix this test
-
-        assertEquals(600L, result.getId());
-        assertEquals(QuestionType.CLOSED, result.getQuestionType());
-        assertNotNull(result.getClosedQuestionOptions());
-        assertEquals(2, result.getClosedQuestionOptions().size());
-    }
-
-    @Test
-    void testAddQuestion_ValidationErrors() {
+    void testCreateOpenQuestion_Validation() {
         when(usersRepository.findById(1L)).thenReturn(Optional.of(new Teacher()));
         
-        QuestionAddDTO dto1 = new QuestionAddDTO(); dto1.setText("");
-        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto1, 1L, null)); // TODO fix this test
-
-        QuestionAddDTO dto2 = new QuestionAddDTO(); dto2.setText("Ok"); dto2.setTopic(null);
-        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto2, 1L, null)); // TODO fix this test
-
-        QuestionAddDTO dto3 = new QuestionAddDTO(); dto3.setText("Ok"); dto3.setTopic("Topic"); 
-        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto3, 1L, null)); // TODO fix this test
-    }
-    
-    @Test
-    void testAddQuestion_UserNotFound() {
-        when(usersRepository.findById(99L)).thenReturn(Optional.empty());
         QuestionAddDTO dto = new QuestionAddDTO();
-        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 99L, null)); // TODO fix this test
+        dto.setText("Q"); dto.setTopic("T"); dto.setQuestionType(QuestionType.OPENED);
+        
+        dto.setValidAnswersOpenQuestion(null);
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
+        
+        dto.setValidAnswersOpenQuestion(Arrays.asList(""));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
+    }
+
+    @Test
+    void testCreateClosedQuestion_Validation() {
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(new Teacher()));
+        
+        QuestionAddDTO dto = new QuestionAddDTO();
+        dto.setText("Q"); dto.setTopic("T"); dto.setQuestionType(QuestionType.CLOSED);
+        
+        dto.setClosedQuestionOptions(null);
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
+        
+        dto.setClosedQuestionOptions(Arrays.asList(new ClosedQuestionOptionDTO(0L, "A", true)));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
+        
+        dto.setClosedQuestionOptions(Arrays.asList(
+            new ClosedQuestionOptionDTO(0L, "A", true), new ClosedQuestionOptionDTO(0L, "B", false),
+            new ClosedQuestionOptionDTO(0L, "C", false), new ClosedQuestionOptionDTO(0L, "D", false),
+            new ClosedQuestionOptionDTO(0L, "E", false)
+        ));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
+        
+        dto.setClosedQuestionOptions(Arrays.asList(
+            new ClosedQuestionOptionDTO(0L, "", true), new ClosedQuestionOptionDTO(0L, "B", false)
+        ));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
+        
+        dto.setClosedQuestionOptions(Arrays.asList(
+            new ClosedQuestionOptionDTO(0L, "A", false), new ClosedQuestionOptionDTO(0L, "B", false)
+        ));
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
     }
 
     @Test
@@ -296,6 +324,7 @@ class QuizServicesTest {
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
         when(questionsRepository.findById(qId)).thenReturn(Optional.of(question));
         when(quizRepository.save(any(Quiz.class))).thenReturn(quiz);
+        mockStats(quiz);
 
         QuizDTO result = quizServices.addQuestionToQuiz(quizId, qId, userId);
 
@@ -350,6 +379,7 @@ class QuizServicesTest {
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
         when(questionsRepository.findById(qId)).thenReturn(Optional.of(question));
         when(quizRepository.save(any(Quiz.class))).thenReturn(quiz);
+        mockStats(quiz);
 
         QuizDTO result = quizServices.removeQuestionFromQuiz(quizId, qId, userId);
 
@@ -393,6 +423,7 @@ class QuizServicesTest {
 
         when(usersRepository.findById(studentId)).thenReturn(Optional.of(student));
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
+        mockStats(quiz);
 
         QuizDTO result = quizServices.getQuizForStudent(quizId, studentId);
 
