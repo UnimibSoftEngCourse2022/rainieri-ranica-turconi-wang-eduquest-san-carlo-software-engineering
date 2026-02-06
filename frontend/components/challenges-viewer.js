@@ -16,9 +16,16 @@ export class ChallengesViewer extends BaseComponent {
     this.innerHTML = '<div id="challenges-container" class="row g-4"></div>'
   }
 
+  attachEventListeners() {
+    document.addEventListener("challenge-added", (event) => {
+      this.loadData();
+    });
+  }
+
   get challengesContainer() { return this.querySelector("#challenges-container"); }
 
   async loadData() {
+    this.challengesContainer.innerHTML = ``;
     const challenges = await this.gamificationService.getMyChallenges();
     console.log(challenges);
     if (!challenges) {

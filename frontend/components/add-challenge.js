@@ -74,6 +74,7 @@ export class AddChallenge extends BaseComponent {
         <alert-component type="success" message="Challenge added correctly"></alert-component>
         `;
         this.addChallengeForm.reset();
+        this.dispatchCustomEvent("challenge-added");
     } else {
         this.addChallengeResult.innerHTML = `
         <alert-component type="danger" message="Error adding the challenge"></alert-component>
