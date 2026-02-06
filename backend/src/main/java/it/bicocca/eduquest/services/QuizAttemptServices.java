@@ -2,7 +2,7 @@ package it.bicocca.eduquest.services;
 
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
-
+import it.bicocca.eduquest.domain.multimedia.*;
 import it.bicocca.eduquest.dto.quizAttempt.QuizAttemptDTO;
 import it.bicocca.eduquest.repository.AnswersRepository;
 import it.bicocca.eduquest.repository.QuestionsRepository;
@@ -22,6 +22,7 @@ import java.util.List;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import it.bicocca.eduquest.dto.multimedia.*;
 
 @Service
 public class QuizAttemptServices {
@@ -194,18 +195,36 @@ public class QuizAttemptServices {
 		for (Question question : questions) {
 			QuestionStats stats = question.getStats();
 			QuestionStatsDTO questionStatsDTO = new QuestionStatsDTO(stats.getAverageSuccess(), stats.getTotalAnswers(), stats.getCorrectAnswer());
-
+			
+			QuestionDTO questionDTO;
+			
 			if (question.getQuestionType() == QuestionType.OPENED) {
-				safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, null, question.getAuthor().getId(), questionStatsDTO));   
+				questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, null, question.getAuthor().getId(), questionStatsDTO);   
 	        } else if (question.getQuestionType() == QuestionType.CLOSED) {
 	            List<ClosedQuestionOptionDTO> safeOptions = new ArrayList<>();
 	            for (ClosedQuestionOption optionDTO : ((ClosedQuestion)question).getOptions()) {
 	                safeOptions.add(new ClosedQuestionOptionDTO(optionDTO.getId(), optionDTO.getText(), false)); 
 	            }
-	            safeQuestions.add(new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, safeOptions, question.getAuthor().getId(), questionStatsDTO));
+	            questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, safeOptions, question.getAuthor().getId(), questionStatsDTO);
 	        } else { 
 				throw new IllegalArgumentException("Not supported question type."); 
 			}
+			if (question.getMultimedia() != null) {
+				MultimediaSupport media = question.getMultimedia();
+				MultimediaDTO mediaDTO = new MultimediaDTO();
+				mediaDTO.setUrl(media.getUrl());
+				mediaDTO.setType(media.getType());
+				
+				if (media instanceof VideoSupport) {
+					mediaDTO.setIsYoutube(((VideoSupport) media).getIsYoutube());
+				} else {
+					mediaDTO.setIsYoutube(false);
+				}
+				
+				questionDTO.setMultimedia(mediaDTO);
+			}
+			
+			safeQuestions.add(questionDTO);
 		}
 		
 		return safeQuestions;

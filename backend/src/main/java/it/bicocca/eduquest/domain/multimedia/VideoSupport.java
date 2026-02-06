@@ -1,23 +1,31 @@
 package it.bicocca.eduquest.domain.multimedia;
 
 import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 @Entity
 @DiscriminatorValue("VIDEO")
 public class VideoSupport extends MultimediaSupport {
-	public boolean isYoutube;
+	@Column(name = "is_youtube")
+	private Boolean isYoutube;
 
 	public VideoSupport() {
-		this.setType(MultimediaType.VIDEO);
+
 	}
 
-	public boolean isYoutube() {
+	public Boolean getIsYoutube() {
 		return isYoutube;
 	}
 
-	public void setYoutube(boolean isYoutube) {
+	public void setIsYoutube(Boolean isYoutube) {
 		this.isYoutube = isYoutube;
 	}
+
+	@Override
+	public MultimediaType getType() {
+		return MultimediaType.VIDEO;
+	}
+	
+	
 	
 }

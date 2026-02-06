@@ -26,7 +26,7 @@ export class QuestionsService {
         }
     }
 
-    async createQuestion(questionData) {
+    /* async createQuestion(questionData) {
         appStore.updateAppState({ loading: true });
         try {
             const response = await callApi(endpoints.questions, "POST", questionData);
@@ -38,6 +38,31 @@ export class QuestionsService {
             }
             return await response.json();
         } catch (e) {
+            appStore.updateAppState({ loading: false, error: true });
+        }
+    } */
+
+    async createQuestion(formData) {
+        appStore.updateAppState({ loading: true });
+        try {
+            const token = localStorage.getItem("token"); 
+
+            const response = await fetch(endpoints.questions, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}` 
+                },
+                body: formData
+            });
+            if (response.ok) {
+                appStore.updateAppState({ loading: false });
+            } else {
+                console.error("Errore server:", await response.text())
+                appStore.updateAppState({ loading: false, error: true });
+            }
+            return await response.json();
+        } catch (e) {
+            console.error(e);
             appStore.updateAppState({ loading: false, error: true });
         }
     }

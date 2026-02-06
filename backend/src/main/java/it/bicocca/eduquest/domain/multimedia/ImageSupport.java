@@ -8,7 +8,14 @@ import jakarta.persistence.Entity;
 public class ImageSupport extends MultimediaSupport {
 
 	public ImageSupport() {
-		this.setType(MultimediaType.IMAGE);
+		
 	}
+
+	@Override
+	public MultimediaType getType() {
+		return MultimediaType.IMAGE;
+	}
+	
+	
 	
 }

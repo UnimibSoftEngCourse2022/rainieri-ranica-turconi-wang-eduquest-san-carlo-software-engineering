@@ -14,9 +14,9 @@ public abstract class MultimediaSupport {
     @Column(nullable = false)
     private String url; // Cloudinary or YouTube
 
-    @Enumerated(EnumType.STRING)
+    /* @Enumerated(EnumType.STRING)
     @Column(name = "media_type", insertable = false, updatable = false)
-    private MultimediaType type; 
+    private MultimediaType type; */
 
     private String caption;
 
@@ -26,10 +26,6 @@ public abstract class MultimediaSupport {
 
 	public String getUrl() {
 		return url;
-	}
-
-	public MultimediaType getType() {
-		return type;
 	}
 
 	public String getCaption() {
@@ -44,13 +40,11 @@ public abstract class MultimediaSupport {
 		this.url = url;
 	}
 
-	public void setType(MultimediaType type) {
-		this.type = type;
-	}
-
 	public void setCaption(String caption) {
 		this.caption = caption;
 	}
+	
+	public abstract MultimediaType getType();
 
 }
 

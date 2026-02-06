@@ -17,7 +17,7 @@ public class QuestionDTO {
 	
 	private final long authorId;
 	
-	private final QuestionStatsDTO stats;
+	private QuestionStatsDTO stats;
 	
 	private MultimediaDTO multimedia;
 	
@@ -76,6 +76,10 @@ public class QuestionDTO {
 
 	public void setMultimedia(MultimediaDTO multimedia) {
 		this.multimedia = multimedia;
+	}
+	
+	public void setQuestionStats(QuestionStatsDTO questionStats) {
+		this.stats = questionStats;
 	}
 	
 }

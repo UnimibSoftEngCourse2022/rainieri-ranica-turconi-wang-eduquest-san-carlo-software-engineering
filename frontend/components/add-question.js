@@ -32,6 +32,10 @@ export class AddQuestion extends BaseComponent {
     return this.querySelector("#difficulty-input");
   }
 
+  get questionImage() {
+    return this.querySelector("#image-input");
+  }
+
   get validAnswers() {
     return this.querySelector("#valid-answers-input");
   }
@@ -52,6 +56,17 @@ export class AddQuestion extends BaseComponent {
                     type="text"
                     class="form-control"
                     id="text-input"
+                />
+            </div>
+            <div class="mb-3">
+                <label for="image-input" class="form-label">
+                    Image (Optional)
+                </label>
+                <input
+                    type="file"
+                    class="form-control"
+                    id="image-input"
+                    accept="image/*"
                 />
             </div>
             <div class="mb-3">
@@ -142,6 +157,11 @@ export class AddQuestion extends BaseComponent {
         text, topic, difficulty, questionType
     }
 
+    const fileInput = this.questionImage;
+    if (fileInput && fileInput.files.length > 0) {
+        requestBody.multimediaType = "IMAGE"; 
+    }
+
     if (questionType == "OPENED") {
         const validAnswersOpenQuestionRaw = this.querySelector("#valid-answers-input").value.split(",");
         const validAnswersOpenQuestion = validAnswersOpenQuestionRaw.map(s => s.trim());
@@ -162,15 +182,26 @@ export class AddQuestion extends BaseComponent {
         requestBody.closedQuestionOptions = closedOptions
     }
 
-    this.submitData(requestBody);
+    const formData = new FormData();
+
+    formData.append("question", new Blob([JSON.stringify(requestBody)], {
+        type: "application/json"
+    }))
+
+    if (fileInput && fileInput.files.length > 0) {
+        formData.append("file", fileInput.files[0]);
+    }
+
+    this.submitData(formData);
   }
 
-  async submitData(requestBody) {
-    const response = await this.questionsService.createQuestion(requestBody);
+  async submitData(formData) {
+    const response = await this.questionsService.createQuestion(formData);
     if (response) {
         this.addQuestionResult.innerHTML = `
         <alert-component type="success" message="Question added successfully"></alert-component>
         `;
+        // this.addQuestionForm.reset(); // Pulisce il form dopo l'invio
         this.dispatchCustomEvent("question-added");
     } else {
         this.addQuestionResult.innerHTML = `

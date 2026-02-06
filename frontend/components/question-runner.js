@@ -11,11 +11,26 @@ export class QuestionRunner extends BaseComponent {
   render() {
     if (!this._question) { return; }
 
+    console.log("DATI DOMANDA RICEVUTI DAL SERVER:", this._question);
+
     this.innerHTML = ``;
     const questionContainer = document.createElement("div");
     questionContainer.classList.add("container");
     questionContainer.innerHTML = `<h4>${this._question.text}</h4>`
     
+    if (this._question.multimedia && this._question.multimedia.url) {
+        const mediaContainer = document.createElement("div");
+        mediaContainer.classList.add("text-center", "my-3");
+
+        mediaContainer.innerHTML = `
+            <img src="${this._question.multimedia.url}" 
+                 class="img-fluid rounded shadow-sm" 
+                 style="max-height: 350px; object-fit: contain;" 
+                 alt="Question Image">
+        `;
+        questionContainer.appendChild(mediaContainer);
+    }
+
     if (this.question.questionType == "OPENED") {
       const input = document.createElement("input");
       input.classList.add("form-control");

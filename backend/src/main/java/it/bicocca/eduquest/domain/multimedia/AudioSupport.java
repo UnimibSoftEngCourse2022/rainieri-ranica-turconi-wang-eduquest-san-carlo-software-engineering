@@ -8,7 +8,12 @@ import jakarta.persistence.Entity;
 public class AudioSupport extends MultimediaSupport {
 
 	public AudioSupport() {
-		this.setType(MultimediaType.AUDIO);
+		
+	}
+
+	@Override
+	public MultimediaType getType() {
+		return MultimediaType.AUDIO;
 	}
 	
 }
