@@ -36,7 +36,7 @@ export class Quiz extends BaseComponent {
     `;
 
     this.innerHTML = `
-      <div class="card my-2" style="border: 1px solid #ccc; padding: 10px;">
+    <div class="card my-2" style="border: 1px solid #ccc; padding: 10px;">
         <h3>${this._quizData.title}</h3>
         <p>${this._quizData.description}</p>
         ${button}

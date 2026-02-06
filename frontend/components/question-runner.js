@@ -11,8 +11,6 @@ export class QuestionRunner extends BaseComponent {
   render() {
     if (!this._question) { return; }
 
-    console.log("DATI DOMANDA RICEVUTI DAL SERVER:", this._question);
-
     this.innerHTML = ``;
     const questionContainer = document.createElement("div");
     questionContainer.classList.add("container");
@@ -27,10 +25,10 @@ export class QuestionRunner extends BaseComponent {
 
         if (media.type === "IMAGE") {
             mediaHtml = `
-                <img src="${media.url}" 
-                     class="img-fluid rounded shadow-sm" 
-                     style="max-height: 400px; object-fit: contain;" 
-                     alt="Question Image">
+            <img src="${media.url}" 
+                  class="img-fluid rounded shadow-sm" 
+                  style="max-height: 400px; object-fit: contain;" 
+                  alt="Question Image">
             `;
         } 
         

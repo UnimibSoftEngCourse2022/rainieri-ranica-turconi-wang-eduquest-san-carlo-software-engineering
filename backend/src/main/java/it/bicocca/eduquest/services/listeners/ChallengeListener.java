@@ -9,6 +9,8 @@ import it.bicocca.eduquest.domain.events.QuizCompletedEvent;
 import it.bicocca.eduquest.domain.gamification.Challenge;
 import it.bicocca.eduquest.domain.gamification.ChallengeStatus;
 import it.bicocca.eduquest.repository.ChallengeRepository;
+
+import java.util.List;
 import java.util.Optional;
 import java.time.LocalDateTime;
 
@@ -29,34 +31,43 @@ public class ChallengeListener {
         Long quizId = attempt.getQuiz().getId();
 
         // Check if there is an active challenge for this user and this quiz
-        Optional<Challenge> challengeOpt = challengeRepository.findActiveChallengeForUserAndQuiz(user.getId(), quizId);
-
-        if (challengeOpt.isEmpty()) {
+        List<Challenge> challengesOpt = challengeRepository.findActiveChallengeForUserAndQuiz(user.getId(), quizId);
+        
+        if (challengesOpt.size() == 0) {
             return;
         }
 
-        Challenge challenge = challengeOpt.get();
+        for (Challenge challenge : challengesOpt) {
+        	// Check whether it has expired before proceeding
+        	if (challenge.isExpired()) {
+                challenge.setStatus(ChallengeStatus.EXPIRED);
+                challengeRepository.save(challenge);
+                return;
+            }
 
-        // Check whether it has expired before proceeding
-        if (challenge.isExpired()) {
-            challenge.setStatus(ChallengeStatus.EXPIRED);
+            // Connect the attempt to the right student
+            if (challenge.getChallenger().getId().equals(user.getId())) {
+            	if (challenge.getChallengerAttempt() != null) {
+            		continue;
+            	}
+                challenge.setChallengerAttempt(attempt);
+            } else {
+            	if (challenge.getOpponentAttempt() != null) {
+            		continue;
+            	}
+            	challenge.setOpponentAttempt(attempt);
+            }
+
+            // Check if both have played
+            if (challenge.getChallengerAttempt() != null && challenge.getOpponentAttempt() != null) {
+                closeChallenge(challenge);
+            }
+
             challengeRepository.save(challenge);
-            return;
+            
+            // If I arrived here, I used the attempt for the first challenge and I won't use it for the next ones
+            break;
         }
-
-        // Connect the attempt to the right student
-        if (challenge.getChallenger().getId().equals(user.getId())) {
-            challenge.setChallengerAttempt(attempt);
-        } else {
-            challenge.setOpponentAttempt(attempt);
-        }
-
-        // Check if both have played
-        if (challenge.getChallengerAttempt() != null && challenge.getOpponentAttempt() != null) {
-            closeChallenge(challenge);
-        }
-
-        challengeRepository.save(challenge);
     }
 
     private void closeChallenge(Challenge challenge) {

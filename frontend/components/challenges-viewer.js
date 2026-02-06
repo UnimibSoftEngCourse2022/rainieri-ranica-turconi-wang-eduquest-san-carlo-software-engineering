@@ -17,9 +17,7 @@ export class ChallengesViewer extends BaseComponent {
   }
 
   attachEventListeners() {
-    document.addEventListener("challenge-added", (event) => {
-      this.loadData();
-    });
+    document.addEventListener("challenge-added", (event) => this.loadData());
   }
 
   get challengesContainer() { return this.querySelector("#challenges-container"); }
@@ -45,7 +43,7 @@ export class ChallengesViewer extends BaseComponent {
         
         challengeElement.innerHTML = `
         <div class="card my-2" style="border: 1px solid #ccc; padding: 10px;">
-            <h3>${challenge.quizTitle} vs ${challenge.opponentName} ${challenge.opponentSurname}</h3>
+            <h3>${challenge.quizTitle} | ${challenge.challengerName} ${challenge.challengerSurname} vs ${challenge.opponentName} ${challenge.opponentSurname}</h3>
             <span class="badge text-bg-${challengeBadgeColor}">${challenge.status}</span>
         </div>
         `
