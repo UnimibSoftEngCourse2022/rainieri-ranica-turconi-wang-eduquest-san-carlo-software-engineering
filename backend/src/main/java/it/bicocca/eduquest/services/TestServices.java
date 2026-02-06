@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import it.bicocca.eduquest.domain.answers.QuizAttempt;
 import it.bicocca.eduquest.domain.quiz.Quiz;
 import it.bicocca.eduquest.domain.quiz.Test;
 import it.bicocca.eduquest.domain.users.Teacher;
@@ -13,6 +14,7 @@ import it.bicocca.eduquest.domain.users.User;
 import it.bicocca.eduquest.dto.quiz.QuizDTO;
 import it.bicocca.eduquest.dto.quiz.TestAddDTO;
 import it.bicocca.eduquest.dto.quiz.TestDTO;
+import it.bicocca.eduquest.dto.quizAttempt.QuizAttemptDTO;
 import it.bicocca.eduquest.repository.QuizRepository;
 import it.bicocca.eduquest.repository.QuizAttemptsRepository; 
 import it.bicocca.eduquest.repository.TestRepository;
@@ -85,6 +87,21 @@ public class TestServices {
         }
         return result;
     }
+    
+	 public List<QuizAttemptDTO> getAttemptsForStudentAndTest(Long testId, Long studentId) {
+	    
+	     List<QuizAttempt> attempts = quizAttemptsRepository.findByStudentIdAndTestId(studentId, testId);
+	     
+	     List<QuizAttemptDTO> dtos = new ArrayList<>();
+	     for (QuizAttempt attempt : attempts) {
+	         QuizAttemptDTO dto = new QuizAttemptDTO();
+	         dto.setId(attempt.getId());
+	         dto.setScore(attempt.getScore());
+	         dto.setFinishedAt(attempt.getFinishedAt()); 
+	         dtos.add(dto);
+	     }
+	     return dtos;
+	 }
 
     public List<TestDTO> getAllTests() {
         List<Test> allTests = testRepository.findAll();

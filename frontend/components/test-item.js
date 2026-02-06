@@ -57,7 +57,7 @@ export class TestItem extends BaseComponent {
         </div>
 
         <hr>
-        Average score: ${avgScore} | Total attempts: ${totalAttempts}
+        Average score: ${(avgScore || 0).toFixed(2)} | Total attempts: ${totalAttempts}
     </div>
     `;
   }

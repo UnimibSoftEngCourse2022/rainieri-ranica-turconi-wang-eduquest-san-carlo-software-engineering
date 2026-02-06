@@ -102,7 +102,14 @@ export class QuizRunner extends BaseComponent {
 
       } catch (e) {
           console.error(e);
-          this.quizError.innerHTML = `<alert-component type="danger" message="${e.message || "Error starting quiz"}"></alert-component>`;
+          const errorMsg = e.message || "";
+          
+          if (errorMsg.toLowerCase().includes("attempts") || errorMsg.toLowerCase().includes("tentativi") || errorMsg.toLowerCase().includes("tries")) {
+              await this.showMaxAttemptsView(errorMsg); 
+              return;
+          }
+          
+          this.quizError.innerHTML = `<alert-component type="danger" message="${errorMsg || "Error starting quiz"}"></alert-component>`;
       }
   }
 
@@ -278,6 +285,19 @@ export class QuizRunner extends BaseComponent {
       <alert-component type="danger" message="Error completing the quiz. Please try again."></alert-component>
       `;
     }
+  }
+
+  async showMaxAttemptsView(customMessage) { 
+    const displayMessage = customMessage || "Max attempts reached for this test.";
+
+    this.innerHTML = `
+        <div class="container text-center mt-5">
+            <div class="alert alert-danger p-4 shadow mx-auto" style="max-width: 600px; border-left: 5px solid #dc3545;" role="alert">
+                <h3 class="alert-heading mb-3 fw-bold">Access Denied</h3>
+                <p class="mb-0 fs-5">${displayMessage}</p>
+            </div>
+        </div>
+    `;
   }
 }
 

@@ -1,11 +1,15 @@
 package it.bicocca.eduquest.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import it.bicocca.eduquest.dto.quiz.TestAddDTO;
+import it.bicocca.eduquest.dto.quizAttempt.QuizAttemptDTO;
+import it.bicocca.eduquest.security.JwtUtils;
 import it.bicocca.eduquest.services.TestServices;
 
 @RestController
@@ -13,9 +17,11 @@ import it.bicocca.eduquest.services.TestServices;
 public class TestController {
 
     private final TestServices testServices;
-
-    public TestController(TestServices testServices) {
+    private final JwtUtils jwtUtils;
+    
+    public TestController(TestServices testServices, JwtUtils jwtUtils) {
         this.testServices = testServices;
+		this.jwtUtils = new JwtUtils();
     }
 
     @PostMapping
@@ -49,6 +55,20 @@ public class TestController {
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<Object> getTestsByTeacher(@PathVariable Long teacherId) {
         return ResponseEntity.ok(testServices.getTestsByTeacherId(teacherId));
+    }
+    
+    @GetMapping("/{testId}/my-attempts")
+    public ResponseEntity<List<QuizAttemptDTO>> getMyAttempts(
+            @PathVariable Long testId, 
+            @RequestHeader("Authorization") String token) {
+                
+        String jwt = token.substring(7);
+        
+        Long studentId = jwtUtils.getUserIdFromToken(jwt); 
+
+        List<QuizAttemptDTO> history = testServices.getAttemptsForStudentAndTest(testId, studentId);
+        
+        return ResponseEntity.ok(history);
     }
     
     @DeleteMapping("/{id}")

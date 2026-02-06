@@ -41,7 +41,7 @@ export class Quiz extends BaseComponent {
         <p>${this._quizData.description}</p>
         ${button}
         <hr>
-        Average score: ${this._quizData.quizStats.averageScore} | Total attempts: ${this._quizData.quizStats.totalAttempts}
+        Average score: ${(this._quizData.quizStats.averageScore || 0).toFixed(2)} | Total attempts: ${this._quizData.quizStats.totalAttempts}
     </div>
     `;
   }
