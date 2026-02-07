@@ -26,6 +26,10 @@ export class UserSearch extends BaseComponent {
         <table class="table">
             <tbody>
                 <tr>
+                    <th scope="row">ID</th>
+                    <td>${this._userData.id}</td>
+                </tr>
+                <tr>
                     <th scope="row">Name</th>
                     <td>${this._userData.name}</td>
                 </tr>

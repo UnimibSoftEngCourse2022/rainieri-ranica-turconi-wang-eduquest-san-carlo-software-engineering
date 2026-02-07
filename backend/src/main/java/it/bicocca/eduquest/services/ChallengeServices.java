@@ -5,6 +5,7 @@ import it.bicocca.eduquest.repository.ChallengeRepository;
 import it.bicocca.eduquest.repository.QuizRepository;
 import it.bicocca.eduquest.repository.UsersRepository;
 import it.bicocca.eduquest.dto.gamification.*;
+import it.bicocca.eduquest.dto.user.ChallengeUserDTO;
 import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.domain.quiz.*;
 import it.bicocca.eduquest.domain.gamification.*;
@@ -64,14 +65,17 @@ public class ChallengeServices {
 	}
 	
 	private ChallengeDTO convertChallengeToDTO(Challenge challenge) {
+		User challenger = challenge.getChallenger();
+		User opponent = challenge.getOpponent();
+		
+		ChallengeUserDTO challengerDTO = new ChallengeUserDTO(challenger.getId(), challenger.getName(), challenger.getSurname(), challenge.getChallengerAttempt() != null);
+		ChallengeUserDTO opponentDTO = new ChallengeUserDTO(opponent.getId(), opponent.getName(), opponent.getSurname(), challenge.getOpponentAttempt() != null);
+
+		
 		ChallengeDTO challengeDTO = new ChallengeDTO();
 		challengeDTO.setId(challenge.getId());
-		challengeDTO.setChallengerId(challenge.getChallenger().getId());
-		challengeDTO.setChallengerName(challenge.getChallenger().getName());
-		challengeDTO.setChallengerSurname(challenge.getChallenger().getSurname());
-		challengeDTO.setOpponentId(challenge.getOpponent().getId());
-		challengeDTO.setOpponentName(challenge.getOpponent().getName());
-		challengeDTO.setOpponentSurname(challenge.getOpponent().getSurname());
+		challengeDTO.setChallenger(challengerDTO);
+		challengeDTO.setOpponent(opponentDTO);
 		challengeDTO.setQuizTitle(challenge.getQuiz().getTitle());
 		challengeDTO.setStatus(challenge.getStatus());
 		challengeDTO.setExpiresAt(challenge.getExpiresAt());

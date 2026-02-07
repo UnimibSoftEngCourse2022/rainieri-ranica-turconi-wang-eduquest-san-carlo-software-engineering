@@ -60,8 +60,8 @@ class ChallengeServicesTest {
         verify(challengeRepository).save(any(Challenge.class));
         
         assertNotNull(result);
-        assertEquals(challengerId, result.getChallengerId());
-        assertEquals(opponentId, result.getOpponentId());
+        assertEquals(challengerId, result.getChallenger().getId());
+        assertEquals(opponentId, result.getOpponent().getId());
         assertEquals("Math", result.getQuizTitle());
         assertEquals(ChallengeStatus.ACTIVE, result.getStatus());
     }

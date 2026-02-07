@@ -2,15 +2,12 @@ package it.bicocca.eduquest.dto.gamification;
 
 import java.time.LocalDateTime;
 import it.bicocca.eduquest.domain.gamification.ChallengeStatus;
+import it.bicocca.eduquest.dto.user.ChallengeUserDTO;
 
 public class ChallengeDTO {
 	private Long id;
-    private Long challengerId; 
-    private String challengerName;
-    private String challengerSurname;
-    private Long opponentId;
-    private String opponentName;
-    private String opponentSurname;
+    ChallengeUserDTO challenger;
+    ChallengeUserDTO opponent;
     private String quizTitle;
     private ChallengeStatus status;
     private LocalDateTime expiresAt;
@@ -21,16 +18,11 @@ public class ChallengeDTO {
 		this.status = ChallengeStatus.ACTIVE;
 	}
 
-	public ChallengeDTO(Long id, Long challengerId, String challengerName, String challengerSurname, Long opponentId,
-			String opponentName, String opponentSurname, String quizTitle, ChallengeStatus status,
+	public ChallengeDTO(Long id, ChallengeUserDTO challenger, ChallengeUserDTO opponent, String quizTitle, ChallengeStatus status,
 			LocalDateTime expiresAt, String winnerName, String winnerSurname) {
 		this.id = id;
-		this.challengerId = challengerId;
-		this.challengerName = challengerName;
-		this.challengerSurname = challengerSurname;
-		this.opponentId = opponentId;
-		this.opponentName = opponentName;
-		this.opponentSurname = opponentSurname;
+		this.challenger = challenger;
+		this.opponent = opponent;
 		this.quizTitle = quizTitle;
 		this.status = status;
 		this.expiresAt = expiresAt;
@@ -40,30 +32,6 @@ public class ChallengeDTO {
 
 	public Long getId() {
 		return id;
-	}
-
-	public Long getChallengerId() {
-		return challengerId;
-	}
-
-	public String getChallengerName() {
-		return challengerName;
-	}
-
-	public String getChallengerSurname() {
-		return challengerSurname;
-	}
-
-	public Long getOpponentId() {
-		return opponentId;
-	}
-
-	public String getOpponentName() {
-		return opponentName;
-	}
-
-	public String getOpponentSurname() {
-		return opponentSurname;
 	}
 
 	public String getQuizTitle() {
@@ -82,28 +50,20 @@ public class ChallengeDTO {
 		this.id = id;
 	}
 
-	public void setChallengerId(Long challengerId) {
-		this.challengerId = challengerId;
+	public ChallengeUserDTO getChallenger() {
+		return challenger;
 	}
 
-	public void setChallengerName(String challengerName) {
-		this.challengerName = challengerName;
+	public void setChallenger(ChallengeUserDTO challenger) {
+		this.challenger = challenger;
 	}
 
-	public void setChallengerSurname(String challengerSurname) {
-		this.challengerSurname = challengerSurname;
+	public ChallengeUserDTO getOpponent() {
+		return opponent;
 	}
 
-	public void setOpponentId(Long opponentId) {
-		this.opponentId = opponentId;
-	}
-
-	public void setOpponentName(String opponentName) {
-		this.opponentName = opponentName;
-	}
-
-	public void setOpponentSurname(String opponentSurname) {
-		this.opponentSurname = opponentSurname;
+	public void setOpponent(ChallengeUserDTO opponent) {
+		this.opponent = opponent;
 	}
 
 	public void setQuizTitle(String quizTitle) {
@@ -133,5 +93,4 @@ public class ChallengeDTO {
 	public void setWinnerSurname(String winnerSurname) {
 		this.winnerSurname = winnerSurname;
 	}
-	
 }	
