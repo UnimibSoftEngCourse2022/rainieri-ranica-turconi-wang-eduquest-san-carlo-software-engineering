@@ -42,6 +42,10 @@ registerForm.addEventListener("submit", async (event) => {
       resultContainer.innerHTML = REGISTER_SUCCESS_DIV;
     } else {
       resultContainer.innerHTML = REGISTER_ERROR_DIV;
+      setTimeout(() => {
+          resultContainer.innerHTML = "";
+      }, 5000);
+      registerForm.reset();
     }
   } catch (error) {}
 });

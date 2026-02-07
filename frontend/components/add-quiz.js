@@ -71,6 +71,9 @@ export class AddQuiz extends BaseComponent {
         this.addQuizResult.innerHTML = `
         <alert-component type="success" message="Quiz created successfully"></alert-component>
         `
+        setTimeout(() => {
+            this.addQuizResult.innerHTML = "";
+        }, 2000);
 
         this.dispatchEvent(new CustomEvent("quiz-created", {
             bubbles: true,
@@ -78,8 +81,11 @@ export class AddQuiz extends BaseComponent {
         }))
     } else {
         this.addQuizResult.innerHTML = `
-        <alert-component type="warning" message="Error during the quiz creation"></alert-component>
+        <alert-component type="danger" message="Error during the quiz creation"></alert-component>
         `
+        setTimeout(() => {
+            this.addQuizResult.innerHTML = "";
+        }, 4000);
     }
   }
 }

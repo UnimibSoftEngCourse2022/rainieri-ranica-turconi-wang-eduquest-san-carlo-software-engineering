@@ -248,6 +248,9 @@ export class AddQuestion extends BaseComponent {
         this.addQuestionResult.innerHTML = `
         <alert-component type="danger" message="Error creating question"></alert-component>
         `;
+        setTimeout(() => {
+            this.addQuestionResult.innerHTML = "";
+        }, 4000);
     }
   }
 

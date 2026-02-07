@@ -38,6 +38,10 @@ const handleLoginSubmit = async (event) => {
     }
     window.location = destination;
   } else {
-    document.getElementById(LOGIN_RESULT_TAG_ID).innerHTML = LOGIN_ERROR_DIV;
+      const resultDiv = document.getElementById(LOGIN_RESULT_TAG_ID);
+      resultDiv.innerHTML = LOGIN_ERROR_DIV;
+      setTimeout(() => {
+          resultDiv.innerHTML = "";
+      }, 3000);
   }
 };
