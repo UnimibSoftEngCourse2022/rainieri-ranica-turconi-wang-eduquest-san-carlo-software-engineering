@@ -55,6 +55,13 @@ public class ChallengeServices {
 		
 		User opponent = usersRepository.findById(challengeCreateDTO.getOpponentId()).orElseThrow(() -> new RuntimeException("Opponent not found"));
 		
+		if (challenger instanceof Teacher) {
+			throw new RuntimeException("A teacher cannot create a challenge");
+		}
+		if (opponent instanceof Teacher) {
+			throw new RuntimeException("You cannot send a challenge to a teacher, only to a student");
+		}
+		
 		Quiz quiz = quizRepository.findById(challengeCreateDTO.getQuizId()).orElseThrow(() -> new RuntimeException("Quiz not found"));
 		
 		Challenge challenge = new Challenge(challenger, opponent, quiz, challengeCreateDTO.getDurationInHours());

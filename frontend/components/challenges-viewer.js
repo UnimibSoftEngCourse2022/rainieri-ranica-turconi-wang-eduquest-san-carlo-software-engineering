@@ -63,7 +63,7 @@ export class ChallengesViewer extends BaseComponent {
 
                 <div style="flex: 1; aspect-ratio: 1 / 1; border: 1px solid #eee; padding: 10px; overflow: hidden; height: 120px;">
                     <h4>Challenger</h4>  
-                    ${challenge.challenger.name} ${challenge.challenger.surname} 
+                    ${challenge.challenger.name} ${challenge.challenger.surname}
                     ${challenge.challenger.id == this.userData.id ? `(You)` : ``}
                     <br>
                     ${challenge.challenger.hasCompletedQuiz ? completedQuiz : notCompletedQuiz}
@@ -72,12 +72,14 @@ export class ChallengesViewer extends BaseComponent {
                 <div style="flex: 1; aspect-ratio: 1 / 1; border: 1px solid #eee; padding: 10px; overflow: hidden; height: 120px;">
                     <h4>Opponent</h4>
                     ${challenge.opponent.name} ${challenge.opponent.surname}
-                    ${challenge.opponent.id == this.userData.id ? `<p>You</p>` : ``}
+                    ${challenge.opponent.id == this.userData.id ? `(You)` : ``}
                     <br>
                     ${challenge.opponent.hasCompletedQuiz ? completedQuiz : notCompletedQuiz}
                 </div>
 
             </div>
+
+            ${challenge.status == "COMPLETED" ? `<h4>Winner: ${challenge.winnerName} ${challenge.winnerSurname}` : null}
         </div>
         `
         this.challengesContainer.appendChild(challengeElement);
