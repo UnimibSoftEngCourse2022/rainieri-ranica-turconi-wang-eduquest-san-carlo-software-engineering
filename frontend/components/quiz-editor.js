@@ -18,6 +18,10 @@ export class QuizEditor extends BaseComponent {
         if (btn) this.removeQuestionFromQuiz(btn.dataset.id);
     });
     this.addEventListener("question-added-to-quiz", () => this.loadData());
+    this.addEventListenerWithTracking("#quiz-editor-general-info-form", "submit", (event) => {
+        event.preventDefault();
+        this.handleSaveQuizGeneralInfo();
+    });
   }
 
   get quizTitleInput() { return this.querySelector("#title-input"); }
@@ -56,7 +60,10 @@ export class QuizEditor extends BaseComponent {
                     id="description-input"
                 />
             </div>
+            <input type="submit" class="btn btn-primary form-control" value="Save changes"></input>
+            <div id="quiz-general-info-result"></div>
         </form>
+        <hr>
         <div id="questions"></div>
         <hr>
         <h3>Add a question</h3>
@@ -93,6 +100,23 @@ export class QuizEditor extends BaseComponent {
 
     if (response) {
         this.loadData();
+    }
+  }
+
+  async handleSaveQuizGeneralInfo() {
+    const title = this.querySelector("#title-input").value;
+    const description = this.querySelector("#description-input").value;
+
+    const quizData = {
+        title, description
+    };
+    const response = await this.quizService.modifyQuiz(this.quizId, quizData);
+
+    const resultDiv = this.querySelector("#quiz-general-info-result");
+    if (response) {
+        resultDiv.innerHTML = `<alert-component type="success" message="Quiz modified correctly" timeout="5000"></alert-component>`
+    } else {
+        resultDiv.innerHTML = `<alert-component type="danger" message="Error modifying quiz" timeout="5000"></alert-component>`
     }
   }
 }

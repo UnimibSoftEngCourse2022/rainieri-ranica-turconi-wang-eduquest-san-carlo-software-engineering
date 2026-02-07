@@ -41,6 +41,15 @@ export class QuizService {
         }
     }
 
+    async modifyQuiz(quizId, quizData) {
+        try {
+            const response = await callApi(endpoints.quizzes+`/${quizId}`, "PUT", quizData);
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (e) {}
+    }
+
     async addQuestionToQuiz(quizId, questionId) {
         try {
             const response = await callApi(`${endpoints.quizzes}/${quizId}/questions/${questionId}`, "POST");
