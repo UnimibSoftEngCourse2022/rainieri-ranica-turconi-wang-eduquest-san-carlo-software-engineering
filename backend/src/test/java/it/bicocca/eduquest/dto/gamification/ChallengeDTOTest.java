@@ -20,8 +20,8 @@ class ChallengeDTOTest {
     void testAllArgsConstructor() {
         LocalDateTime now = LocalDateTime.now();
         
-        ChallengeUserDTO challenger = new ChallengeUserDTO(1L, "Mario", "Rossi", false);
-        ChallengeUserDTO opponent = new ChallengeUserDTO(2L, "Luigi", "Verdi", false);
+        ChallengeUserDTO challenger = new ChallengeUserDTO(2L, "Mario", "Rossi", false);
+        ChallengeUserDTO opponent = new ChallengeUserDTO(3L, "Luigi", "Verdi", false);
         
         ChallengeDTO dto = new ChallengeDTO(
             1L, 
@@ -55,7 +55,7 @@ class ChallengeDTOTest {
         LocalDateTime expiry = LocalDateTime.now().plusDays(1);
 
         ChallengeUserDTO challenger = new ChallengeUserDTO(20L, "Alice", "Smith", false);
-        ChallengeUserDTO opponent = new ChallengeUserDTO(20L, "Alice", "Smith", false);
+        ChallengeUserDTO opponent = new ChallengeUserDTO(30L, "Bob", "Jones", false);
         
         dto.setId(10L);
         dto.setChallenger(challenger);
