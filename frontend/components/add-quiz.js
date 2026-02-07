@@ -72,10 +72,7 @@ export class AddQuiz extends BaseComponent {
         <alert-component type="success" message="Quiz created successfully" timeout="2000"></alert-component>
         `
 
-        this.dispatchEvent(new CustomEvent("quiz-created", {
-            bubbles: true,
-            composed: true
-        }))
+        this.dispatchCustomEvent("quiz-created");
     } else {
         this.addQuizResult.innerHTML = `
         <alert-component type="danger" message="Error during the quiz creation" timeout="4000"></alert-component>

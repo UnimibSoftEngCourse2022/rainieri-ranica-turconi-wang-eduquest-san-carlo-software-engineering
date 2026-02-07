@@ -1,5 +1,6 @@
 import { QuizService } from "../services/quiz-service.js";
 import { TestsService } from "../services/tests-service.js";
+import { UsersService } from "../services/users-service.js";
 import { BaseComponent } from "./base-component.js";
 import { Alert } from "./shared/alert.js";
 
@@ -7,14 +8,24 @@ export class AddTest extends BaseComponent {
   setupComponent() {
     this.quizService = new QuizService();
     this.testsService = new TestsService();
+    this.usersService = new UsersService();
     this.quizzes = [];
     this.render();
     this.loadQuizzes(); 
   }
 
   async loadQuizzes() {
-      this.quizzes = await this.quizService.getQuizzes() || [];
+      const userData = await this.usersService.getMyUserInfo();
+      const userId = userData.id;
+      this.quizzes = await this.quizService.getQuizzesByAuthorId(userId) || [];
       this.render();
+  }
+
+  attachEventListeners() {
+    document.addEventListener("quiz-created", () => {
+        this.loadQuizzes();
+    });
+    this.addEventListenerWithTracking("#add-test-button", "click", (event) => this.handleAddTest(event));
   }
 
   get quizSelect() { return this.querySelector("#test-quiz-select"); }
@@ -25,7 +36,7 @@ export class AddTest extends BaseComponent {
   render() {
     const options = this.quizzes.length > 0 
         ? this.quizzes.map(q => `<option value="${q.id}">${q.title}</option>`).join('') 
-        : '<option disabled>Loading quizzes...</option>';
+        : '<option disabled>No quizzes to show</option>';
 
     this.innerHTML = `
     <div class="mb-3">
@@ -52,15 +63,7 @@ export class AddTest extends BaseComponent {
     </div>
     <div id="add-test-result" class="container"></div>
     `;
-
     this.attachEventListeners();
-  }
-
-  attachEventListeners() {
-    const btn = this.querySelector("#add-test-button");
-    if (btn) {
-        btn.onclick = (e) => this.handleAddTest(e);
-    }
   }
 
   async handleAddTest(event) {
