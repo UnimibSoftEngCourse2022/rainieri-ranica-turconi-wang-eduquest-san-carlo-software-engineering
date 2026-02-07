@@ -29,6 +29,11 @@ export class QuizEditor extends BaseComponent {
   render() {
     this.innerHTML = `
     <div class="container my-5 text-center">
+        <div class="d-flex justify-content-start mb-3">
+            <a href="../teacher-dashboard/" class="btn btn-outline-secondary">
+                ← Back to Dashboard
+            </a>
+        </div>
         <h1>Quiz editor</h1>
         <form id="quiz-editor-general-info-form">
             <div class="mb-3">

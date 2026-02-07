@@ -44,7 +44,7 @@ export class ChallengesViewer extends BaseComponent {
 
     if (challenges.length == 0) {
       this.challengesContainer.innerHTML = `
-      <alert-component type="success" message="No challenges to display"></alert-component>
+      <alert-component type="info" message="No challenges to display"></alert-component>
       `;
     } else {
       challenges.forEach(challenge => {
