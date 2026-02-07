@@ -240,6 +240,7 @@ export class AddQuestion extends BaseComponent {
         <alert-component type="success" message="Question added successfully" timeout="3000"></alert-component>
         `;
         this.addQuestionForm.reset();
+        this.updateQuestionFields();
     } else {
         this.addQuestionResult.innerHTML = `
         <alert-component type="danger" message="Error creating question" timeout="4000"></alert-component>
