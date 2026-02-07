@@ -39,8 +39,16 @@ public class TestController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllTests() {
-        return ResponseEntity.ok(testServices.getAllTests());
+    public ResponseEntity<Object> getAllTests(@RequestParam(required = false) Long authorId) {
+    	try {
+    		if (authorId != null) {
+    			return ResponseEntity.ok(testServices.getTestsByTeacherId(authorId));
+    		} else {
+    			return ResponseEntity.ok(testServices.getAllTests());    			
+    		}
+    	} catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore del server: " + e.getMessage());
+    	}
     }
     
     @GetMapping("/{id}")
@@ -50,11 +58,6 @@ public class TestController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-    }
-
-    @GetMapping("/teacher/{teacherId}")
-    public ResponseEntity<Object> getTestsByTeacher(@PathVariable Long teacherId) {
-        return ResponseEntity.ok(testServices.getTestsByTeacherId(teacherId));
     }
     
     @GetMapping("/{testId}/my-attempts")

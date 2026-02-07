@@ -35,7 +35,7 @@ export class TestsViewer extends BaseComponent {
 
   async loadData() {
     try {
-        const tests = await this.testsService.getTests();
+        const tests = await this.testsService.getTestsByAuthorId(this.userId);
         
         if (!tests || tests.length == 0) {
             this.innerHTML = `<alert-component type="warning" message="There are no active tests to display"></alert-component>`
