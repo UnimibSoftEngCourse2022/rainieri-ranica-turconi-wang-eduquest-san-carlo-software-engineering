@@ -96,7 +96,7 @@ export class QuestionsViewer extends BaseComponent {
     } else {
       const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
       addQuestionResult.innerHTML = `
-      <alert-component type="danger" message="Error adding question"></alert-component>
+      <alert-component type="danger" message="Error adding question" timeout="3000"></alert-component>
       `
     }
   }

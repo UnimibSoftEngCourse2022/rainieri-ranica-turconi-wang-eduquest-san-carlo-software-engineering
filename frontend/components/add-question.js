@@ -237,20 +237,13 @@ export class AddQuestion extends BaseComponent {
     const response = await this.questionsService.createQuestion(formData);
     if (response) {
         this.addQuestionResult.innerHTML = `
-        <alert-component type="success" message="Question added successfully"></alert-component>
+        <alert-component type="success" message="Question added successfully" timeout="3000"></alert-component>
         `;
         this.addQuestionForm.reset();
-        this.dispatchCustomEvent("question-added");
-        setTimeout(() => {
-            this.addQuestionResult.innerHTML = "";
-        }, 3000);
     } else {
         this.addQuestionResult.innerHTML = `
-        <alert-component type="danger" message="Error creating question"></alert-component>
+        <alert-component type="danger" message="Error creating question" timeout="4000"></alert-component>
         `;
-        setTimeout(() => {
-            this.addQuestionResult.innerHTML = "";
-        }, 4000);
     }
   }
 

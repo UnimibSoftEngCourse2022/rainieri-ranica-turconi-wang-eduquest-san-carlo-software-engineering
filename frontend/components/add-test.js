@@ -27,7 +27,6 @@ export class AddTest extends BaseComponent {
         ? this.quizzes.map(q => `<option value="${q.id}">${q.title}</option>`).join('') 
         : '<option disabled>Loading quizzes...</option>';
 
-    // --- MODIFICATO QUI SOTTO: placeholder="0" invece di value="0" ---
     this.innerHTML = `
     <div class="mb-3">
         <label for="test-quiz-select" class="form-label">Select Quiz</label>
@@ -71,12 +70,16 @@ export class AddTest extends BaseComponent {
     const timeLimit = this.timeLimitInput.value;
     const maxAttempts = this.maxAttemptsInput.value;
     
-    // Controllo rigoroso: se l'utente non scrive nulla, timeLimit è una stringa vuota ""
-    // e quindi entra nell'if mostrando l'errore "Please fill all fields".
     if (!quizId || timeLimit === "" || maxAttempts === "") {
-        this.addTestResult.innerHTML = `<alert-component type="warning" message="Please fill all fields"></alert-component>`;
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="Please fill all fields" timeout="2000"></alert-component>`;
         return;
     }
+    
+    if (timeLimit <= 0 || maxAttempts < 1) {
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="Time limit and Max attempt values must be positive" timeout="3000"></alert-component>`;
+        return;
+    }
+
 
     const requestBody = {
         quizId: parseInt(quizId),
@@ -91,7 +94,7 @@ export class AddTest extends BaseComponent {
     const success = await this.testsService.createTest(requestBody);
     if (success) {
         this.addTestResult.innerHTML = `
-        <alert-component type="success" message="Test created successfully"></alert-component>
+        <alert-component type="success" message="Test created successfully" timeout="2000"></alert-component>
         `
         this.dispatchEvent(new CustomEvent("test-created", {
             bubbles: true,
@@ -99,7 +102,7 @@ export class AddTest extends BaseComponent {
         }))
     } else {
         this.addTestResult.innerHTML = `
-        <alert-component type="warning" message="Error during test creation"></alert-component>
+        <alert-component type="danger" message="Error during test creation" timeout="3000"></alert-component>
         `
     }
   }

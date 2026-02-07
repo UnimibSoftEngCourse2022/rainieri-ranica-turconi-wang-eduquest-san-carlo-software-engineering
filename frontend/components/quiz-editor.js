@@ -67,7 +67,7 @@ export class QuizEditor extends BaseComponent {
         this.quizDescriptionInput.value = quizData.description;
         this.showQuizQuestions(quizData.questions);
     } else {
-        this.innerHTML = `<alert-component type="danger" message="Error trying to show the quiz, please try again later"></alert-component>`;
+        this.innerHTML = `<alert-component type="danger" message="Error trying to show the quiz, please try again later" timeout="5000"></alert-component>`;
     }
   }
 
