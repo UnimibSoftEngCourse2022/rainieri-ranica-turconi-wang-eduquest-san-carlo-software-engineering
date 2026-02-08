@@ -321,6 +321,8 @@ class QuizAttemptServicesTest {
         OpenQuestionAcceptedAnswer validQ3 = new OpenQuestionAcceptedAnswer("Rome");
         q3.addAnswer(validQ3); 
         OpenAnswer a3 = new OpenAnswer(attempt, q3, "Berlin");
+        
+        quiz.setQuestions(Arrays.asList(q1, q2, q3));
 
         attempt.setAnswers(Arrays.asList(a1, a2, a3));
 
@@ -486,11 +488,16 @@ class QuizAttemptServicesTest {
         Student student = new Student(); student.setId(userId); student.setName("A"); student.setSurname("B");
         Quiz quiz = new Quiz(); quiz.setId(11L); quiz.setTitle("Title");
         
+        Question dummyQuestion = new OpenQuestion(); 
+        dummyQuestion.setId(999L);
+        quiz.setQuestions(Collections.singletonList(dummyQuestion));
+        
         QuizAttempt attempt = new QuizAttempt(student, quiz);
         attempt.setId(attemptId);
         attempt.setStatus(QuizAttemptStatus.STARTED);
 
         Answer weirdAnswer = new Answer() {};
+        weirdAnswer.setQuestion(dummyQuestion);
         attempt.addAnswer(weirdAnswer);
 
         when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
