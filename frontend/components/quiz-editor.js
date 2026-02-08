@@ -93,18 +93,23 @@ export class QuizEditor extends BaseComponent {
     let questionsHTML = ``;
     questions.forEach(q => {
         const questionRelativeStats = quizData.quizStats.statsPerQuestion[q.id];
-        const questionRelativePercentage = questionRelativeStats.totalAnswers ? questionRelativeStats.correctAnswer / questionRelativeStats.totalAnswers : 0;
-        const questionRelativeStatsHTML = `
-        ${questionRelativeStats.correctAnswer} correct answer, ${questionRelativeStats.totalAnswers} 
-        total attempts (${questionRelativePercentage * 100}%)
-        `;
-        const questionRelativeStatsColor = questionRelativePercentage > 0.6 ? `success` : `danger`
+        let questionRelativeStatsHTML = ``;
+        if (questionRelativeStats) {
+            const questionRelativePercentage = questionRelativeStats.totalAnswers ? questionRelativeStats.correctAnswer / questionRelativeStats.totalAnswers : 0;
+            const questionRelativeStatsColor = questionRelativePercentage > 0.6 ? `success` : `danger`;
+            questionRelativeStatsHTML = `
+            <span class="badge text-bg-${questionRelativeStatsColor}">
+            ${questionRelativeStats.correctAnswer} correct answer, ${questionRelativeStats.totalAnswers}
+            total attempts (${questionRelativePercentage * 100}%)
+            </span>
+            `;
+        }
 
         questionsHTML +=`
         <a class="list-group-item list-group">
             ${q.text}
             <button class="btn remove-question-from-quiz-button" data-id="${q.id}">🗑️</button>
-            <span class="badge text-bg-${questionRelativeStatsColor}">${questionRelativeStatsHTML}</span>
+            ${questionRelativeStatsHTML}
         </a>
         `;
     });
