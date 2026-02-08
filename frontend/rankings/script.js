@@ -12,7 +12,7 @@ window.onload = async () => {
     const pageDiv = document.getElementById("page");
     pageDiv.style.display = "block";
   } else {
-    window.location = LOGIN_PAGE;
+    globalThis.location = LOGIN_PAGE;
   }
 
   const rankingElement = document.querySelector("ranking-viewer");

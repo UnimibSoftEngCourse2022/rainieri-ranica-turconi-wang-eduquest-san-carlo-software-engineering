@@ -7,7 +7,7 @@ export class QuestionsViewer extends BaseComponent {
   setupComponent() {
     this.quizId = this.getAttribute("quizId");
     this.authorId = this.getAttribute("authorId");
-    this.role = this.getAttribute("role");
+    this.userRole = this.getAttribute("userRole");
     this.allQuestions = [];
 
     this.questionsService = new QuestionsService();
@@ -80,7 +80,7 @@ export class QuestionsViewer extends BaseComponent {
     });
 
     this.querySelectorAll('.add-question-to-quiz-button').forEach(btn => {
-      btn.onclick = () => this.addQuestionToQuiz(btn.getAttribute('data-id'));
+      btn.onclick = () => this.addQuestionToQuiz(btn.dataset.id);
     });
   }
 
@@ -104,7 +104,7 @@ export class QuestionsViewer extends BaseComponent {
         <h5 class="card-title">${question.text}</h5>
         ${difficultyBannerHTML} <br>
         Answers: ${answers} <br>
-        ${this.role == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
+        ${this.userRole == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
         <div id="add-question-${question.id}-result"></div>
         <hr>
         <p>Number of given answers: ${question.stats.totalAnswers} | Success rate: ${questionSuccessRate * 100}%</p>

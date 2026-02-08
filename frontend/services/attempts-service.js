@@ -34,12 +34,20 @@ export class AttemptsService {
     }
 
     async saveAttemptAnswer(attemptId, answer) {
-        const response = await callApi(`${endpoints.attempts}/${attemptId}/answers`, "PUT", answer);
-        return await response.json();
+        try {
+            const response = await callApi(`${endpoints.attempts}/${attemptId}/answers`, "PUT", answer);
+            return await response.json();
+        } catch (e) {
+
+        }
     }
 
     async completeAttemptAnswer(attemptId) {
-        const response = await callApi(`${endpoints.attempts}/${attemptId}/complete`, "POST");
-        return await response.json();
+        try {
+            const response = await callApi(`${endpoints.attempts}/${attemptId}/complete`, "POST");
+            return await response.json();
+        } catch (e) {
+            
+        }
     }
 }

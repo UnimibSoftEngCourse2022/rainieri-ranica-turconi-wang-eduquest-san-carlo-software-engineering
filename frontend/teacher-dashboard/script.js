@@ -1,9 +1,9 @@
 import { verifyUser } from "../js/auth.js";
-import { Quiz } from "../components/quiz-item.js";
-import { QuizzesViewer } from "../components/quizzes-viewer.js";
-import { TestsViewer } from "../components/tests-viewer.js";
-import { AddQuiz } from "../components/add-quiz.js";
-import { AddTest } from "../components/add-test.js";
+import "../components/quiz-item.js";
+import "../components/quizzes-viewer.js";
+import "../components/tests-viewer.js";
+import "../components/add-quiz.js";
+import "../components/add-test.js";
 
 
 const LOGIN_PAGE = "../login/index.html";
@@ -47,6 +47,6 @@ window.onload = async () => {
         <tests-viewer user-id=${userData.id} role="TEACHER"></tests-viewer>
         `
     } else {
-        window.location.href = LOGIN_PAGE;
+        globalThis.location.href = LOGIN_PAGE;
     }
 };

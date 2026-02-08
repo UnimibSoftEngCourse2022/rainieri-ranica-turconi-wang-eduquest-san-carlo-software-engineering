@@ -204,19 +204,8 @@ export class AddQuestion extends BaseComponent {
         const validAnswersOpenQuestion = validAnswersOpenQuestionRaw.map(s => s.trim());
         requestBody.validAnswersOpenQuestion = validAnswersOpenQuestion;
     } else {
-        const closedOptions = []
-        for (let i = 0; i < this.nClosedQuestionOptions; i++) {
-            const textInput = this.querySelector(`#closed-option-${i}-text`);
-            const checkbox = this.querySelector(`#closed-option-${i}-is-true`);
-            if (textInput && checkbox) {
-                const text = textInput.value.trim();
-                const isTrue = checkbox.checked;
-                if (text !== "") { 
-                    closedOptions.push({ text, isTrue });
-                }
-            }
-        }
-        requestBody.closedQuestionOptions = closedOptions
+        const closedOptions = this.getWrittenClosedOptions();
+        requestBody.closedQuestionOptions = closedOptions;
     }
 
     const formData = new FormData();
@@ -230,6 +219,22 @@ export class AddQuestion extends BaseComponent {
     }
 
     this.submitData(formData);
+  }
+
+  getWrittenClosedOptions() {
+    const closedOptions = []
+    for (let i = 0; i < this.nClosedQuestionOptions; i++) {
+        const textInput = this.querySelector(`#closed-option-${i}-text`);
+        const checkbox = this.querySelector(`#closed-option-${i}-is-true`);
+        if (textInput && checkbox) {
+            const text = textInput.value.trim();
+            const isTrue = checkbox.checked;
+            if (text !== "") { 
+                closedOptions.push({ text, isTrue });
+            }
+        }
+    }
+    return closedOptions;
   }
 
   async submitData(formData) {

@@ -68,7 +68,7 @@ export class QuizzesAttemptsViewer extends BaseComponent {
         <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
            onclick="sessionStorage.setItem('currentQuizId', '${att.quizId}'); 
                     sessionStorage.setItem('currentTestId', '${att.testId || ''}'); 
-                    window.location.hash = '#quiz-runner'; return false;">
+                    globalThis.location.hash = '#quiz-runner'; return false;">
             ${att.quizTitle}
             <span class="badge text-bg-secondary">${att.status}</span>
         </a>`;

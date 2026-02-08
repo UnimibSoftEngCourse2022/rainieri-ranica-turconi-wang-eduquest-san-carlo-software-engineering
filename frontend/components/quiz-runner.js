@@ -216,7 +216,7 @@ export class QuizRunner extends BaseComponent {
   renderHeader() {
     if (!this.attemptData) return;
     const [startDate, completeStartTime] = this.attemptData.startedAt.split("T")
-    const [startTime, _] = completeStartTime.split(".")
+    const [startTime] = completeStartTime.split(".")
     this.quizHeader.innerHTML = `<h4>${this.attemptData.quizTitle}</h4>Started at: ${startTime}, ${startDate}`
   }
 
@@ -303,14 +303,10 @@ export class QuizRunner extends BaseComponent {
       await this.handleSaveAnswerToCurrentQuestion();
     }
 
-    try {
-      const response = await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
-      if (response) {
-        window.location.href = window.location.pathname;
-      } else {
-        throw new Error("Submission failed");
-      }
-    } catch (e) {
+    const response = await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
+    if (response) {
+      globalThis.location.href = globalThis.location.pathname;
+    } else {
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = "Finish Quiz";
@@ -321,8 +317,8 @@ export class QuizRunner extends BaseComponent {
     }
   }
 
-  async showMaxAttemptsView(customMessage) { 
-    const displayMessage = customMessage || "Max attempts reached for this test.";
+  async showMaxAttemptsView(customMessage="Max attempts reached for this test.") { 
+    const displayMessage = customMessage;
 
     this.innerHTML = `
         <div class="container text-center mt-5">

@@ -17,7 +17,7 @@ let userData = null;
 
 const handleNavigation = () => {
     const pageDiv = document.getElementById("page");
-    const isRunner = window.location.hash === '#quiz-runner';
+    const isRunner = globalThis.location.hash === '#quiz-runner';
     
     Array.from(pageDiv.children).forEach(child => {
         if (child.tagName !== 'QUIZ-RUNNER') {
@@ -37,7 +37,7 @@ const handleNavigation = () => {
 
 window.onload = async () => {
     userData = await verifyUser(STUDENT_ROLE);
-    if (!userData) { window.location.href = LOGIN_PAGE; return; }
+    if (!userData) { globalThis.location.href = LOGIN_PAGE; return; }
 
     const pageDiv = document.getElementById("page");
     pageDiv.style.display = "block";

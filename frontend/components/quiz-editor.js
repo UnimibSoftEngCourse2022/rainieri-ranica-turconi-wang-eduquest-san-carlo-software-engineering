@@ -67,7 +67,7 @@ export class QuizEditor extends BaseComponent {
         <div id="stats"></div>
         <hr>
         <h3>Add a question</h3>
-        <questions-viewer role="TEACHER" quizId="${this.quizId}"></questions-viewer>
+        <questions-viewer userRole="TEACHER" quizId="${this.quizId}"></questions-viewer>
     </div>
     `;
   }

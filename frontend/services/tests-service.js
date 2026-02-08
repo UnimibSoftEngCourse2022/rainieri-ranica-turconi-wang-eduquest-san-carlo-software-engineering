@@ -37,11 +37,7 @@ export class TestsService {
     async deleteTest(testId) {
         try {
             const response = await callApi(`${endpoints.tests}/${testId}`, "DELETE");
-            if (response.ok) {
-                return true;
-            } else {
-                return false;
-            }
+            return response.ok;
         } catch (e) {
             return false;
         }

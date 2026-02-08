@@ -21,11 +21,11 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-question-modal">
                 Add question
             </button>
-            <div class="modal fade" id="add-question-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="add-question-modal" tabindex="-1" aria-labelledby="add-question-modal-label" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add question</h1>
+                        <h1 class="modal-title fs-5" id="add-question-modal-label">Add question</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -58,11 +58,11 @@
                  <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#add-challenge-modal">
                     Add a challenge
                 </button>
-                <div class="modal fade" id="add-challenge-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="add-challenge-modal" tabindex="-1" aria-labelledby="add-challenge-modal-label" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add challenge</h1>
+                                <h1 class="modal-title fs-5" id="add-challenge-modal-label">Add challenge</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -76,7 +76,7 @@
 
             <div class="container text-center my-5" id="questions-container">
                 <h1>Your questions</h1>
-                <questions-viewer role="STUDENT"></questions-viewer>
+                <questions-viewer userRole="STUDENT"></questions-viewer>
             </div>
         </div>
 

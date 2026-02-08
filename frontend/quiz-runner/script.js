@@ -12,14 +12,14 @@ window.onload = async () => {
   if (userData) {
     pageDiv.style.display = "block";
   } else {
-    window.location = LOGIN_PAGE;
+    globalThis.location = LOGIN_PAGE;
     return;
   }
 
-  const url = new URL(window.location);
+  const url = new URL(globalThis.location);
   const quizId = url.searchParams.get("quizAttemptId");
   if (quizId == null) {
-    window.location = LOGIN_PAGE;
+    globalThis.location = LOGIN_PAGE;
     return;
   }
   

@@ -37,7 +37,7 @@ const handleLoginSubmit = async (event) => {
     } else if (data.role == TEACHER_ROLE) {
       destination = "../teacher-dashboard/";
     }
-    window.location = destination;
+    globalThis.location = destination;
   } else {
       const resultDiv = document.getElementById(LOGIN_RESULT_TAG_ID);
       resultDiv.innerHTML = LOGIN_ERROR_DIV;

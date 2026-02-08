@@ -11,13 +11,13 @@ window.onload = async () => {
   if (loggedUserData) {
     pageDiv.style.display = "block";
   } else {
-    window.location = LOGIN_PAGE;
+    globalThis.location = LOGIN_PAGE;
     return;
   }
 
   createSearchBar(pageDiv);
 
-  let url = new URL(window.location);
+  let url = new URL(globalThis.location);
   let searchedUserId = url.searchParams.get("id");
 
   const searchedUserData = await new UsersService().getUserInfoById(searchedUserId);
@@ -54,9 +54,9 @@ const createSearchBar = (root) => {
       return;
     }
 
-    const url = new URL(window.location.href);
+    const url = new URL(globalThis.location.href);
     url.searchParams.set("id", newUserId);
 
-    window.location.href = url.toString();
+    globalThis.location.href = url.toString();
   })
 }

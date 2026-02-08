@@ -3,7 +3,7 @@ export class CollapsiblePanel extends HTMLElement {
         const originalContent = this.innerHTML;
         const title = this.getAttribute('title') || 'Menu';
         const startOpen = this.hasAttribute('open');
-        const uniqueId = 'collapse-' + Math.random().toString(36).substr(2, 9);
+        const uniqueId = 'collapse-' + Math.random().toString(36).substring(2, 9);
         const showClass = startOpen ? 'show' : '';
         const expandedAttr = startOpen ? 'true' : 'false';
 
