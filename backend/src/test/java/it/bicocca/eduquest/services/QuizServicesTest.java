@@ -94,7 +94,7 @@ class QuizServicesTest {
     }
 
     @Test
-    void addQuiz_ShouldThrowException_WhenUserIsStudent() {
+    void addQuizUserIsStudent() {
         QuizAddDTO dto = new QuizAddDTO();
         when(usersRepository.findById(2L)).thenReturn(Optional.of(student));
 
@@ -104,7 +104,7 @@ class QuizServicesTest {
     }
 
     @Test
-    void getQuizById_ShouldReturnDtoWithStats() {
+    void getQuizByIdReturnDtoWithStats() {
         when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
         when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quiz)).thenReturn(8.5);
         when(quizAttemptsRepository.countByQuizAndTestIsNull(quiz)).thenReturn(10L);
@@ -117,13 +117,13 @@ class QuizServicesTest {
     }
 
     @Test
-    void getQuizById_ShouldThrowException_WhenNotFound() {
+    void getQuizByIdNotFound() {
         when(quizRepository.findById(99L)).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> quizServices.getQuizById(99L));
     }
 
     @Test
-    void editQuiz_ShouldUpdate_WhenUserIsAuthor() {
+    void editQuizUserIsAuthor() {
         QuizEditDTO editDTO = new QuizEditDTO();
         editDTO.setTitle("New Title");
         editDTO.setDescription("New Desc");
@@ -139,7 +139,7 @@ class QuizServicesTest {
     }
 
     @Test
-    void editQuiz_ShouldThrowException_WhenUserIsNotAuthor() {
+    void editQuizUserIsNotAuthor() {
         QuizEditDTO editDTO = new QuizEditDTO();
         when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
 
@@ -149,7 +149,7 @@ class QuizServicesTest {
     }
 
     @Test
-    void addQuestion_ShouldCreateOpenQuestion() {
+    void addQuestionCreateOpenQuestion() {
         QuestionAddDTO dto = new QuestionAddDTO();
         dto.setQuestionType(QuestionType.OPENED);
         dto.setText("What is 2+2?");
@@ -174,7 +174,7 @@ class QuizServicesTest {
     }
 
     @Test
-    void addQuestion_ShouldCreateClosedQuestion() {
+    void addQuestionCreateClosedQuestion() {
         QuestionAddDTO dto = new QuestionAddDTO();
         dto.setQuestionType(QuestionType.CLOSED);
         dto.setText("Choose color");
@@ -201,7 +201,7 @@ class QuizServicesTest {
     }
     
     @Test
-    void addQuestion_WithImage_ShouldSaveMultimedia() {
+    void addQuestionMultimedia() {
         QuestionAddDTO dto = new QuestionAddDTO();
         dto.setQuestionType(QuestionType.OPENED);
         dto.setText("Describe image");
@@ -231,7 +231,7 @@ class QuizServicesTest {
     }
 
     @Test
-    void addQuestionToQuiz_ShouldAddAndRecalculate() {
+    void addQuestionToQuizAndRecalculate() {
         OpenQuestion question = new OpenQuestion("Q1", "Topic", teacher, Difficulty.EASY);
         question.setId(100L);
 
@@ -250,7 +250,7 @@ class QuizServicesTest {
     }
     
     @Test
-    void addQuestionToQuiz_ShouldThrow_IfQuestionAlreadyPresent() {
+    void addQuestionToQuizQuestionAlreadyPresent() {
         OpenQuestion question = new OpenQuestion("Q1", "Topic", teacher, Difficulty.EASY);
         question.setId(100L);
         quiz.addQuestion(question); 
@@ -264,7 +264,7 @@ class QuizServicesTest {
     }
 
     @Test
-    void removeQuestionFromQuiz_ShouldRemove() {
+    void removeQuestionFromQuiz() {
         OpenQuestion question = new OpenQuestion("Q1", "Topic", teacher, Difficulty.EASY);
         question.setId(100L);
         quiz.addQuestion(question); 
@@ -282,7 +282,7 @@ class QuizServicesTest {
     }
     
     @Test
-    void getQuizForStudent_ShouldSanitizeCorrectAnswers() {
+    void getQuizForStudentCorrectAnswers() {
         ClosedQuestion cq = new ClosedQuestion("Q1", "Topic", teacher, Difficulty.MEDIUM);
         cq.setId(200L);
         cq.addOption(new ClosedQuestionOption("Right", true));
