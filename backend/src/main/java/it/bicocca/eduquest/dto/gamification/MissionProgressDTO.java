@@ -39,7 +39,7 @@ public class MissionProgressDTO {
 	public int currentCount;
 	public int goal;
 	private boolean isCompleted;
-	private MissionDTO mission;
+	public MissionDTO mission;
 	private long studentId;
 	
 }
