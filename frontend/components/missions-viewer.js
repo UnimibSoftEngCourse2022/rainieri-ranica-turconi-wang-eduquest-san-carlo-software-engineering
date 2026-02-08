@@ -2,6 +2,7 @@ import { UsersService } from "../services/users-service.js";
 import { BaseComponent } from "./base-component.js";
 import { GamificationService } from "../services/gamification-service.js";
 import { Alert } from "./shared/alert.js";
+import "./shared/collapsible-panel.js";
 
 export class MissionsViewer extends BaseComponent {
     setupComponent() {
@@ -16,7 +17,11 @@ export class MissionsViewer extends BaseComponent {
             return;
         }
 
-        this.innerHTML = `<div class="row g-4 justify-content-center" id="missions-container"></div>`;
+        this.innerHTML = `
+        <collapsible-panel title=" " open>
+            <div class="row g-4 justify-content-center" id="missions-container"></div>
+        </collapsible-panel>
+        `;
         const missionsContainer = this.querySelector("#missions-container");
 
         missionsProgresses.forEach(missionProgress => {

@@ -2,6 +2,7 @@ import { QuestionsService } from "../services/questions-service.js";
 import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
 import { Alert } from "./shared/alert.js";
+import "./shared/collapsible-panel.js";
 
 export class QuestionsViewer extends BaseComponent {
   setupComponent() {
@@ -39,30 +40,14 @@ export class QuestionsViewer extends BaseComponent {
 
   render() {
     this.innerHTML = `
-    <style>
-        [aria-expanded="true"] .arrow-down { display: none; }
-        [aria-expanded="true"] .arrow-up   { display: block; }
-        [aria-expanded="false"] .arrow-down { display: block; }
-        [aria-expanded="false"] .arrow-up   { display: none; }
-    </style>
-    <div class="mb-4">
-        <div class="d-flex justify-content-between align-items-center border-bottom pb-2" 
-             style="cursor: pointer;" 
-             data-bs-toggle="collapse" 
-             data-bs-target="#questionsCollapse" 
-             aria-expanded="true"> <h3 class="m-0"></h3>
-            <svg class="arrow-down" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            <svg class="arrow-up" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-        </div>
-        <div id="questionsCollapse" class="collapse show mt-3 justify-content-center">
+    <collapsible-panel title=" " open>
           <div class="row mb-3">
               <div class="col-md-6 mx-auto">
                  <input type="text" id="search-input" class="form-control" placeholder="Search question...">
               </div>
           </div>
           <div id="questions" class="row g-4"></div>
-        </div>
-    </div>
+    </collapsible-panel>
     `;
   }
 

@@ -2,6 +2,7 @@ import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
 import { Quiz } from "./quiz-item.js"
 import { Alert } from "./shared/alert.js";
+import "./shared/collapsible-panel.js";
 
 
 export class QuizzesViewer extends BaseComponent {
@@ -34,18 +35,20 @@ export class QuizzesViewer extends BaseComponent {
 
   render() {
     this.innerHTML = `
-    <div class="container my-5 text-center">
-        <div class="row justify-content-center mb-4">
-            <div class="col-md-6">
-                <input type="text" id="search-input" class="form-control" placeholder="Quiz Title">
-            </div>
-        </div>
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div id="message-container"></div>
-        <div class="row g-4 justify-content-center" id="quizzes-container"></div>
-    </div>
+    <collapsible-panel title=" " open>
+      <div class="container my-5 text-center">
+          <div class="row justify-content-center mb-4">
+              <div class="col-md-6">
+                  <input type="text" id="search-input" class="form-control" placeholder="Quiz Title">
+              </div>
+          </div>
+          <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+          </div>
+          <div id="message-container"></div>
+          <div class="row g-4 justify-content-center" id="quizzes-container"></div>
+      </div>
+    </collapsible-panel>
     `;
   }
 

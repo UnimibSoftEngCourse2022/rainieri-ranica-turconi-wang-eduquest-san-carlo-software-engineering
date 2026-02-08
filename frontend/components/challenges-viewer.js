@@ -4,6 +4,7 @@ import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
 import { Quiz } from "./quiz-item.js"
 import { Alert } from "./shared/alert.js";
+import "./shared/collapsible-panel.js";
 
 
 export class ChallengesViewer extends BaseComponent {
@@ -15,7 +16,7 @@ export class ChallengesViewer extends BaseComponent {
   }
 
   render() {
-    this.innerHTML = '<div id="challenges-container" class="row g-4"></div>';
+    this.innerHTML = '<collapsible-panel title=" " open><div id="challenges-container" class="row g-4"></div></collapsible-panel>';
   }
 
   attachEventListeners() {

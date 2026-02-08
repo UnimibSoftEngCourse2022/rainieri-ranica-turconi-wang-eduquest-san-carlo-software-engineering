@@ -1,6 +1,7 @@
 import { AttemptsService } from "../services/attempts-service.js";
 import { BaseComponent } from "./base-component.js";
 import { Alert } from "./shared/alert.js";
+import "./shared/collapsible-panel.js";
 
 export class QuizzesAttemptsViewer extends BaseComponent {
   setupComponent() {
@@ -21,7 +22,9 @@ export class QuizzesAttemptsViewer extends BaseComponent {
 
   render() {
     this.innerHTML = `
-    <div id="quizzes-attempts" class="container"></div>
+    <collapsible-panel title=" " open>
+      <div id="quizzes-attempts" class="container"></div>
+    </collapsible-panel>
     `;
   }
 

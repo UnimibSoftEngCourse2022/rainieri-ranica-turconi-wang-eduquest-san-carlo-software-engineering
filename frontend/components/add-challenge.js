@@ -71,13 +71,13 @@ export class AddChallenge extends BaseComponent {
     const response = await this.gamificationService.addChallenge(opponentId, quizId, duration);
     if (response) {
         this.addChallengeResult.innerHTML = `
-        <alert-component type="success" message="Challenge added correctly"></alert-component>
+        <alert-component type="success" message="Challenge added correctly" timeout="2000"></alert-component>
         `;
         this.addChallengeForm.reset();
         this.dispatchCustomEvent("challenge-added");
     } else {
         this.addChallengeResult.innerHTML = `
-        <alert-component type="danger" message="Error adding the challenge"></alert-component>
+        <alert-component type="danger" message="Error adding the challenge" timeout="2000"></alert-component>
         `;
     }
   }

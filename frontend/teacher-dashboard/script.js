@@ -38,12 +38,12 @@ window.onload = async () => {
         }
 
         document.getElementById("quizzes-container").innerHTML = `
-        <h1>All quizzes</h1>
+        <h1>Your quizzes</h1>
         <quizzes-viewer user-id=${userData.id} role="TEACHER"></quizzes-viewer>
         `
 
         document.getElementById("tests-container").innerHTML = `
-        <h1>All tests</h1>
+        <h1>Your tests</h1>
         <tests-viewer user-id=${userData.id} role="TEACHER"></tests-viewer>
         `
     } else {
