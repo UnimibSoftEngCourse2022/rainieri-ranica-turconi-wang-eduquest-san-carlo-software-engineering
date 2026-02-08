@@ -4,7 +4,7 @@ import it.bicocca.eduquest.domain.answers.*;
 import org.springframework.context.ApplicationEvent;
 
 public class QuizCompletedEvent extends ApplicationEvent {
-	private final QuizAttempt attempt;
+	private final transient QuizAttempt attempt;
 
     public QuizCompletedEvent(Object source, QuizAttempt attempt) {
         super(source);

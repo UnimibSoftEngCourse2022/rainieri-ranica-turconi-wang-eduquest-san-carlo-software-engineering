@@ -133,7 +133,6 @@ public class QuizAttemptController {
 		try {
 			return ResponseEntity.ok(quizAttemptServices.completeQuizAttempt(quizAttemptId, loggedId));	
 		} catch (NullPointerException e) {
-			String msg = e.getMessage();
 			return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
 		} catch (RuntimeException e) {
 			String msg = e.getMessage();
