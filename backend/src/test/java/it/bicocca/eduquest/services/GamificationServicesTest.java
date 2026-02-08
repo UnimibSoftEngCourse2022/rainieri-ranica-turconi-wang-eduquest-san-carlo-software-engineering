@@ -141,4 +141,120 @@ class GamificationServicesTest {
             return currentProgress + 1;
         }
     }
+    
+    @Test
+    void updateMissionsProgressesAlreadyCompleted() {
+        Student student = new Student(); student.setId(1L);
+        QuizAttempt attempt = new QuizAttempt(); attempt.setStudent(student);
+
+        Mission mission = createMission(10L, "Done", 10);
+        MissionProgress progress = new MissionProgress(mission, student, 10);
+        progress.setCompleted(true); 
+
+        when(missionsRepository.findAll()).thenReturn(List.of(mission));
+        
+        lenient().when(missionsProgressesRepository.findByMissionIdAndStudentId(10L, 1L))
+            .thenReturn(List.of(progress));
+        
+        when(missionsProgressesRepository.findByStudentId(1L))
+            .thenReturn(List.of(progress));
+
+        gamificationServices.updateMissionsProgresses(attempt);
+
+        verify(missionsProgressesRepository, never()).save(progress);
+    }
+
+    @Test
+    void updateMissionsProgressesGoalNotReached() {
+        Student student = new Student(); student.setId(1L);
+        QuizAttempt attempt = new QuizAttempt(); attempt.setStudent(student);
+
+        Mission mission = createMission(10L, "Ongoing", 10); 
+        
+        MissionProgress progress = new MissionProgress(mission, student, 10);
+        progress.setCurrentCount(2);
+        progress.setCompleted(false);
+
+        when(missionsRepository.findAll()).thenReturn(List.of(mission));
+        lenient().when(missionsProgressesRepository.findByMissionIdAndStudentId(10L, 1L))
+            .thenReturn(List.of(progress));
+        when(missionsProgressesRepository.findByStudentId(1L))
+            .thenReturn(List.of(progress));
+
+        gamificationServices.updateMissionsProgresses(attempt);
+
+        ArgumentCaptor<MissionProgress> captor = ArgumentCaptor.forClass(MissionProgress.class);
+        verify(missionsProgressesRepository).save(captor.capture());
+
+        MissionProgress saved = captor.getValue();
+        assertEquals(3, saved.getCurrentCount(), "Dovrebbe incrementare da 2 a 3");
+        assertFalse(saved.isCompleted(), "Non dovrebbe essere completata (3 < 10)");
+    }
+
+    @Test
+    void refreshWeeklyMissionsSelect4NewRandomly() {
+        long userId = 1L;
+
+        List<Mission> allMissions = new java.util.ArrayList<>();
+        for (long i = 1; i <= 6; i++) {
+            allMissions.add(createMission(i, "Mission " + i, 10));
+        }
+
+        when(missionsRepository.findAll()).thenReturn(allMissions);
+
+        gamificationServices.refreshWeeklyMissions(userId);
+
+        verify(missionsProgressesRepository).deleteByStudentId(userId);
+
+        verify(missionsProgressesRepository, times(4)).save(any(MissionProgress.class));
+    }
+    
+    @Test
+    void updateMissionsProgressesSkipCompleted() {
+        Student student = new Student(); student.setId(1L);
+        QuizAttempt attempt = new QuizAttempt(); attempt.setStudent(student);
+
+        Mission mission = mock(Mission.class);
+        lenient().when(mission.getId()).thenReturn(10L); 
+        
+        MissionProgress progress = new MissionProgress(mission, student, 10);
+        progress.setCompleted(true); 
+        when(missionsRepository.findAll()).thenReturn(Collections.emptyList());
+        
+        when(missionsProgressesRepository.findByStudentId(1L))
+            .thenReturn(List.of(progress));
+
+        gamificationServices.updateMissionsProgresses(attempt);
+
+        verify(missionsProgressesRepository, never()).save(progress);
+        verify(mission, never()).getProgress(anyInt(), any());
+    }
+
+    @Test
+    void updateMissionsProgressesButNotComplete() {
+        Student student = new Student(); student.setId(1L);
+        QuizAttempt attempt = new QuizAttempt(); attempt.setStudent(student);
+
+        Mission mission = mock(Mission.class);
+        lenient().when(mission.getId()).thenReturn(10L);
+        lenient().when(mission.getGoal()).thenReturn(100); 
+        
+        when(mission.getProgress(eq(0), any(QuizAttempt.class))).thenReturn(50);
+
+        MissionProgress progress = new MissionProgress(mission, student, 100);
+        progress.setCurrentCount(0);
+        progress.setCompleted(false);
+
+        when(missionsRepository.findAll()).thenReturn(Collections.emptyList());
+        when(missionsProgressesRepository.findByStudentId(1L)).thenReturn(List.of(progress));
+
+        gamificationServices.updateMissionsProgresses(attempt);
+
+        ArgumentCaptor<MissionProgress> captor = ArgumentCaptor.forClass(MissionProgress.class);
+        verify(missionsProgressesRepository).save(captor.capture());
+        
+        MissionProgress saved = captor.getValue();
+        assertEquals(50, saved.getCurrentCount()); 
+        assertFalse(saved.isCompleted()); 
+    }
 }
