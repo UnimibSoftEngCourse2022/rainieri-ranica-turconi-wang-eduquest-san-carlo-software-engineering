@@ -27,9 +27,10 @@ export class TestsViewer extends BaseComponent {
     if (searchInput) {
         searchInput.addEventListener("input", (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const filteredTests = this.allTests.filter(test => 
-                test.title.toLowerCase().includes(searchTerm)
-            );
+            const filteredTests = this.allTests.filter(test => {
+                const title = test.title || "";
+                return title.toLowerCase().includes(searchTerm)
+            });
             this.displayTests(filteredTests);
         });
     }
@@ -56,13 +57,29 @@ export class TestsViewer extends BaseComponent {
     const loader = this.querySelector(".spinner-border");
     const messageContainer = this.querySelector("#message-container");
     try {
-        const tests = await this.testsService.getTestsByAuthorId(this.userId);
-        
+        //const tests = await this.testsService.getTestsByAuthorId(this.userId);
+        let tests = [];
+
+        if (this.role === "TEACHER") {
+            tests = await this.testsService.getTestsByAuthorId(this.userId);
+        } else {
+            tests = await this.testsService.getTests();
+        }
+
+        this.allTests = tests || [];
+
+        if (loader) loader.style.display = "none";
+
+        if (messageContainer) messageContainer.innerHTML = "";
+
         if (!tests || tests.length == 0) {
             //this.innerHTML = `<alert-component type="warning" message="There are no active tests to display"></alert-component>`
             //messageContainer.innerHTML = `<alert-component type="warning" message="There are no active tests to display"></alert-component>`
             if (messageContainer) {
-                messageContainer.innerHTML = `<alert-component type="warning" message="There are no active tests to display"></alert-component>`;
+                const msg = this.role === "TEACHER" 
+                    ? "You haven't created any tests yet." 
+                    : "There are no active tests to display.";
+                messageContainer.innerHTML = `<alert-component type="warning" message="${msg}"></alert-component>`;
             }
         } else {
             /*this.innerHTML = `<div class="row g-4" id="tests-inner-container"></div>`;
@@ -82,7 +99,12 @@ export class TestsViewer extends BaseComponent {
         }
     } catch (e) {
       console.log(e);
-        this.innerHTML = `<alert-component type="danger" message="Cannot get the tests list, please try again later"></alert-component>`
+        //this.innerHTML = `<alert-component type="danger" message="Cannot get the tests list, please try again later"></alert-component>`
+        if (loader) loader.style.display = "none";
+        
+        if (messageContainer) {
+            messageContainer.innerHTML = `<alert-component type="danger" message="Cannot get the tests list, please try again later"></alert-component>`;
+        }
     }
   }
 
