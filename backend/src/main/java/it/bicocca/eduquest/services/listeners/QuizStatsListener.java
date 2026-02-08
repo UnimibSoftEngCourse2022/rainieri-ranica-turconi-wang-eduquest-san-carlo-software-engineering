@@ -32,8 +32,6 @@ public class QuizStatsListener {
         	quizStats.updateStats(attempt.getScore());
         }
 
-        quizRepository.save(quiz);
-
         for (Question question : quiz.getQuestions()) {
         	Answer givenAnswer = null;
         	for (Answer answer : attempt.getAnswers()) {

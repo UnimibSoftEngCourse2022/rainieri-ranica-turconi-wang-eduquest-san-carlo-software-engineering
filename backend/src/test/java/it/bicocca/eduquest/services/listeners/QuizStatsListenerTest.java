@@ -46,11 +46,15 @@ class QuizStatsListenerTest {
         Question q1 = new Question() {}; 
         QuestionStats qStats1 = new QuestionStats();
         q1.setStats(qStats1);
+        q1.setId(1L);
 
         Question q2 = new Question() {};
         QuestionStats qStats2 = new QuestionStats();
         q2.setStats(qStats2);
+        q2.setId(2L);
 
+        quiz.setQuestions(Arrays.asList(q1, q2));
+        
         Answer a1 = mock(Answer.class);
         when(a1.getQuestion()).thenReturn(q1);
         when(a1.isCorrect()).thenReturn(true);
