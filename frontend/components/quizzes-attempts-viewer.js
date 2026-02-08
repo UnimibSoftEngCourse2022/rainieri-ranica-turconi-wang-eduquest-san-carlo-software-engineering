@@ -50,7 +50,7 @@ export class QuizzesAttemptsViewer extends BaseComponent {
 
   getQuizAttemptRow(quizAttempt) {
     if (quizAttempt.status == "COMPLETED") {
-      const quizResultPercentage = quizAttempt.score / quizAttempt.maxScore;
+      const quizResultPercentage = quizAttempt.score ? quizAttempt.score / quizAttempt.maxScore : 0;
       const badgeColor = quizResultPercentage > 0.6 ? "success" : "danger";
       return `
       <p class="list-group-item list-group"">

@@ -176,10 +176,11 @@ public class QuizAttemptServices {
 		quizAttempt.setFinishedAt(LocalDateTime.now());
 		quizAttempt.setStatus(QuizAttemptStatus.COMPLETED);
 		
+		Quiz quiz = quizAttempt.getQuiz();
 		List<Answer> answers = quizAttempt.getAnswers();
-		quizAttempt.setMaxScore(answers.size());
+		quizAttempt.setMaxScore(quiz.getQuestions().size());
 		
-		int score = calculateScore(answers);
+		int score = calculateScore(quiz, answers);
 		quizAttempt.setScore(score);
 		
 		quizAttemptsRepository.save(quizAttempt);
@@ -345,13 +346,25 @@ public class QuizAttemptServices {
         ((ClosedAnswer) answer).setChosenOption(selectedOption);
 	}
 	
-	
-	
-	private int calculateScore(List<Answer> answers) {
+	private int calculateScore(Quiz quiz, List<Answer> answers) {
 		int score = 0;
-		for (Answer a : answers) {
-			boolean isCorrect = isAnswerCorrect(a);
-			a.setCorrect(isCorrect);
+		for (Question question: quiz.getQuestions()) {
+			Answer answerForQuestion = null;
+			
+			for (Answer a : answers) {
+				if (a.getQuestion().getId() == question.getId()) {
+					answerForQuestion = a;
+				}
+			}
+			
+			if (answerForQuestion == null) {
+				// The user didn't give an answer for this question
+				score += 0;
+				continue;
+			}
+			
+			boolean isCorrect = isAnswerCorrect(answerForQuestion);
+			answerForQuestion.setCorrect(isCorrect);
 			if (isCorrect) {
 				score++;
 			}

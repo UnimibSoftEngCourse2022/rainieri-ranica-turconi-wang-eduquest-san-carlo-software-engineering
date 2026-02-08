@@ -10,7 +10,7 @@ export class Navbar extends BaseComponent {
     async render() {
       const user = await this.usersService.getMyUserInfo();
       if (!user) {
-        window.location = `../../`;
+        window.location = `../`;
         return;
       }
 

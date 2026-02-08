@@ -260,6 +260,10 @@ export class QuizRunner extends BaseComponent {
     
     const answer = this.questionRunner.answer;
 
+    if (!answer) {
+      return true;
+    }
+
     if (answer == null || answer == undefined || answer === "") {
       this.quizError.innerHTML = `
       <alert-component type="warning" message="Please provide an answer before proceeding."></alert-component>
