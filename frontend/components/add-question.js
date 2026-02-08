@@ -241,6 +241,11 @@ export class AddQuestion extends BaseComponent {
         `;
         this.addQuestionForm.reset();
         this.updateQuestionFields();
+
+        this.dispatchEvent(new CustomEvent('question-added', {
+            bubbles: true,
+            composed: true 
+        }));
     } else {
         this.addQuestionResult.innerHTML = `
         <alert-component type="danger" message="Error creating question" timeout="4000"></alert-component>
