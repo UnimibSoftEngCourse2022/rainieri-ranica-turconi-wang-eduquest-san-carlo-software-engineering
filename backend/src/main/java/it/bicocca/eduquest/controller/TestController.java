@@ -21,7 +21,7 @@ public class TestController {
     
     public TestController(TestServices testServices, JwtUtils jwtUtils) {
         this.testServices = testServices;
-		this.jwtUtils = new JwtUtils();
+        this.jwtUtils = jwtUtils; 
     }
 
     @PostMapping
