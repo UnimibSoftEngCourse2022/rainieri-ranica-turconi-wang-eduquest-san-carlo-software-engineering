@@ -24,11 +24,16 @@ public class GamificationServices {
 		this.missionsRepository = missionsRepository;
 	}
 	
-	public List<MissionProgressDTO> getAllMissionsProgressesByUserId(long userId) {
+	public List<MissionProgressDTO> getAllMissionsProgressesByUserId(long userId, boolean onlyCompleted) {
 		List<MissionProgressDTO> missionsProgresses = new ArrayList<MissionProgressDTO>();
 		
 		for (MissionProgress progress : missionsProgressesRepository.findByStudentId(userId)) {
 			Mission mission = progress.getMission();
+			
+			if (onlyCompleted && !progress.isCompleted()) {
+				continue;
+			}
+			
 			MissionDTO missionDTO = new MissionDTO(mission.getId(), mission.getTitle(), mission.getDescription(), mission.getGoal());
 			MissionProgressDTO progressDTO = new MissionProgressDTO(progress.getId(), progress.getCurrentCount(), progress.getGoal(), progress.isCompleted(), missionDTO, progress.getStudent().getId());
 			missionsProgresses.add(progressDTO);

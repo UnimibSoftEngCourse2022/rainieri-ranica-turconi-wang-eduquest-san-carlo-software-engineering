@@ -14,6 +14,7 @@ import it.bicocca.eduquest.services.GamificationServices;
 import it.bicocca.eduquest.services.MissionsServices;
 import it.bicocca.eduquest.services.RankingServices;
 import it.bicocca.eduquest.services.ChallengeServices;
+import it.bicocca.eduquest.domain.gamification.ChallengeStatus;
 import it.bicocca.eduquest.dto.gamification.*;
 
 @RestController
@@ -47,7 +48,17 @@ public class GamificationController {
         Long loggedId = Long.valueOf(loggedIdString);
         
 		try {
-            return ResponseEntity.ok(gamificationServices.getAllMissionsProgressesByUserId(loggedId));
+            return ResponseEntity.ok(gamificationServices.getAllMissionsProgressesByUserId(loggedId, false));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
+        }
+	}
+	
+	@GetMapping("/missions/progresses/{userId}")
+	public ResponseEntity<Object> getMissionsByUserId(Authentication authentication, @PathVariable Long userId, @RequestParam(required = false) boolean onlyCompleted) {
+       
+		try {
+            return ResponseEntity.ok(gamificationServices.getAllMissionsProgressesByUserId(userId, onlyCompleted));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
         }

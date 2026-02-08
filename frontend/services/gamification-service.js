@@ -2,11 +2,21 @@ import { callApi, endpoints } from "../js/api.js";
 import { appStore } from "../js/store.js";
 
 export class GamificationService {
-    async getUserMissionsProgresses(quizAttemptId) {
+    async getUserMissionsProgresses() {
         try {
             const response = await callApi(endpoints.missionsProgresses, "GET");
             const attempts = await response.json();
             return attempts;
+        } catch (e) {
+
+        }
+    }
+
+    async getUserCompletedMissions(userId) {
+        try {
+            const response = await callApi(endpoints.missionsProgresses+`/${userId}?onlyCompleted=true`);
+            const completedMissions = await response.json();
+            return completedMissions;
         } catch (e) {
 
         }

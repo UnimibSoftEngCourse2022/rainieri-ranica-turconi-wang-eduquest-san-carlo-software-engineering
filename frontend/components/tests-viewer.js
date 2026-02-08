@@ -47,7 +47,7 @@ export class TestsViewer extends BaseComponent {
             <span class="visually-hidden">Loading...</span>
         </div>
         <div id="message-container"></div>
-        <div class="row g-4" id="tests-container"></div>
+        <div class="row g-4 justify-content-center" id="tests-container"></div>
     </div>
     `;
   }

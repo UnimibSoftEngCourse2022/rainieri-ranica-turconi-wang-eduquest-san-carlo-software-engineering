@@ -16,7 +16,7 @@ export class MissionsViewer extends BaseComponent {
             return;
         }
 
-        this.innerHTML = `<div class="row g-4" id="missions-container"></div>`;
+        this.innerHTML = `<div class="row g-4 justify-content-center" id="missions-container"></div>`;
         const missionsContainer = this.querySelector("#missions-container");
 
         missionsProgresses.forEach(missionProgress => {

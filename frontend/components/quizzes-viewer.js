@@ -44,7 +44,7 @@ export class QuizzesViewer extends BaseComponent {
             <span class="visually-hidden">Loading...</span>
         </div>
         <div id="message-container"></div>
-        <div class="row g-4" id="quizzes-container"></div>
+        <div class="row g-4 justify-content-center" id="quizzes-container"></div>
     </div>
     `;
   }
