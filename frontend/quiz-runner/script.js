@@ -1,4 +1,4 @@
-import { QuizEditor } from "../components/quiz-editor.js";
+import "../components/quiz-editor.js";
 import { verifyUser } from "../js/auth.js";
 
 const LOGIN_PAGE = "../login/";
@@ -16,7 +16,6 @@ window.onload = async () => {
     return;
   }
 
-  // FIXME if id doesn't exit, go to another page
   const url = new URL(window.location);
   const quizId = url.searchParams.get("quizAttemptId");
   if (quizId == null) {

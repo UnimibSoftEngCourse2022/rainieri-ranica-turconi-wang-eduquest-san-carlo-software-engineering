@@ -1,5 +1,4 @@
 import { callApi, endpoints } from "../js/api.js";
-import { appStore } from "../js/store.js";
 
 export class QuizService {
     async getQuizzes() {
@@ -37,7 +36,6 @@ export class QuizService {
             }
             return await response.json();
         } catch (e) {
-            appStore.updateAppState({ loading: false, error: true });
         }
     }
 
@@ -59,12 +57,10 @@ export class QuizService {
             }
             return await response.json();
         } catch (e) {
-            appStore.updateAppState({ loading: false, error: true });
         }
     }
 
     async removeQuestionFromQuiz(quizId, questionId) {
-        appStore.updateAppState({ loading: true });
         try {
             const response = await callApi(`${endpoints.quizzes}/${quizId}/questions/${questionId}`, "DELETE");
 

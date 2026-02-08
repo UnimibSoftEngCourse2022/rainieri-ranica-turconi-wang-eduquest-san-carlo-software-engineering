@@ -1,10 +1,8 @@
-import { QuizEditor } from "../components/quiz-editor.js";
+import "../components/quiz-editor.js";
 import { verifyUser } from "../js/auth.js";
 import { UsersService } from "../services/users-service.js";
 
 const LOGIN_PAGE = "../login/";
-
-let userData = null;
 
 window.onload = async () => {
   const loggedUserData = await verifyUser();
@@ -19,8 +17,8 @@ window.onload = async () => {
 
   createSearchBar(pageDiv);
 
-  var url = new URL(window.location);
-  var searchedUserId = url.searchParams.get("id");
+  let url = new URL(window.location);
+  let searchedUserId = url.searchParams.get("id");
 
   const searchedUserData = await new UsersService().getUserInfoById(searchedUserId);
   if (!searchedUserData) {

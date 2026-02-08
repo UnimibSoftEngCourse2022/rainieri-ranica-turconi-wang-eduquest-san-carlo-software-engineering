@@ -15,7 +15,7 @@ export class UserSearch extends BaseComponent {
     }
 
     async render() {
-        if (!this._userData) {
+        if (this._userData) {
             this.innerHTML = `
             <div class="text-center">
                 <h1>User info</h1><div id="user-table"></div>

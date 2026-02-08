@@ -1,5 +1,4 @@
 import { callApi, endpoints } from "../js/api.js";
-import { appStore } from "../js/store.js";
 
 export class AttemptsService {
     async getAttemptById(quizAttemptId) {

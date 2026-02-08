@@ -1,4 +1,4 @@
-import { QuizEditor } from "../components/quiz-editor.js";
+import "../components/quiz-editor.js";
 import { verifyUser } from "../js/auth.js";
 
 const LOGIN_PAGE = "/login/";
@@ -22,6 +22,6 @@ window.onload = async () => {
     const rankingType = button.id.replace('button-', '');
     button.addEventListener("click", () => {
       rankingElement.rankingType = rankingType;
-    })
-  })
+    });
+  });
 };

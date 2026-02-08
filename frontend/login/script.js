@@ -31,6 +31,7 @@ const handleLoginSubmit = async (event) => {
     const jwtToken = data.token;
     window.localStorage.setItem("token", jwtToken);
 
+    let destination;
     if (data.role == STUDENT_ROLE) {
       destination = "../student-dashboard/";
     } else if (data.role == TEACHER_ROLE) {

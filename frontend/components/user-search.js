@@ -64,8 +64,7 @@ export class UserSearch extends HTMLElement {
       const id = input.value.trim();
       const errorMsg = this.querySelector("#error-msg");
       const card = this.querySelector("#detail-card");
-      const jwt = window.localStorage.getItem("jwtToken");
-  
+      
       errorMsg.style.display = "none";
       card.style.display = "none";
   

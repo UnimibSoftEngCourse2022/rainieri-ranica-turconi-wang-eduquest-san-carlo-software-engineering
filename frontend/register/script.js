@@ -35,17 +35,14 @@ registerForm.addEventListener("submit", async (event) => {
 
   const usersService = new UsersService();
 
-  try {
-    const response = await usersService.register(requestBody);
-
-    if (response) {
-      resultContainer.innerHTML = REGISTER_SUCCESS_DIV;
-    } else {
-      resultContainer.innerHTML = REGISTER_ERROR_DIV;
-      setTimeout(() => {
-          resultContainer.innerHTML = "";
-      }, 5000);
-      registerForm.reset();
-    }
-  } catch (error) {}
+  const response = await usersService.register(requestBody);
+  if (response) {
+    resultContainer.innerHTML = REGISTER_SUCCESS_DIV;
+  } else {
+    resultContainer.innerHTML = REGISTER_ERROR_DIV;
+    setTimeout(() => {
+        resultContainer.innerHTML = "";
+    }, 5000);
+    registerForm.reset();
+  }
 });

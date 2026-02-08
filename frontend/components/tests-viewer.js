@@ -1,7 +1,7 @@
 import { TestsService } from "../services/tests-service.js";
 import { BaseComponent } from "./base-component.js";
-import { TestItem } from "./test-item.js"; 
-import { Alert } from "./shared/alert.js";
+import "./test-item.js"; 
+import "./shared/alert.js";
 import "./shared/collapsible-panel.js";
 
 export class TestsViewer extends BaseComponent {
