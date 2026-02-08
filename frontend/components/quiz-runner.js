@@ -299,6 +299,11 @@ export class QuizRunner extends BaseComponent {
       btn.innerHTML = "Processing...";
     }
 
+    // First I save the answer to the last question
+    if (this.currentQuestionIndex == this.quizQuestions.length - 1) {
+      await this.handleSaveAnswerToCurrentQuestion();
+    }
+
     try {
       const response = await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
       if (response) {
