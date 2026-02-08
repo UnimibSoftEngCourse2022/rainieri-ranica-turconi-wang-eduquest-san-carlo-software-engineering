@@ -24,11 +24,7 @@ export class TestsService {
     async createTest(testData) {
         try {
             const response = await callApi(endpoints.tests, "POST", testData);
-            if (response.ok) {
-                return true;
-            } else {
-                return false;
-            }
+            return response.ok;
         } catch (e) {
             return false;
         }

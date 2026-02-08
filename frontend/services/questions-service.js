@@ -47,10 +47,10 @@ export class QuestionsService {
                 body: formData
             });
             if (response.ok) {
+                return await response.json();
             } else {
                 console.error("Errore server:", await response.text())
             }
-            return await response.json();
         } catch (e) {
         }
     }
