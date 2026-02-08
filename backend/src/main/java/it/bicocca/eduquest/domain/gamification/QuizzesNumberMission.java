@@ -13,7 +13,7 @@ public class QuizzesNumberMission extends Mission {
 	
 	public QuizzesNumberMission(int numberOfQuizzes) {
 		this.numberOfQuizzes = numberOfQuizzes;
-		this.title = "Complete " + numberOfQuizzes + " lessons";
+		this.title = "Complete " + numberOfQuizzes + " quizzes";
 		this.description = "To achieve this mission, the student must complete at least " + numberOfQuizzes + " quizzes";
 	}
 	

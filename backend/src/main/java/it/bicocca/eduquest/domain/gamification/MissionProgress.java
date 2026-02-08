@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.*;
+import java.time.temporal.TemporalAdjusters;
 
 @Entity
 public class MissionProgress {
@@ -20,6 +21,8 @@ public class MissionProgress {
     private int currentCount;
     private int goal;
     private boolean isCompleted;
+    
+    private LocalDate assignmentDate = LocalDate.now();
 
     @ManyToOne
     @JoinColumn(name = "mission_id")
@@ -89,5 +92,21 @@ public class MissionProgress {
 		this.student = student;
 	}
 
+	public LocalDate getAssignmentDate() {
+		return assignmentDate;
+	}
+
+	public void setAssignmentDate(LocalDate assignmentDate) {
+		this.assignmentDate = assignmentDate;
+	}
+	
+	public boolean isValidForCurrentWeek() {
+		if (this.assignmentDate == null) {
+            return false;
+        }
+		LocalDate today = LocalDate.now();
+		LocalDate startOfCurrentWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		return !this.assignmentDate.isBefore(startOfCurrentWeek);
+	}
     
 }
