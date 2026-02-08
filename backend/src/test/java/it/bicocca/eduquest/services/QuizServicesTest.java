@@ -301,4 +301,108 @@ class QuizServicesTest {
             assertFalse(opt.isTrue());
         }
     }
+    
+    @Test
+    void getAllQuizzesReturnList() {
+        when(quizRepository.findAll()).thenReturn(List.of(quiz));
+        when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(any())).thenReturn(0.0);
+        when(quizAttemptsRepository.countByQuizAndTestIsNull(any())).thenReturn(0L);
+
+        List<QuizDTO> results = quizServices.getAllQuizzes();
+
+        assertEquals(1, results.size());
+        assertEquals("Math Quiz", results.get(0).getTitle());
+    }
+
+    @Test
+    void getQuizzesByAuthorIdFilterCorrectly() {
+        Quiz quiz2 = new Quiz("Other", "Desc", new Teacher());
+        quiz2.setId(11L);
+        quiz2.getAuthor().setId(99L); 
+
+        when(quizRepository.findAll()).thenReturn(List.of(quiz, quiz2));
+        
+        when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quiz)).thenReturn(0.0);
+        when(quizAttemptsRepository.countByQuizAndTestIsNull(quiz)).thenReturn(0L);
+
+        List<QuizDTO> results = quizServices.getQuizzesByAuthorId(1L);
+
+        assertEquals(1, results.size());
+        assertEquals(10L, results.get(0).getId());
+    }
+    
+    @Test
+    void addQuestionNoCorrectAnswer() {
+        QuestionAddDTO dto = new QuestionAddDTO();
+        dto.setQuestionType(QuestionType.CLOSED);
+        dto.setText("Text");
+        dto.setTopic("Topic");
+        dto.setDifficulty(Difficulty.MEDIUM);
+        
+        List<ClosedQuestionOptionDTO> options = new ArrayList<>();
+        options.add(new ClosedQuestionOptionDTO(null, "A", false));
+        options.add(new ClosedQuestionOptionDTO(null, "B", false));
+        dto.setClosedQuestionOptions(options);
+
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            quizServices.addQuestion(dto, 1L, null);
+        });
+        assertTrue(e.getMessage().contains("must select at least one correct answer"));
+    }
+
+    @Test
+    void addQuestionTooFewOptions() {
+        QuestionAddDTO dto = new QuestionAddDTO();
+        dto.setQuestionType(QuestionType.CLOSED);
+        dto.setText("Text");
+        dto.setTopic("Topic");
+        dto.setClosedQuestionOptions(List.of(new ClosedQuestionOptionDTO(null, "A", true))); 
+
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+            quizServices.addQuestion(dto, 1L, null);
+        });
+        assertTrue(e.getMessage().contains("must have at least 2 options"));
+    }
+    
+    @Test
+    void addQuestionSaveUrl() {
+        QuestionAddDTO dto = new QuestionAddDTO();
+        dto.setQuestionType(QuestionType.OPENED);
+        dto.setText("Watch video");
+        dto.setTopic("Media");
+        dto.setDifficulty(Difficulty.EASY);
+        dto.setValidAnswersOpenQuestion(List.of("OK"));
+        
+        dto.setMultimediaType(MultimediaType.VIDEO);
+        dto.setMultimediaUrl("https://youtube.com/watch?v=123");
+
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+        when(multimediaRepository.save(any())).thenReturn(null); 
+        
+        when(questionsRepository.save(any(Question.class))).thenAnswer(i -> {
+            Question q = i.getArgument(0);
+            q.setId(80L); 
+            return q;
+        });
+
+        QuestionDTO result = quizServices.addQuestion(dto, 1L, null);
+
+        assertNotNull(result.getMultimedia());
+        assertEquals("https://youtube.com/watch?v=123", result.getMultimedia().getUrl());
+        assertTrue(result.getMultimedia().getIsYoutube());
+    }
+    
+    @Test
+    void addQuestionToQuizUserNotAuthor() {
+        when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
+        when(questionsRepository.findById(anyLong())).thenReturn(Optional.of(new OpenQuestion()));
+
+        assertThrows(IllegalStateException.class, () -> {
+            quizServices.addQuestionToQuiz(10L, 100L, 99L);
+        });
+    }
 }
