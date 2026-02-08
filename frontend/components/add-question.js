@@ -1,6 +1,6 @@
 import { QuestionsService } from "../services/questions-service.js";
 import { BaseComponent } from "./base-component.js";
-import { Alert } from "./shared/alert.js";
+import "./shared/alert.js";
 
 export class AddQuestion extends BaseComponent {
   setupComponent() {
@@ -284,7 +284,7 @@ export class AddQuestion extends BaseComponent {
       const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
       const match = url.match(regExp);
 
-      if (match && match[2].length === 11) {
+      if (match?.[2]?.length === 11) {
           return `https://www.youtube.com/embed/${match[2]}`;
       } else {
           return url;

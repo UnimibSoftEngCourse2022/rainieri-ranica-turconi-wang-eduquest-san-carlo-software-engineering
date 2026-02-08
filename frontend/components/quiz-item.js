@@ -53,7 +53,6 @@ export class Quiz extends BaseComponent {
   async handleQuizButtonClick() {
     if (this._role == "TEACHER") {
       window.location = `../quiz-editor/?id=${this._quizData.id}`;
-      return;
     } else if (this._role == "STUDENT") {
       window.location.href = `?view=runner&quizId=${this._quizData.id}`;
     }

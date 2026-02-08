@@ -1,7 +1,7 @@
 import { AttemptsService } from "../services/attempts-service.js";
 import { BaseComponent } from "./base-component.js";
-import { Alert } from "./shared/alert.js";
 import "./shared/collapsible-panel.js";
+import "./shared/alert.js";
 
 export class QuizzesAttemptsViewer extends BaseComponent {
   setupComponent() {

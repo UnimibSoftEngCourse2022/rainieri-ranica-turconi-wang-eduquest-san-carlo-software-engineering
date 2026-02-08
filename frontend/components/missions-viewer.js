@@ -1,7 +1,6 @@
-import { UsersService } from "../services/users-service.js";
 import { BaseComponent } from "./base-component.js";
 import { GamificationService } from "../services/gamification-service.js";
-import { Alert } from "./shared/alert.js";
+import "./shared/alert.js";
 import "./shared/collapsible-panel.js";
 
 export class MissionsViewer extends BaseComponent {

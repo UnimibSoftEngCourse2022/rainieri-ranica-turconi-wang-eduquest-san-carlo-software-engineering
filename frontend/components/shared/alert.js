@@ -11,7 +11,7 @@ export class Alert extends HTMLElement {
         `
 
         if (this.timeout) {
-            const ms = parseInt(this.timeout);
+            const ms = Number.parseInt(this.timeout);
             setTimeout(() => {
                 this.remove(); 
             }, ms);

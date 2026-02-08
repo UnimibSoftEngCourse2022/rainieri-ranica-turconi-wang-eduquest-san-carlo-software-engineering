@@ -1,7 +1,6 @@
 import { QuestionsService } from "../services/questions-service.js";
 import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
-import { Alert } from "./shared/alert.js";
 import "./shared/collapsible-panel.js";
 
 export class QuestionsViewer extends BaseComponent {

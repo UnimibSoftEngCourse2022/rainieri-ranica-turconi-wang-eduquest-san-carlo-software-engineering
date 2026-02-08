@@ -1,6 +1,6 @@
 import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
-import { Alert } from "./shared/alert.js";
+import "./shared/alert.js";
 
 export class AddQuiz extends BaseComponent {
   setupComponent() {

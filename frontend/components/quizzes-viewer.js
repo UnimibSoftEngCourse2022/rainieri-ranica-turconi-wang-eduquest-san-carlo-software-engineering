@@ -1,7 +1,7 @@
 import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
-import { Quiz } from "./quiz-item.js"
-import { Alert } from "./shared/alert.js";
+import "./quiz-item.js"
+import "./shared/alert.js";
 import "./shared/collapsible-panel.js";
 
 
@@ -55,27 +55,23 @@ export class QuizzesViewer extends BaseComponent {
   async loadData() {
     const loader = this.querySelector(".spinner-border");
     const messageContainer = this.querySelector("#message-container");
-    try {
-      let quizzes = []
-      if (this.role == "STUDENT") {
-        quizzes = await this.quizService.getQuizzes();
-      } else if (this.role == "TEACHER") {
-        quizzes = await this.quizService.getQuizzesByAuthorId(this.userId);
-      }
-      
-      this.allQuizzes = quizzes;
+    let quizzes = []
+    if (this.role == "STUDENT") {
+      quizzes = await this.quizService.getQuizzes();
+    } else if (this.role == "TEACHER") {
+      quizzes = await this.quizService.getQuizzesByAuthorId(this.userId);
+    }
+    
+    this.allQuizzes = quizzes;
 
-      if (loader) {
-        loader.style.display = "none";
-      }
+    if (loader) {
+      loader.style.display = "none";
+    }
 
-      if (quizzes.length == 0) {
-          messageContainer.innerHTML = `<alert-component type="warning" message="There is not quiz to display"></alert-component>`
-      } else {
-         this.displayQuizzes(this.allQuizzes);
-      }
-    } catch (e) {
-        this.innerHTML = `<alert-component type="danger" message="Cannot get the quizzes list, please try again later"></alert-component>`
+    if (quizzes.length == 0) {
+        messageContainer.innerHTML = `<alert-component type="warning" message="There is not quiz to display"></alert-component>`
+    } else {
+        this.displayQuizzes(this.allQuizzes);
     }
   }
 

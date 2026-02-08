@@ -1,6 +1,6 @@
 import { BaseComponent } from "./base-component.js";
 import { GamificationService } from "../services/gamification-service.js"
-import { Alert } from "./shared/alert.js";
+import "./shared/alert.js";
 
 export class RankingViewer extends BaseComponent {
     setupComponent() {
@@ -26,7 +26,7 @@ export class RankingViewer extends BaseComponent {
 
     async loadData() {
       let ranking = [];
-      let rankingTitleHTML = ``;
+      let rankingTitleHTML;
 
       const rankingTable = this.querySelector("#ranking-table");
       const rankingTitle = this.querySelector("#ranking-title");
@@ -38,7 +38,6 @@ export class RankingViewer extends BaseComponent {
         ranking = await this.gamificationService.getRankingByAverageScore();
         rankingTitleHTML = `<h4>Average score</h4>`;
       } else {
-        ranking = [];
         rankingTitle.innerHTML = ``;
         rankingTable.innerHTML = ``;
         return;

@@ -2,7 +2,7 @@ import { QuizService } from "../services/quiz-service.js";
 import { TestsService } from "../services/tests-service.js";
 import { UsersService } from "../services/users-service.js";
 import { BaseComponent } from "./base-component.js";
-import { Alert } from "./shared/alert.js";
+import "./shared/alert.js";
 
 export class AddTest extends BaseComponent {
   setupComponent() {
@@ -85,9 +85,9 @@ export class AddTest extends BaseComponent {
 
 
     const requestBody = {
-        quizId: parseInt(quizId),
-        maxDurationMinutes: parseInt(timeLimit),
-        maxTries: parseInt(maxAttempts)
+        quizId: Number.parseInt(quizId),
+        maxDurationMinutes: Number.parseInt(timeLimit),
+        maxTries: Number.parseInt(maxAttempts)
     };
     
     this.submitData(requestBody);

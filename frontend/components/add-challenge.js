@@ -1,9 +1,7 @@
 import { GamificationService } from "../services/gamification-service.js";
-import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
-import { Quiz } from "./quiz-item.js"
-import { Alert } from "./shared/alert.js";
-
+import "./quiz-item.js"
+import "./shared/alert.js";
 
 export class AddChallenge extends BaseComponent {
   setupComponent() {

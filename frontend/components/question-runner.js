@@ -1,13 +1,7 @@
-import { AttemptsService } from "../services/attempts-service.js";
-import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
-import { Alert } from "./shared/alert.js";
+import "./shared/alert.js";
 
 export class QuestionRunner extends BaseComponent {
-  setupComponent() {
-    
-  }
-
   render() {
     if (!this._question) { return; }
 
@@ -16,7 +10,7 @@ export class QuestionRunner extends BaseComponent {
     questionContainer.classList.add("container");
     questionContainer.innerHTML = `<h4>${this._question.text}</h4>`
     
-    if (this._question.multimedia && this._question.multimedia.url) {
+    if (this._question?.multimedia?.url) {
         const media = this._question.multimedia;
         const mediaContainer = document.createElement("div");
         mediaContainer.classList.add("text-center", "my-3");
@@ -114,7 +108,8 @@ export class QuestionRunner extends BaseComponent {
       } else {
         return null;
       }
-      return selectedOption;
+    } else {
+      return null;
     }
   }
 }

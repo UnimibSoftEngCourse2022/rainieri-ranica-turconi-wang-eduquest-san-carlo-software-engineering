@@ -13,8 +13,12 @@ export class BaseComponent extends HTMLElement {
         this.cleanUp();
     }
 
-    setupComponent() {};
-    attachEventListeners() {};
+    setupComponent() {
+        // This method must be implemented in the subclass
+    };
+    attachEventListeners() {
+        // This method must be implemented in the subclass
+    };
 
     addEventListenerWithTracking(selector, event, handler) {
         const element = this.querySelector(selector);

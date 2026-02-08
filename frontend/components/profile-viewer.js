@@ -1,4 +1,3 @@
-import { UsersService } from "../services/users-service.js";
 import { BaseComponent } from "./base-component.js";
 import { roundWithTwoDecimals } from "../js/utils.js"
 import { GamificationService } from "../services/gamification-service.js";
@@ -17,9 +16,6 @@ export class UserSearch extends BaseComponent {
 
     async render() {
         if (!this._userData) {
-            this.innerHTML = `<div class="text-center my-5"><loading-spinner></loading-spinner></div>`;
-            return;
-        } else {
             this.innerHTML = `
             <div class="text-center">
                 <h1>User info</h1><div id="user-table"></div>
@@ -27,6 +23,9 @@ export class UserSearch extends BaseComponent {
                 <h4>Badges</h4><div id="badges" class="row g-4 justify-content-center"></div>
             </div>
             `;
+        } else {
+            this.innerHTML = `<div class="text-center my-5"><loading-spinner></loading-spinner></div>`;
+            return;
         }
         this.loadData();
     }
@@ -70,7 +69,7 @@ export class UserSearch extends BaseComponent {
     loadStatsTable() {
         const statsTable = this.querySelector("#stats-table");
         if (this._userData.role == "STUDENT") {
-            if (this._userData.studentStats && this._userData.studentStats.quizzesCompleted) {
+            if (this._userData?.studentStats?.quizzesCompleted) {
                 statsTable.innerHTML = `
                 <table class="table">
                     <tbody>

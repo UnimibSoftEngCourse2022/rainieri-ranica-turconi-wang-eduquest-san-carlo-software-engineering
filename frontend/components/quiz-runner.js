@@ -2,8 +2,8 @@ import { AttemptsService } from "../services/attempts-service.js";
 import { QuizService } from "../services/quiz-service.js";
 import { TestsService } from "../services/tests-service.js";
 import { BaseComponent } from "./base-component.js";
-import { QuestionRunner } from "./question-runner.js";
-import { Alert } from "./shared/alert.js";
+import "./question-runner.js";
+import "./shared/alert.js";
 
 export class QuizRunner extends BaseComponent {
   setupComponent() {
@@ -35,7 +35,7 @@ export class QuizRunner extends BaseComponent {
         }
     }
 
-    this.studentId = rawId ? parseInt(rawId) : null; 
+    this.studentId = rawId ? Number.parseInt(rawId) : null; 
 
     this.render();
     this.initQuiz();
@@ -170,7 +170,7 @@ export class QuizRunner extends BaseComponent {
             this.updateTimerDisplay(endTime);
 
             this.timerInterval = setInterval(() => {
-                const now = new Date().getTime();
+                const now = Date.now();
                 const distance = endTime - now;
 
                 if (distance < 0) {
@@ -190,7 +190,7 @@ export class QuizRunner extends BaseComponent {
   }
 
   updateTimerDisplay(endTime) {
-     const now = new Date().getTime();
+     const now = Date.now();
      const distance = endTime - now;
      if (distance > 0) {
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -230,7 +230,7 @@ export class QuizRunner extends BaseComponent {
     this.questionRunner.answer = null;
     
     const sessionData = await this.attemptsService.addAttempt(this.quizId, this.studentId, this.testId);
-    if (sessionData && sessionData.existingAnswers) {
+    if (sessionData?.existingAnswers) {
         sessionData.existingAnswers.forEach(answer => {
           if (answer.questionId == currentQuestion.id) {
             let answerValue = ``;

@@ -1,7 +1,7 @@
 import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
-import { QuestionsViewer } from "./questions-viewer.js";
-import { Alert } from "./shared/alert.js";
+import "./questions-viewer.js";
+import "./shared/alert.js";
 
 export class QuizEditor extends BaseComponent {
   setupComponent() {
