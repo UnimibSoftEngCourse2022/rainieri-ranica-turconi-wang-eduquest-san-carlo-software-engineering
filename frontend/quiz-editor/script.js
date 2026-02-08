@@ -10,8 +10,8 @@ let userData = null;
 window.onload = async () => {
   userData = await verifyUser(TEACHER_ROLE);
 
+  const pageDiv = document.getElementById("page");
   if (userData) {
-    const pageDiv = document.getElementById("page");
     pageDiv.style.display = "block";
   } else {
     window.location = LOGIN_PAGE;
@@ -24,5 +24,7 @@ window.onload = async () => {
     return;
   }
 
-  document.getElementById("page").innerHTML = `<quiz-editor id=${quizId}></quiz-editor>`
+  const quizEditorElement = document.createElement("quiz-editor");
+  quizEditorElement.setAttribute("id", quizId);
+  pageDiv.appendChild(quizEditorElement);
 };

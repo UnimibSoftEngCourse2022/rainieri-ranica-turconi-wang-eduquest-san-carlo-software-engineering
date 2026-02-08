@@ -8,8 +8,8 @@ let userData = null;
 window.onload = async () => {
   userData = await verifyUser("STUDENT");
 
+  const pageDiv = document.getElementById("page");
   if (userData) {
-    const pageDiv = document.getElementById("page");
     pageDiv.style.display = "block";
   } else {
     window.location = LOGIN_PAGE;
@@ -22,8 +22,8 @@ window.onload = async () => {
     window.location = LOGIN_PAGE;
     return;
   }
-
-  document.getElementById("page").innerHTML = `
-  <quiz-runner quiz-attempt-id="${quizId}"></quiz-runner>
-  `
+  
+  const quizEditorElement = document.createElement("quiz-runner");
+  quizEditorElement.setAttribute("quiz-attempt-id", quizId);
+  pageDiv.appendChild(quizEditorElement);
 };
