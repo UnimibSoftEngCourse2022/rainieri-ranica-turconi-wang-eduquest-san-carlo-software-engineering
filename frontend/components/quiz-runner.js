@@ -17,9 +17,8 @@ export class QuizRunner extends BaseComponent {
     this.quizService = new QuizService();
     this.testsService = new TestsService();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    this.quizId = urlParams.get('quizId');
-    this.testId = urlParams.get('testId'); 
+    this.quizId = sessionStorage.getItem("currentQuizId");
+    this.testId = sessionStorage.getItem("currentTestId");
     
     let rawId = this.getAttribute("student-id");
 

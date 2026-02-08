@@ -4,7 +4,6 @@ import "./quiz-item.js"
 import "./shared/alert.js";
 import "./shared/collapsible-panel.js";
 
-
 export class QuizzesViewer extends BaseComponent {
   setupComponent() {
     this.role = this.getAttribute('role') || "STUDENT";
@@ -85,12 +84,20 @@ export class QuizzesViewer extends BaseComponent {
           messageContainer.innerHTML = `<div class="alert alert-light">No quizzes found matching your search.</div>`;
           return;
       }
+      
       quizzesList.forEach(quiz => {
           const quizItem = document.createElement("quiz-item");
           quizItem.classList.add("col-12", "col-md-6", "col-lg-4");
+          
           quizItem.quizData = quiz;
           quizItem.role = this.role;
           quizItem.userId = this.userId;
+
+          if (this.userId) {
+              quizItem.setAttribute("student-id", this.userId);
+          }
+          quizItem.setAttribute("role", this.role);
+
           container.appendChild(quizItem);
       });
   }
