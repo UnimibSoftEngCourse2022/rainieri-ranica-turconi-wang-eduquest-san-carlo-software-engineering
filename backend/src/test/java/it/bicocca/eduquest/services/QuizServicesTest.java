@@ -405,4 +405,106 @@ class QuizServicesTest {
             quizServices.addQuestionToQuiz(10L, 100L, 99L);
         });
     }
+    
+    @Test
+    void getAllQuestionsReturnAll() {
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+        
+        Question q = new OpenQuestion("Q1", "T", teacher, Difficulty.EASY);
+        q.setId(10L);
+        when(questionsRepository.findAll()).thenReturn(List.of(q));
+
+        List<QuestionDTO> result = quizServices.getAllQuestions(1L);
+
+        assertEquals(1, result.size());
+        verify(questionsRepository).findAll();
+        verify(questionsRepository, never()).findByAuthorId(anyLong());
+    }
+
+    @Test
+    void getAllQuestionsReturnOnlyOwn() {
+        when(usersRepository.findById(2L)).thenReturn(Optional.of(student));
+        
+        Question q = new OpenQuestion("Q1", "T", student, Difficulty.EASY);
+        q.setId(11L);
+        when(questionsRepository.findByAuthorId(2L)).thenReturn(List.of(q));
+
+        List<QuestionDTO> result = quizServices.getAllQuestions(2L);
+
+        assertEquals(1, result.size());
+        verify(questionsRepository).findByAuthorId(2L);
+    }
+
+    @Test
+    void getQuestionsByAuthorIdFilter() {
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher)); 
+        
+        Question q1 = new OpenQuestion("Q1", "T", teacher, Difficulty.EASY); 
+        q1.setId(10L);
+        Question q2 = new OpenQuestion("Q2", "T", student, Difficulty.EASY); 
+        q2.setId(11L);
+        
+        when(questionsRepository.findAll()).thenReturn(List.of(q1, q2));
+
+        List<QuestionDTO> result = quizServices.getQuestionsByAuthorId(1L, 1L);
+
+        assertEquals(1, result.size());
+        assertEquals(10L, result.get(0).getId()); 
+    }
+
+    @Test
+    void addQuestionUpload() {
+        QuestionAddDTO dto = new QuestionAddDTO();
+        dto.setQuestionType(QuestionType.OPENED);
+        dto.setText("Listen");
+        dto.setTopic("Audio");
+        dto.setDifficulty(Difficulty.EASY);
+        dto.setValidAnswersOpenQuestion(List.of("OK"));
+        dto.setMultimediaType(MultimediaType.AUDIO);
+
+        MockMultipartFile file = new MockMultipartFile("file", "audio.mp3", "audio/mpeg", "sound".getBytes());
+
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+        when(multimediaService.uploadMedia(any(), eq("eduquest_audios"))).thenReturn("http://audio.url");
+        when(multimediaRepository.save(any())).thenReturn(null);
+        when(questionsRepository.save(any(Question.class))).thenAnswer(i -> {
+            Question q = i.getArgument(0);
+            q.setId(90L);
+            return q;
+        });
+
+        QuestionDTO result = quizServices.addQuestion(dto, 1L, file);
+
+        verify(multimediaService).uploadMedia(any(), eq("eduquest_audios"));
+        assertEquals("http://audio.url", result.getMultimedia().getUrl());
+        assertEquals(MultimediaType.AUDIO, result.getMultimedia().getType());
+    }
+
+    @Test
+    void addQuestionVideoUpload() {
+        QuestionAddDTO dto = new QuestionAddDTO();
+        dto.setQuestionType(QuestionType.OPENED);
+        dto.setText("Watch");
+        dto.setTopic("Video");
+        dto.setDifficulty(Difficulty.EASY);
+        dto.setValidAnswersOpenQuestion(List.of("OK"));
+        dto.setMultimediaType(MultimediaType.VIDEO);
+
+        MockMultipartFile file = new MockMultipartFile("file", "video.mp4", "video/mp4", "video".getBytes());
+
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+        when(multimediaService.uploadMedia(any(), eq("eduquest_videos"))).thenReturn("http://video.url");
+        when(multimediaRepository.save(any())).thenReturn(null);
+        when(questionsRepository.save(any(Question.class))).thenAnswer(i -> {
+            Question q = i.getArgument(0);
+            q.setId(91L);
+            return q;
+        });
+
+        QuestionDTO result = quizServices.addQuestion(dto, 1L, file);
+
+        verify(multimediaService).uploadMedia(any(), eq("eduquest_videos"));
+        assertEquals("http://video.url", result.getMultimedia().getUrl());
+        assertFalse(result.getMultimedia().getIsYoutube()); 
+    }
 }
