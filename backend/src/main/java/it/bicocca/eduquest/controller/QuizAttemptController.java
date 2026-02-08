@@ -94,7 +94,6 @@ public class QuizAttemptController {
 		try {
 			return ResponseEntity.ok(quizAttemptServices.getQuizSession(attemptId));
 		} catch (RuntimeException e) {
-			System.out.println(e.getMessage());
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
@@ -135,11 +134,9 @@ public class QuizAttemptController {
 			return ResponseEntity.ok(quizAttemptServices.completeQuizAttempt(quizAttemptId, loggedId));	
 		} catch (NullPointerException e) {
 			String msg = e.getMessage();
-			System.out.println("[ERROR - AttemptController] " + msg);
-            return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
+			return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
 		} catch (RuntimeException e) {
 			String msg = e.getMessage();
-			System.out.println("[ERROR - AttemptController] " + msg);
 			
             // 404 -> attempt not found
             if (msg.contains(CANNOT_FIND_MSG) || msg.contains(NOT_FOUND_MSG)) {
@@ -154,8 +151,6 @@ public class QuizAttemptController {
             // 400 -> attempt already completed
             return ResponseEntity.badRequest().body(msg);
 		} catch (Exception e) {
-			String msg = e.getMessage();
-			System.out.println("[ERROR - AttemptController] " + msg);
 			return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
 		}
 	}

@@ -9,7 +9,7 @@ public class QuestionStats {
 	private int correctAnswer = 0;
 	
 	public QuestionStats() {
-
+		// Empty constructor
 	}
 	
 	public void updateStats(boolean isCorrect) {

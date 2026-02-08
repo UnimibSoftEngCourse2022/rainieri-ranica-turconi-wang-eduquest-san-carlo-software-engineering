@@ -30,7 +30,7 @@ public class ChallengeServices {
 	public List<ChallengeDTO> getChallengesByUserId(Long studentId) {
 		List<Challenge> challenges = challengesRepository.findAll();
 		
-		List<ChallengeDTO> challengesDTO = new ArrayList<ChallengeDTO>();
+		List<ChallengeDTO> challengesDTO = new ArrayList<>();
 		for (Challenge c : challenges) {
 			if (c.getChallenger().getId().equals(studentId) || c.getOpponent().getId().equals(studentId)) {
 				challengesDTO.add(convertChallengeToDTO(c));

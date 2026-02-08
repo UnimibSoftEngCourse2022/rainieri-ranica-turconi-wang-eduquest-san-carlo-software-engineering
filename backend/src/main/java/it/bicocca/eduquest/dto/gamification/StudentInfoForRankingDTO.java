@@ -7,6 +7,7 @@ public class StudentInfoForRankingDTO {
 	private double value;
 
 	public StudentInfoForRankingDTO(long id, String name, String surname, double value) {
+		this.id = id;
 		this.name = name;
 		this.surname = surname;
 		this.value = value;

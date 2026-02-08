@@ -11,7 +11,6 @@ import it.bicocca.eduquest.domain.gamification.ChallengeStatus;
 import it.bicocca.eduquest.repository.ChallengeRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.time.LocalDateTime;
 
 @Component
@@ -33,7 +32,7 @@ public class ChallengeListener {
         // Check if there is an active challenge for this user and this quiz
         List<Challenge> challengesOpt = challengeRepository.findActiveChallengeForUserAndQuiz(user.getId(), quizId);
         
-        if (challengesOpt.size() == 0) {
+        if (challengesOpt.isEmpty()) {
             return;
         }
 

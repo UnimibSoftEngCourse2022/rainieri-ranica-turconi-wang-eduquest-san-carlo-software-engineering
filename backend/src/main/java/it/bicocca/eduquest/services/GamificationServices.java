@@ -32,11 +32,7 @@ public class GamificationServices {
 	
 	@Transactional
 	public List<MissionProgressDTO> getAllMissionsProgressesByUserId(long userId, boolean onlyCompleted) {
-		List<MissionProgress> currentMissions = missionsProgressesRepository.findByStudentId(userId);
-		
-		
-		
-		List<MissionProgressDTO> missionsProgresses = new ArrayList<MissionProgressDTO>();
+		List<MissionProgressDTO> missionsProgresses = new ArrayList<>();
 		
 		for (MissionProgress progress : missionsProgressesRepository.findByStudentId(userId)) {
 			Mission mission = progress.getMission();
@@ -76,7 +72,7 @@ public class GamificationServices {
     private void fillMissingMissionProgress(Student student) {
     	for (Mission mission : missionsRepository.findAll()) {
         	List<MissionProgress> missionProgress = missionsProgressesRepository.findByMissionIdAndStudentId(mission.getId(), student.getId());
-        	if (missionProgress.size() == 0) {
+        	if (missionProgress.isEmpty()) {
         		MissionProgress progress = new MissionProgress(mission, student, mission.getGoal());
         		missionsProgressesRepository.save(progress);
         	}
@@ -108,7 +104,7 @@ public class GamificationServices {
     }
     
     @Transactional
-    private void refreshWeeklyMissions(long userId) {
+    public void refreshWeeklyMissions(long userId) {
     	missionsProgressesRepository.deleteByStudentId(userId);
     	
     	List<Mission> allMissions = missionsRepository.findAll();

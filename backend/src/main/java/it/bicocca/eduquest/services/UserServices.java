@@ -98,7 +98,7 @@ public class UserServices {
     }
 
 	public List<UserInfoDTO> getAllUsers() {
-		List<UserInfoDTO> users = new ArrayList<UserInfoDTO>();
+		List<UserInfoDTO> users = new ArrayList<>();
 		for (User user : usersRepository.findAll()) {
 			StudentStatsDTO statsDTO = null;
 			if (user instanceof Student) {

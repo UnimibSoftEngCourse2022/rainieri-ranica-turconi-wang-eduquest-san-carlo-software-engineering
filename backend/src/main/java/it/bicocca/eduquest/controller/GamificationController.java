@@ -14,7 +14,6 @@ import it.bicocca.eduquest.services.GamificationServices;
 import it.bicocca.eduquest.services.MissionsServices;
 import it.bicocca.eduquest.services.RankingServices;
 import it.bicocca.eduquest.services.ChallengeServices;
-import it.bicocca.eduquest.domain.gamification.ChallengeStatus;
 import it.bicocca.eduquest.dto.gamification.*;
 
 @RestController
@@ -25,6 +24,8 @@ public class GamificationController {
 	private GamificationServices gamificationServices;
 	private RankingServices rankingServices;
 	private ChallengeServices challengeServices;
+	
+	private final String internalServerError = "Internal server error while getting all missions";
 	
 	public GamificationController(MissionsServices missionsServices, GamificationServices gamificationServices, RankingServices rankingServices, ChallengeServices challengeServices) {
 		this.missionsServices = missionsServices;
@@ -38,7 +39,7 @@ public class GamificationController {
 		try {
             return ResponseEntity.ok(missionsServices.getAllMissions());
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
 	}
 	
@@ -50,7 +51,7 @@ public class GamificationController {
 		try {
             return ResponseEntity.ok(gamificationServices.getAllMissionsProgressesByUserId(loggedId, false));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
 	}
 	
@@ -60,7 +61,7 @@ public class GamificationController {
 		try {
             return ResponseEntity.ok(gamificationServices.getAllMissionsProgressesByUserId(userId, onlyCompleted));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
 	}
 	
@@ -69,7 +70,7 @@ public class GamificationController {
 		try {
             return ResponseEntity.ok(rankingServices.getRankingByNumberOfQuizzesCompleted());
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
 	}
 	
@@ -78,7 +79,7 @@ public class GamificationController {
 		try {
             return ResponseEntity.ok(rankingServices.getRankingByAverageQuizzesScore());
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error while getting all missions");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
 	}
 	

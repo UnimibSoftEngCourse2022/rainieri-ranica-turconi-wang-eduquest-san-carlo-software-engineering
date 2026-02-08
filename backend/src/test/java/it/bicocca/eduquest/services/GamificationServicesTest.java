@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Collections;
-import java.util.ArrayList;
 
 import it.bicocca.eduquest.repository.MissionsProgressesRepository;
 import it.bicocca.eduquest.repository.MissionsRepository;
@@ -59,7 +58,7 @@ class GamificationServicesTest {
 
         assertEquals(2, allResults.size());
         assertEquals(1, completedResults.size());
-        assertEquals("Win", completedResults.get(0).mission.title); 
+        assertEquals("Win", completedResults.get(0).getMission().getTitle()); 
     }
     
     @Test

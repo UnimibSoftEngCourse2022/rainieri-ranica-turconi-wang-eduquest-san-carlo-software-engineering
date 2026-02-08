@@ -53,11 +53,10 @@ public class QuizAttemptServices {
 		if (quizAttempt.getStudent().getId() != userId) {
 			throw new RuntimeException("Not authorized");
 		}
-		QuizAttemptDTO quizAttemptDTO = new QuizAttemptDTO(quizAttempt.getId(), quizAttempt.getQuiz().getId(), quizAttempt.getQuiz().getTitle(), 
+		return new QuizAttemptDTO(quizAttempt.getId(), quizAttempt.getQuiz().getId(), quizAttempt.getQuiz().getTitle(), 
 				   quizAttempt.getStudent().getId(), quizAttempt.getStudent().getName(), 
 				   quizAttempt.getStudent().getSurname(), quizAttempt.getScore(), quizAttempt.getMaxScore(), 
 				   quizAttempt.getStartedAt(), quizAttempt.getFinishedAt(), quizAttempt.getStatus());
-		return quizAttemptDTO;
 	}
 	
 	public List<QuizAttemptDTO> getQuizAttemptsByUserId(long userId) {
@@ -398,12 +397,7 @@ public class QuizAttemptServices {
 			return false;
 		}
 		
-		OpenQuestion openQ;
-		if (question instanceof OpenQuestion) {
-			openQ = (OpenQuestion) question;
-		} else {
-			openQ = (OpenQuestion) question; 
-		}
+		OpenQuestion openQ = (OpenQuestion) question;
 		
 		String studentText = openA.getText();
 

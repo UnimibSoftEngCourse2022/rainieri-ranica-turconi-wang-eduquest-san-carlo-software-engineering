@@ -1,7 +1,12 @@
 package it.bicocca.eduquest.dto.gamification;
 
 public class MissionProgressDTO {
-	public long id;
+	private long id;
+	private int currentCount;
+	private int goal;
+	private boolean isCompleted;
+	private MissionDTO mission;
+	private long studentId;
 	
 	public MissionProgressDTO(long id, int currentCount, int goal, boolean isCompleted, MissionDTO mission, long studentId) {
 		this.id = id;
@@ -34,12 +39,5 @@ public class MissionProgressDTO {
 
 	public MissionDTO getMission() {
 		return mission;
-	}
-
-	public int currentCount;
-	public int goal;
-	private boolean isCompleted;
-	public MissionDTO mission;
-	private long studentId;
-	
+	}	
 }

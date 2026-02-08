@@ -32,27 +32,10 @@ public abstract class Question {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "multimedia_id", referencedColumnName = "id")
     private MultimediaSupport multimedia;
-
-    /*
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    @JsonIgnore
-    private Quiz quiz; */
 	
 	protected Question() {
 		this.stats = new QuestionStats();
 	}
-
-    /* public Question(Long id, String text, String topic, User author, QuestionType questionType, Difficulty difficulty, Quiz quiz) {
-		this.id = id;
-		this.text = text;
-		this.topic = topic;
-		this.author = author;
-		this.questionType = questionType;
-		this.difficulty = difficulty;
-		this.stats = new QuestionStats();
-		this.quiz = quiz;
-	} */
 
     protected Question(String text, String topic, User author, QuestionType questionType, Difficulty difficulty) {
 		this.text = text;

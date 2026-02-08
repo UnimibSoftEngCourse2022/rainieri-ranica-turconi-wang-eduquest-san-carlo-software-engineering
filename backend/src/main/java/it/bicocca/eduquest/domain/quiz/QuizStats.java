@@ -15,10 +15,10 @@ public class QuizStats {
 	
 	@ElementCollection(fetch = FetchType.EAGER)
 	@MapKeyColumn(name = "question_id")
-	private Map<Long, QuestionStats> statsPerQuestion = new HashMap<Long, QuestionStats>();
+	private Map<Long, QuestionStats> statsPerQuestion = new HashMap<>();
 	
 	public QuizStats() {
-
+		// Empty constructor
 	}
 	
 	public void updateStats(double newScore) {

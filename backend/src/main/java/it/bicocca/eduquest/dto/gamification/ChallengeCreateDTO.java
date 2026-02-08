@@ -6,7 +6,7 @@ public class ChallengeCreateDTO {
     private int durationInHours;
 	
     public ChallengeCreateDTO() {
-
+    	// Empty constructor
 	}
 
 	public Long getOpponentId() {

@@ -1,6 +1,5 @@
 package it.bicocca.eduquest.repository;
 
-import java.util.Optional;
 import java.util.List;
 import java.time.LocalDateTime;
 import org.springframework.data.jpa.repository.*;

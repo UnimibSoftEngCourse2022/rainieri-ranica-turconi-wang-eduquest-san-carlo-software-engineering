@@ -55,7 +55,7 @@ public class UserController {
         }
     	try {
     		String userIdString = authentication.getName(); 
-    		long userId = Long.valueOf(userIdString).longValue();
+    		long userId = Long.parseLong(userIdString);
    
     		return ResponseEntity.ok(userServices.getUserInfo(userId));
     	} catch (RuntimeException e) {

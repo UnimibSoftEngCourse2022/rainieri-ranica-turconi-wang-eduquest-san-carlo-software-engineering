@@ -10,7 +10,7 @@ public class StudentStats {
 	private double averageQuizzesScore = 0.0;
 	
 	public StudentStats() {
-
+		// Empty constructor
 	}
 	
 	public void updateStats(double newQuizScore, int answersGiven, int correctAnswers) {

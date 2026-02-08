@@ -19,7 +19,7 @@ public class MissionsServices {
 	}
 	
 	public List<MissionDTO> getAllMissions() {
-		List<MissionDTO> missionsDTO = new ArrayList<MissionDTO>();
+		List<MissionDTO> missionsDTO = new ArrayList<>();
 		for (Mission mission : missionsRepository.findAll()) {
 			MissionDTO missionDTO = new MissionDTO(mission.getId(), mission.getTitle(), mission.getDescription(), mission.getGoal());
 			missionsDTO.add(missionDTO);

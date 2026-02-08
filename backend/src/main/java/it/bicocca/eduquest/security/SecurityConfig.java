@@ -22,7 +22,7 @@ public class SecurityConfig {
 
     @Bean
     @SuppressWarnings("java:S112")
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) {
         http
             .csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())

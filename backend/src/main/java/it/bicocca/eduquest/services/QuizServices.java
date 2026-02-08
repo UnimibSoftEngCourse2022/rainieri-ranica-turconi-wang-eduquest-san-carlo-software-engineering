@@ -63,7 +63,7 @@ public class QuizServices {
 		long count = quizAttemptsRepository.countByQuizAndTestIsNull(quiz);
 		Map<Long, QuestionStats> statsPerQuestion = quiz.getStats().getStatsPerQuestion();
 		
-		Map<Long, QuestionStatsDTO> statsPerQuestionDTO = new HashMap<Long, QuestionStatsDTO>();
+		Map<Long, QuestionStatsDTO> statsPerQuestionDTO = new HashMap<>();
 		for (Map.Entry<Long, QuestionStats> entry : statsPerQuestion.entrySet()) {
 			QuestionStats questionStats = entry.getValue();
 			QuestionStatsDTO questionStatsDTO = new QuestionStatsDTO(questionStats.getAverageSuccess(), questionStats.getTotalAnswers(), questionStats.getCorrectAnswer());
@@ -79,28 +79,9 @@ public class QuizServices {
 		QuizStatsDTO statsDTO = calculateQuizOnlyStats(quiz);
 		
 		List<QuestionDTO> questionsDTO = new ArrayList<>();
-		//List<String> validAnswersOpenQuestionDTO = new ArrayList<>();
-		//List<ClosedQuestionOptionDTO> closedQuestionOptionsDTO = new ArrayList<>();
 		
 		for (Question question : quiz.getQuestions()) {
-			/*if (question instanceof OpenQuestion openQuestion) {		
-				List<OpenQuestionAcceptedAnswer> validAnswersOpenQuestion = openQuestion.getValidAnswers();
-				for (OpenQuestionAcceptedAnswer a : validAnswersOpenQuestion) {
-					validAnswersOpenQuestionDTO.add(a.getText());
-				}
-			} else if (question instanceof ClosedQuestion closedQuestion) {
-				List<ClosedQuestionOption> optionsClosedQuestion = closedQuestion.getOptions();
-				for (ClosedQuestionOption c : optionsClosedQuestion) {
-					closedQuestionOptionsDTO.add(new ClosedQuestionOptionDTO(c.getId(), c.getText(), c.isTrue()));
-				}
-			}*/
-			
 			QuestionDTO questionDTO = convertSingleQuestionToDTO(question);
-			
-			//QuestionStats stats = question.getStats();
-			//QuestionStatsDTO questionStatsDTO = new QuestionStatsDTO(stats.getAverageSuccess(), stats.getTotalAnswers(), stats.getCorrectAnswer());
-			//questionDTO.setQuestionStats(questionStatsDTO);
-			//QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), validAnswersOpenQuestionDTO, closedQuestionOptionsDTO, question.getAuthor().getId(), questionStatsDTO);	
 			questionsDTO.add(questionDTO);
 		}
 
@@ -160,7 +141,7 @@ public class QuizServices {
 		Quiz quiz = new Quiz(quizAddDTO.getTitle(), quizAddDTO.getDescription(), author);
 		Quiz savedQuiz = quizRepository.save(quiz);
 		
-		QuizStatsDTO statsDTO = new QuizStatsDTO(0.0, 0, new HashMap<Long, QuestionStatsDTO>()); // Quiz nuovo = 0 stats
+		QuizStatsDTO statsDTO = new QuizStatsDTO(0.0, 0, new HashMap<>()); // Quiz nuovo = 0 stats
 		return new QuizDTO(savedQuiz.getId(), savedQuiz.getTitle(), savedQuiz.getDescription(), savedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO, quiz.getDifficulty());
 	}
 	
@@ -286,9 +267,7 @@ public class QuizServices {
 		
 		Question savedQuestion = questionsRepository.save(question);
 	    
-		QuestionDTO questionDTO = convertSingleQuestionToDTO(savedQuestion);
-		
-		return questionDTO;
+		return convertSingleQuestionToDTO(savedQuestion);
 	}
 
 	public QuizDTO addQuestionToQuiz (long quizId, long questionId, long userIdFromRequest) {
