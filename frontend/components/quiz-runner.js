@@ -47,6 +47,10 @@ export class QuizRunner extends BaseComponent {
   get quizTimer() { return this.querySelector("#quiz-timer"); }
   get quizError() { return this.querySelector("#quiz-error"); }
   get questionsViewer() { return document.getElementById("questions-viewer"); }
+  get questionNumber() { return this.querySelector("#question-number"); }
+  get nextQuestionButton() { return this.querySelector("#next-question-button"); }
+  get previousQuestionButton() { return this.querySelector("#previous-question-button"); }
+  get completeQuizButton() { return this.querySelector("#complete-quiz-button"); }
 
   render() {
     this.innerHTML = `
@@ -62,7 +66,11 @@ export class QuizRunner extends BaseComponent {
       </div>
       
       <div class="card-footer">
+          <p id="question-number"></p>
+          <button class="btn btn-primary" id="previous-question-button" disabled>Previous Question</button>
           <button class="btn btn-primary" id="next-question-button" disabled>Next Question</button>
+          <hr>
+          <button class="btn btn-success" id="complete-quiz-button" disabled>Complete Quiz</button>
           <div id="quiz-error" class="mt-2"></div>
       </div>
     </div>
@@ -70,8 +78,26 @@ export class QuizRunner extends BaseComponent {
   }  
 
   attachEventListeners() {
-    this.addEventListenerWithTracking("#next-question-button", "click", () => {
-      this.handleSaveAnswerToCurrentQuestion();
+    this.addEventListenerWithTracking("#next-question-button", "click", async () => {
+      const ok = await this.handleSaveAnswerToCurrentQuestion();
+      if (ok) {
+        this.currentQuestionIndex++;
+        this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
+        this.updateQuestionViewer();
+      }
+    });
+
+    this.addEventListenerWithTracking("#previous-question-button", "click", async () => {
+      const ok = await this.handleSaveAnswerToCurrentQuestion();
+      if (ok) {
+        this.currentQuestionIndex--;
+        this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
+        this.updateQuestionViewer();
+      }
+    })
+
+    this.addEventListenerWithTracking("#complete-quiz-button", "click", () => {
+      this.handleCompleteQuiz();
     })
   }
 
@@ -195,7 +221,7 @@ export class QuizRunner extends BaseComponent {
     this.quizHeader.innerHTML = `<h4>${this.attemptData.quizTitle}</h4>Started at: ${startTime}, ${startDate}`
   }
 
-  updateQuestionViewer() {
+  async updateQuestionViewer() {
     if (!this.quizQuestions || this.quizQuestions.length === 0) return;
     
     const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
@@ -203,8 +229,9 @@ export class QuizRunner extends BaseComponent {
 
     this.questionRunner.answer = null;
     
-    if (this.sessionData && this.sessionData.existingAnswers) {
-        this.sessionData.existingAnswers.forEach(answer => {
+    const sessionData = await this.attemptsService.addAttempt(this.quizId, this.studentId, this.testId);
+    if (sessionData && sessionData.existingAnswers) {
+        sessionData.existingAnswers.forEach(answer => {
           if (answer.questionId == currentQuestion.id) {
             let answerValue = ``;
             if (answer.questionType == "OPENED") {
@@ -217,6 +244,11 @@ export class QuizRunner extends BaseComponent {
         });
     }
     this.questionRunner.render();
+
+    this.questionNumber.innerHTML = (this.currentQuestionIndex + 1) + "/" + this.quizQuestions.length;
+    this.previousQuestionButton.disabled = (this.currentQuestionIndex == 0);
+    this.nextQuestionButton.disabled = (this.currentQuestionIndex == this.quizQuestions.length - 1);
+    this.completeQuizButton.disabled = (this.currentQuestionIndex < this.quizQuestions.length - 1);
   }
 
   async handleSaveAnswerToCurrentQuestion() {
@@ -232,7 +264,7 @@ export class QuizRunner extends BaseComponent {
       this.quizError.innerHTML = `
       <alert-component type="warning" message="Please provide an answer before proceeding."></alert-component>
       `
-      return;
+      return false;
     }
 
     const currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
@@ -243,20 +275,14 @@ export class QuizRunner extends BaseComponent {
     }
 
     const response = await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
-
     if (response) {
-      if (this.currentQuestionIndex < this.quizQuestions.length - 1) {
-        this.currentQuestionIndex++;
-        this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
-        this.updateQuestionViewer();
-        this.quizError.innerHTML = ""; 
-      } else {
-        this.handleCompleteQuiz();
-      }
+      this.quizError.innerHTML = "";
+      return true;
     } else {
       this.quizError.innerHTML = `
       <alert-component type="danger" message="Error sending your answer, please try again later"></alert-component>
-      `
+      `;
+      return false;
     }
   }
 
