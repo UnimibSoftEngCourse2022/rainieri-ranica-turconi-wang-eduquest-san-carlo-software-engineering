@@ -302,7 +302,7 @@ class QuizAttemptServicesTest {
     }
 
     @Test
-    void testCompleteQuizAttempt_Scoring() {
+    void testCompleteQuizAttemptScoring() {
         long attemptId = 1L;
         
         long q1Id = 101L; 
@@ -423,7 +423,7 @@ class QuizAttemptServicesTest {
     }
 
     @Test
-    void testGetQuizAttemptsByUserId_Success() {
+    void testGetQuizAttemptsByUserIdSuccess() {
         long userId = 11L;
         Student student = new Student(); student.setId(userId); student.setName("N"); student.setSurname("S");
         Quiz quiz = new Quiz(); quiz.setId(1L); quiz.setTitle("T");
@@ -439,5 +439,164 @@ class QuizAttemptServicesTest {
         assertEquals(userId, results.get(0).getStudentId());
     }
     
+    @Mock private TestRepository testRepository;
+    @org.junit.jupiter.api.Test
+    void startQuizAttemptsBelowLimit() {
+        long quizId = 1L;
+        long userId = 2L;
+        long testId = 100L;
+
+        Student student = new Student(); student.setId(userId);
+        Quiz quiz = new Quiz(); quiz.setId(quizId);
+        
+        it.bicocca.eduquest.domain.quiz.Test testEntity = new it.bicocca.eduquest.domain.quiz.Test();
+        testEntity.setId(testId);
+        testEntity.setMaxTries(3); 
+        testEntity.setQuiz(quiz);
+
+        when(usersRepository.findById(userId)).thenReturn(Optional.of(student));
+        when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
+        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(any(), any(), any())).thenReturn(Optional.empty());
+        
+        when(testRepository.findById(testId)).thenReturn(Optional.of(testEntity));
+        when(quizAttemptsRepository.countByStudentAndTest(student, testEntity)).thenReturn(1L); 
+        
+        when(quizAttemptsRepository.save(any(QuizAttempt.class))).thenAnswer(i -> {
+            QuizAttempt q = i.getArgument(0);
+            q.setId(55L);
+            return q;
+        });
+
+        QuizSessionDTO result = quizAttemptServices.startQuiz(quizId, userId, testId);
+
+        assertNotNull(result);
+        assertEquals(55L, result.getAttemptId());
+        verify(testRepository).findById(testId);
+    }
+
+    @org.junit.jupiter.api.Test
+    void startQuizMaxAttemptsReached() {
+        long quizId = 1L;
+        long userId = 2L;
+        long testId = 100L;
+
+        Student student = new Student(); student.setId(userId);
+        Quiz quiz = new Quiz(); quiz.setId(quizId);
+        
+        it.bicocca.eduquest.domain.quiz.Test testEntity = new it.bicocca.eduquest.domain.quiz.Test();
+        testEntity.setId(testId);
+        testEntity.setMaxTries(2); 
+        testEntity.setQuiz(quiz);
+
+        when(usersRepository.findById(userId)).thenReturn(Optional.of(student));
+        when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
+        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(any(), any(), any())).thenReturn(Optional.empty());
+        
+        when(testRepository.findById(testId)).thenReturn(Optional.of(testEntity));
+        when(quizAttemptsRepository.countByStudentAndTest(student, testEntity)).thenReturn(2L);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> 
+            quizAttemptServices.startQuiz(quizId, userId, testId)
+        );
+        assertTrue(ex.getMessage().contains("Max attempts reached"));
+    }
     
+    @org.junit.jupiter.api.Test
+    void startQuizNotFound() {
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(new Student()));
+        when(quizRepository.findById(1L)).thenReturn(Optional.of(new Quiz()));
+        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(any(), any(), any())).thenReturn(Optional.empty());
+        
+        when(testRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> 
+            quizAttemptServices.startQuiz(1L, 1L, 999L)
+        );
+    }
+    
+    @Test
+    void getQuizSessionMultimediaMapping() {
+        long attemptId = 50L;
+        long quizId = 10L;
+        
+        Teacher author = new Teacher();
+        author.setId(99L); 
+        
+        Quiz quiz = new Quiz("Title", "Desc", author);
+        quiz.setId(quizId);
+        
+        OpenQuestion qVideo = new OpenQuestion();
+        qVideo.setId(1L);
+        qVideo.setText("Watch this");
+        qVideo.setQuestionType(QuestionType.OPENED);
+        qVideo.setAuthor(author); 
+        
+        it.bicocca.eduquest.domain.multimedia.VideoSupport video = mock(it.bicocca.eduquest.domain.multimedia.VideoSupport.class);
+        when(video.getUrl()).thenReturn("yt_link");
+        when(video.getIsYoutube()).thenReturn(true);
+        when(video.getType()).thenReturn(it.bicocca.eduquest.domain.multimedia.MultimediaType.VIDEO);
+        qVideo.setMultimedia(video);
+        
+        OpenQuestion qImage = new OpenQuestion();
+        qImage.setId(2L);
+        qImage.setText("Look at this");
+        qImage.setQuestionType(QuestionType.OPENED);
+        qImage.setAuthor(author); 
+        
+        it.bicocca.eduquest.domain.multimedia.ImageSupport image = mock(it.bicocca.eduquest.domain.multimedia.ImageSupport.class);
+        when(image.getUrl()).thenReturn("img_link");
+        when(image.getType()).thenReturn(it.bicocca.eduquest.domain.multimedia.MultimediaType.IMAGE);
+        qImage.setMultimedia(image); 
+
+        quiz.setQuestions(Arrays.asList(qVideo, qImage));
+
+        QuizAttempt attempt = new QuizAttempt(new Student(), quiz);
+        attempt.setId(attemptId);
+        attempt.addAnswer(new OpenAnswer(attempt, qVideo, "Seen it"));
+
+        when(quizAttemptsRepository.findById(attemptId)).thenReturn(Optional.of(attempt));
+        when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
+
+        QuizSessionDTO result = quizAttemptServices.getQuizSession(attemptId);
+
+        assertNotNull(result);
+        assertEquals(attemptId, result.getAttemptId());
+        
+        var media1 = result.getQuestions().get(0).getMultimedia();
+        assertEquals("yt_link", media1.getUrl());
+        assertTrue(media1.getIsYoutube());
+        
+        var media2 = result.getQuestions().get(1).getMultimedia();
+        assertEquals("img_link", media2.getUrl());
+        assertFalse(media2.getIsYoutube()); 
+    }
+
+    @Test
+    void getQuizSessionNotFound() {
+        when(quizAttemptsRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> quizAttemptServices.getQuizSession(99L));
+    }
+    
+    @Test
+    void getQuizSessionThrow() {
+        Quiz quiz = new Quiz();
+        quiz.setId(10L);
+        
+        Question weirdQ = new Question() {};
+        weirdQ.setId(99L);
+        weirdQ.setText("Alien Question");
+        
+        quiz.setQuestions(List.of(weirdQ));
+        
+        QuizAttempt attempt = new QuizAttempt(new Student(), quiz);
+        attempt.setId(50L);
+
+        when(quizAttemptsRepository.findById(50L)).thenReturn(Optional.of(attempt));
+        when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> 
+            quizAttemptServices.getQuizSession(50L)
+        );
+        assertEquals("Not supported question type.", e.getMessage());
+    }
 }

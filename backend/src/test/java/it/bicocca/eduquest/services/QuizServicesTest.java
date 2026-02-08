@@ -507,4 +507,113 @@ class QuizServicesTest {
         assertEquals("http://video.url", result.getMultimedia().getUrl());
         assertFalse(result.getMultimedia().getIsYoutube()); 
     }
+    
+    @Test
+    void addQuizTitleIsEmpty() {
+        QuizAddDTO dto = new QuizAddDTO();
+        dto.setTitle("   ");
+        dto.setDescription("Valid Desc");
+
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuiz(dto, 1L));
+    }
+
+    @Test
+    void addQuizWhenDescriptionIsNull() {
+        QuizAddDTO dto = new QuizAddDTO();
+        dto.setTitle("Valid Title");
+        dto.setDescription(null); 
+
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+
+        assertThrows(IllegalArgumentException.class, () -> quizServices.addQuiz(dto, 1L));
+    }
+
+    @Test
+    void editQuizWhenTitleEmpty() {
+        QuizEditDTO dto = new QuizEditDTO();
+        dto.setTitle(""); 
+        dto.setDescription("Desc");
+
+        when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
+
+        assertThrows(IllegalArgumentException.class, () -> quizServices.editQuiz(10L, dto, 1L));
+    }
+    
+    @Test
+    void addQuizIfUserIsNotTeacher() {
+        QuizAddDTO dto = new QuizAddDTO();
+        when(usersRepository.findById(2L)).thenReturn(Optional.of(student));
+
+        Exception e = assertThrows(IllegalArgumentException.class, () -> quizServices.addQuiz(dto, 2L));
+        assertTrue(e.getMessage().contains("associated to a Student"));
+    }
+
+    @Test
+    void getQuizForStudentIfUserIsNotStudent() {
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+
+        Exception e = assertThrows(IllegalArgumentException.class, () -> quizServices.getQuizForStudent(10L, 1L));
+        assertTrue(e.getMessage().contains("associated to a Teacher"));
+    }
+    
+    @Test
+    void addQuestionWhenTypeIsNull() {
+        QuestionAddDTO dto = new QuestionAddDTO();
+        dto.setText("Text");
+        dto.setTopic("Topic");
+        dto.setQuestionType(null); 
+
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
+
+        Exception e = assertThrows(IllegalArgumentException.class, () -> quizServices.addQuestion(dto, 1L, null));
+        assertTrue(e.getMessage().contains("Not supported question type"));
+    }
+    
+    @Test
+    void getQuizByIdMapStatisticsCorrectly() {
+        Double expectedAvg = 75.5;
+        long expectedCount = 42L;
+
+        when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
+        
+        when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quiz)).thenReturn(expectedAvg);
+        when(quizAttemptsRepository.countByQuizAndTestIsNull(quiz)).thenReturn(expectedCount);
+
+        QuizDTO result = quizServices.getQuizById(10L);
+
+        assertNotNull(result.getQuizStats());
+        assertEquals(expectedAvg, result.getQuizStats().getAverageScore());
+        assertEquals((int)expectedCount, result.getQuizStats().getTotalAttempts());
+    }
+    
+    @Test
+    void removeQuestionFromQuizAndSave() {
+        OpenQuestion q = new OpenQuestion("Q", "T", teacher, Difficulty.EASY);
+        q.setId(100L);
+        quiz.addQuestion(q); 
+
+        when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
+        when(questionsRepository.findById(100L)).thenReturn(Optional.of(q));
+        
+        when(quizRepository.save(any(Quiz.class))).thenAnswer(i -> i.getArgument(0));
+        when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(any())).thenReturn(0.0);
+        when(quizAttemptsRepository.countByQuizAndTestIsNull(any())).thenReturn(0L);
+
+        QuizDTO result = quizServices.removeQuestionFromQuiz(10L, 100L, 1L);
+
+        assertTrue(result.getQuestions().isEmpty());
+        verify(quizRepository).save(quiz);
+    }
+
+    @Test
+    void removeQuestionFromQuizIfUserNotAuthor() {
+        when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
+        when(questionsRepository.findById(100L)).thenReturn(Optional.of(new OpenQuestion()));
+
+        assertThrows(IllegalStateException.class, () -> 
+            quizServices.removeQuestionFromQuiz(10L, 100L, 99L)
+        );
+    }
 }
