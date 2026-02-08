@@ -8,6 +8,7 @@ export class QuestionsViewer extends BaseComponent {
     this.quizId = this.getAttribute("quizId");
     this.authorId = this.getAttribute("authorId");
     this.role = this.getAttribute("role");
+    this.allQuestions = [];
 
     this.questionsService = new QuestionsService();
     this.quizService = new QuizService();
@@ -19,6 +20,17 @@ export class QuestionsViewer extends BaseComponent {
     document.addEventListener("question-added", () => {
       this.loadData();
     });
+
+    const searchInput = this.querySelector("#search-input");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredQuestions = this.allQuestions.filter(question => 
+                question.text.toLowerCase().includes(searchTerm)
+            );
+            this.showQuestions(filteredQuestions);
+        });
+    }
   }
 
   get questions() {
@@ -26,7 +38,14 @@ export class QuestionsViewer extends BaseComponent {
   }
 
   render() {
-    this.innerHTML = `<div id="questions" class="row g-4"></div>`;
+    this.innerHTML = `
+      <div class="row mb-3">
+            <div class="col-md-6 mx-auto">
+                 <input type="text" id="search-input" class="form-control" placeholder="Search question...">
+            </div>
+        </div>
+      <div id="questions" class="row g-4"></div>
+    `;
   }
 
   async loadData() {
@@ -37,6 +56,8 @@ export class QuestionsViewer extends BaseComponent {
       questions = await this.questionsService.getQuestions();
     }
     
+    this.allQuestions = questions || [];
+
     if (questions != null && questions != undefined) {
       this.showQuestions(questions)
     } else {
@@ -47,6 +68,11 @@ export class QuestionsViewer extends BaseComponent {
   }
 
   showQuestions(questions) {
+    const container = this.questions;
+    if (!container) return;
+
+    container.innerHTML = "";
+
     questions.forEach(question => {
       this.questions.appendChild(this.getQuestionElement(question));
     });

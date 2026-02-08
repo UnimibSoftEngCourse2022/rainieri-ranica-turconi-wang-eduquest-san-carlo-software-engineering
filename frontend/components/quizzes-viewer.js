@@ -69,18 +69,6 @@ export class QuizzesViewer extends BaseComponent {
       if (quizzes.length == 0) {
           messageContainer.innerHTML = `<alert-component type="warning" message="There is not quiz to display"></alert-component>`
       } else {
-          /*this.innerHTML = `<div class="row g-4" id="quizzes-container"></div>`;
-          const quizzesContainer = this.querySelector("#quizzes-container");
-          quizzes.forEach(quiz => {
-            const quizItem = document.createElement("quiz-item");
-            quizItem.classList.add("col-12", "col-md-6", "col-lg-4");
-
-            quizItem.quizData = quiz;
-            quizItem.role = this.role;
-            quizItem.userId = this.userId;
-
-            quizzesContainer.appendChild(quizItem);
-          })*/
          this.displayQuizzes(this.allQuizzes);
       }
     } catch (e) {

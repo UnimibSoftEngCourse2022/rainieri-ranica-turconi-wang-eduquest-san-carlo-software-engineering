@@ -57,7 +57,6 @@ export class TestsViewer extends BaseComponent {
     const loader = this.querySelector(".spinner-border");
     const messageContainer = this.querySelector("#message-container");
     try {
-        //const tests = await this.testsService.getTestsByAuthorId(this.userId);
         let tests = [];
 
         if (this.role === "TEACHER") {
@@ -73,8 +72,6 @@ export class TestsViewer extends BaseComponent {
         if (messageContainer) messageContainer.innerHTML = "";
 
         if (!tests || tests.length == 0) {
-            //this.innerHTML = `<alert-component type="warning" message="There are no active tests to display"></alert-component>`
-            //messageContainer.innerHTML = `<alert-component type="warning" message="There are no active tests to display"></alert-component>`
             if (messageContainer) {
                 const msg = this.role === "TEACHER" 
                     ? "You haven't created any tests yet." 
@@ -82,26 +79,11 @@ export class TestsViewer extends BaseComponent {
                 messageContainer.innerHTML = `<alert-component type="warning" message="${msg}"></alert-component>`;
             }
         } else {
-            /*this.innerHTML = `<div class="row g-4" id="tests-inner-container"></div>`;
-            const testsContainer = this.querySelector("#tests-inner-container");
-            
-            tests.forEach(test => {
-              const testItem = document.createElement("test-item");
-              testItem.classList.add("col-12", "col-md-6", "col-lg-4");
-
-              testItem.testData = test;
-              testItem.role = this.role;
-              testItem.userId = this.userId;
-
-              testsContainer.appendChild(testItem);
-            })*/
            this.displayTests(this.allTests);
         }
     } catch (e) {
       console.log(e);
-        //this.innerHTML = `<alert-component type="danger" message="Cannot get the tests list, please try again later"></alert-component>`
         if (loader) loader.style.display = "none";
-        
         if (messageContainer) {
             messageContainer.innerHTML = `<alert-component type="danger" message="Cannot get the tests list, please try again later"></alert-component>`;
         }
