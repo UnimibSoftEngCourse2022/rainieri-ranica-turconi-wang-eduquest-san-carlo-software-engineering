@@ -25,10 +25,9 @@ export class QuizEditor extends BaseComponent {
   }
 
   get quizTitleInput() { return this.querySelector("#title-input"); }
-
   get quizDescriptionInput() { return this.querySelector("#description-input"); }
-
   get quizQuestions() { return this.querySelector("#questions"); }
+  get quizStats() { return this.querySelector("#stats"); }
 
   render() {
     this.innerHTML = `
@@ -65,6 +64,7 @@ export class QuizEditor extends BaseComponent {
         </form>
         <hr>
         <div id="questions"></div>
+        <div id="stats"></div>
         <hr>
         <h3>Add a question</h3>
         <questions-viewer role="TEACHER" quizId="${this.quizId}"></questions-viewer>
@@ -78,6 +78,7 @@ export class QuizEditor extends BaseComponent {
         this.quizTitleInput.value = quizData.title;
         this.quizDescriptionInput.value = quizData.description;
         this.showQuizQuestions(quizData);
+        this.showQuizStats(quizData.quizStats);
     } else {
         this.innerHTML = `<alert-component type="danger" message="Error trying to show the quiz, please try again later" timeout="5000"></alert-component>`;
     }
@@ -139,6 +140,16 @@ export class QuizEditor extends BaseComponent {
     } else {
         resultDiv.innerHTML = `<alert-component type="danger" message="Error modifying quiz" timeout="5000"></alert-component>`
     }
+  }
+
+  showQuizStats(quizStats) {
+    const quizStatsMessage = `
+    <h4>Quiz stats</h4>
+    Total attempts: ${quizStats.totalAttempts} | Average score: ${quizStats.averageScore} 
+    `;
+    this.quizStats.innerHTML = `
+    <alert-component type="primary" message="${quizStatsMessage}"></alert-component>
+    `
   }
 }
 
