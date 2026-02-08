@@ -9,11 +9,12 @@ export class QuizzesAttemptsViewer extends BaseComponent {
     this.attemptsService = new AttemptsService();
     this.render();
     this.loadData();
-
   }
 
   attachEventListeners() {
-    document.addEventListener("quiz-attempt-started", () => this.loadData());
+    document.addEventListener("attempt-created", () => {
+        this.loadData();
+    });
   }
 
   get quizzesAttempts() {
@@ -23,52 +24,54 @@ export class QuizzesAttemptsViewer extends BaseComponent {
   render() {
     this.innerHTML = `
     <collapsible-panel title=" " open>
-      <div id="quizzes-attempts" class="container"></div>
+      <div id="quizzes-attempts" class="container">Loading...</div>
     </collapsible-panel>
     `;
   }
 
   async loadData() {
-    const quizzesAttempts = await this.attemptsService.getAttemptsByStudentId(this.userId);
+    if (!this.userId) this.userId = this.getAttribute("user-id");
+    
+    if (!this.userId) return;
 
-    if (quizzesAttempts) {
-        if (quizzesAttempts.length == 0) {
-          this.quizzesAttempts.innerHTML = `
-          <alert-component type="warning" message="Start a quiz to see your attempts here."></alert-component>
-          `
+    try {
+        const attempts = await this.attemptsService.getAttemptsByStudentId(this.userId);
+        
+        if (!attempts || attempts.length === 0) {
+            this.quizzesAttempts.innerHTML = `<alert-component type="warning" message="Start a quiz to see your attempts here."></alert-component>`;
         } else {
-          let quizzesAttemptsHTML = `<div class="list-group">`
-          quizzesAttempts.forEach(quizAttempt => {
-            quizzesAttemptsHTML += this.getQuizAttemptRow(quizAttempt);
-          })
-          quizzesAttemptsHTML += `</div>`
-          this.quizzesAttempts.innerHTML = quizzesAttemptsHTML;
+            attempts.sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
+            
+            const listHtml = `
+                <div class="list-group">
+                    ${attempts.map(att => this.getQuizAttemptRow(att)).join('')}
+                </div>`;
+            this.quizzesAttempts.innerHTML = listHtml;
         }
-    } else {
-        this.quizzesAttempts.innerHTML = `
-        <alert-component type="danger" message="Error trying to access the quizzes attempts, please try again later"></alert-component>
-        `
+    } catch (e) {
+        console.error(e);
+        this.quizzesAttempts.innerHTML = `<alert-component type="danger" message="Error loading history."></alert-component>`;
     }
-  };
+  }
 
-  getQuizAttemptRow(quizAttempt) {
-    if (quizAttempt.status == "COMPLETED") {
-      const quizResultPercentage = quizAttempt.score ? quizAttempt.score / quizAttempt.maxScore : 0;
-      const badgeColor = quizResultPercentage > 0.6 ? "success" : "danger";
-      return `
-      <p class="list-group-item list-group"">
-        ${quizAttempt.quizTitle}
-        <span class="badge text-bg-${badgeColor}">${quizAttempt.status} (${quizResultPercentage * 100}%)</span>
-      </a>
-      `
+  getQuizAttemptRow(att) {
+    if (att.status === "COMPLETED") {
+        const pct = att.score && att.maxScore ? (att.score / att.maxScore) : 0;
+        const color = pct > 0.6 ? "success" : "danger";
+        return `
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            ${att.quizTitle}
+            <span class="badge text-bg-${color}">${att.status} (${(pct * 100).toFixed(0)}%)</span>
+        </div>`;
     } else {
-      const quizAttemptLink = `../quiz-runner/?quizAttemptId=${quizAttempt.id}`
-      return `
-        <a class="list-group-item list-group" href="${quizAttemptLink}">
-          ${quizAttempt.quizTitle}
-          <span class="badge text-bg-secondary">${quizAttempt.status}</span>
-        </a>
-      `
+        return `
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+           onclick="sessionStorage.setItem('currentQuizId', '${att.quizId}'); 
+                    sessionStorage.setItem('currentTestId', '${att.testId || ''}'); 
+                    window.location.hash = '#quiz-runner'; return false;">
+            ${att.quizTitle}
+            <span class="badge text-bg-secondary">${att.status}</span>
+        </a>`;
     }
   }
 }
