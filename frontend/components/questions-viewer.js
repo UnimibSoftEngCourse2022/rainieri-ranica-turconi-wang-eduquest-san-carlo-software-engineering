@@ -44,7 +44,7 @@ export class QuestionsViewer extends BaseComponent {
                  <input type="text" id="search-input" class="form-control" placeholder="Search question...">
             </div>
         </div>
-      <div id="questions" class="row g-4"></div>
+      <div id="questions" class="row g-4 justify-content-center"></div>
     `;
   }
 

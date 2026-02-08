@@ -82,7 +82,6 @@ export class TestsViewer extends BaseComponent {
            this.displayTests(this.allTests);
         }
     } catch (e) {
-      console.log(e);
         if (loader) loader.style.display = "none";
         if (messageContainer) {
             messageContainer.innerHTML = `<alert-component type="danger" message="Cannot get the tests list, please try again later"></alert-component>`;

@@ -77,21 +77,37 @@ export class QuizEditor extends BaseComponent {
     if (quizData) {        
         this.quizTitleInput.value = quizData.title;
         this.quizDescriptionInput.value = quizData.description;
-        this.showQuizQuestions(quizData.questions);
+        this.showQuizQuestions(quizData);
     } else {
         this.innerHTML = `<alert-component type="danger" message="Error trying to show the quiz, please try again later" timeout="5000"></alert-component>`;
     }
   }
 
-  showQuizQuestions(questions) {
+  showQuizQuestions(quizData) {
+    const questions = quizData.questions;
     if (!questions.length) {
         this.quizQuestions.innerHTML = `<alert-component type="info" message="No questions added to the quiz yet"></alert-component>`;
         return;
     }
 
-    const questionsHTML = questions.map(q => `
-        <a class="list-group-item list-group">${q.text}<button class="btn remove-question-from-quiz-button" data-id="${q.id}">🗑️</button></a>
-    `).join('');
+    let questionsHTML = ``;
+    questions.forEach(q => {
+        const questionRelativeStats = quizData.quizStats.statsPerQuestion[q.id];
+        const questionRelativePercentage = questionRelativeStats.totalAnswers ? questionRelativeStats.correctAnswer / questionRelativeStats.totalAnswers : 0;
+        const questionRelativeStatsHTML = `
+        ${questionRelativeStats.correctAnswer} correct answer, ${questionRelativeStats.totalAnswers} 
+        total attempts (${questionRelativePercentage * 100}%)
+        `;
+        const questionRelativeStatsColor = questionRelativePercentage > 0.6 ? `success` : `danger`
+
+        questionsHTML +=`
+        <a class="list-group-item list-group">
+            ${q.text}
+            <button class="btn remove-question-from-quiz-button" data-id="${q.id}">🗑️</button>
+            <span class="badge text-bg-${questionRelativeStatsColor}">${questionRelativeStatsHTML}</span>
+        </a>
+        `;
+    });
     this.quizQuestions.innerHTML = `<h3>Quiz questions</h3><div class="list-group">${questionsHTML}</div>`;
   }
 

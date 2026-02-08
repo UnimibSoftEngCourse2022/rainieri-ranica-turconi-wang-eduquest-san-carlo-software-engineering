@@ -79,6 +79,7 @@ public class DatabaseLoader implements CommandLineRunner {
         quiz1 = quizRepository.save(quiz1);
         
         quiz1.addQuestion(q1);
+        quiz1.addQuestion(q2);
         quiz1.addQuestion(q3); 
         quizRepository.save(quiz1);
 

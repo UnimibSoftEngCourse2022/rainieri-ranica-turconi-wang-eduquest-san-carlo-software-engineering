@@ -35,7 +35,6 @@ export class ChallengesViewer extends BaseComponent {
 
     this.challengesContainer.innerHTML = ``;
     const challenges = await this.gamificationService.getMyChallenges();
-    console.log(challenges);
     if (!challenges) {
       this.challengesContainer.innerHTML = `
       <alert-component type="danger" message="Error loading your challenges, please try again later"></alert-component>

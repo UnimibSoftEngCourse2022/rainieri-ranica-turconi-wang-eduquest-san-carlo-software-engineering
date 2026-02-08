@@ -134,6 +134,8 @@ public class QuizAttemptController {
 		try {
 			return ResponseEntity.ok(quizAttemptServices.completeQuizAttempt(quizAttemptId, loggedId));	
 		} catch (NullPointerException e) {
+			String msg = e.getMessage();
+			System.out.println("[ERROR - AttemptController] " + msg);
             return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
 		} catch (RuntimeException e) {
 			String msg = e.getMessage();
@@ -152,6 +154,8 @@ public class QuizAttemptController {
             // 400 -> attempt already completed
             return ResponseEntity.badRequest().body(msg);
 		} catch (Exception e) {
+			String msg = e.getMessage();
+			System.out.println("[ERROR - AttemptController] " + msg);
 			return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
 		}
 	}

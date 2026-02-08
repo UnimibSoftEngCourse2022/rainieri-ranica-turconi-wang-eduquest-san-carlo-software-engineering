@@ -113,7 +113,6 @@ export class UserSearch extends BaseComponent {
                 return;
             }
 
-            console.log(completedMissions);
             completedMissions.forEach(missionProgress => {
                 const missionContainer = document.createElement("div");
                 missionContainer.classList.add("card");

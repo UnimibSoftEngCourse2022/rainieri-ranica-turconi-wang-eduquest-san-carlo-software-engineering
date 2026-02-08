@@ -34,15 +34,34 @@ public class QuizStatsListener {
 
         quizRepository.save(quiz);
 
-        for (Answer answer : attempt.getAnswers()) {
-            Question question = answer.getQuestion();
-            QuestionStats qStats = question.getStats();
-
-            boolean isCorrect = answer.isCorrect(); 
-
-            qStats.updateStats(isCorrect);
-            
-            questionRepository.save(question);
+        for (Question question : quiz.getQuestions()) {
+        	Answer givenAnswer = null;
+        	for (Answer answer : attempt.getAnswers()) {
+        		if (answer.getQuestion().getId() == question.getId()) {
+        			givenAnswer = answer;
+        			break;
+        		}
+        	}
+        	
+        	boolean isCorrect;
+        	if (givenAnswer == null) {
+        		isCorrect = false;
+        	} else {
+        		isCorrect = givenAnswer.isCorrect();
+        	}
+        	
+        	QuestionStats globalQuestionStats = question.getStats();
+        	globalQuestionStats.updateStats(isCorrect);
+        	questionRepository.save(question);
+        	
+        	QuestionStats questionStatsInQuiz = quiz.getStats().getQuestionStats(question.getId());
+        	if (questionStatsInQuiz == null) {
+        		questionStatsInQuiz = new QuestionStats();
+        		quiz.getStats().setQuestionStats(question.getId(), questionStatsInQuiz);
+        	}
+        	questionStatsInQuiz.updateStats(isCorrect);
         }
+        
+        quizRepository.save(quiz);
     }
 }

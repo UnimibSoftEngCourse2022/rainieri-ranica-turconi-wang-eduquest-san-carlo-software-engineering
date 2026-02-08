@@ -1,7 +1,9 @@
 package it.bicocca.eduquest.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -59,7 +61,16 @@ public class QuizServices {
 	private QuizStatsDTO calculateQuizOnlyStats(Quiz quiz) {
 		Double avg = quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quiz);
 		long count = quizAttemptsRepository.countByQuizAndTestIsNull(quiz);
-		return new QuizStatsDTO(avg, (int) count);
+		Map<Long, QuestionStats> statsPerQuestion = quiz.getStats().getStatsPerQuestion();
+		
+		Map<Long, QuestionStatsDTO> statsPerQuestionDTO = new HashMap<Long, QuestionStatsDTO>();
+		for (Map.Entry<Long, QuestionStats> entry : statsPerQuestion.entrySet()) {
+			QuestionStats questionStats = entry.getValue();
+			QuestionStatsDTO questionStatsDTO = new QuestionStatsDTO(questionStats.getAverageSuccess(), questionStats.getTotalAnswers(), questionStats.getCorrectAnswer());
+			statsPerQuestionDTO.put(entry.getKey(), questionStatsDTO);
+		}
+		
+		return new QuizStatsDTO(avg, (int) count, statsPerQuestionDTO);
 	}
 	
 	public QuizDTO getQuizById(long id) {
@@ -149,7 +160,7 @@ public class QuizServices {
 		Quiz quiz = new Quiz(quizAddDTO.getTitle(), quizAddDTO.getDescription(), author);
 		Quiz savedQuiz = quizRepository.save(quiz);
 		
-		QuizStatsDTO statsDTO = new QuizStatsDTO(0.0, 0); // Quiz nuovo = 0 stats
+		QuizStatsDTO statsDTO = new QuizStatsDTO(0.0, 0, new HashMap<Long, QuestionStatsDTO>()); // Quiz nuovo = 0 stats
 		return new QuizDTO(savedQuiz.getId(), savedQuiz.getTitle(), savedQuiz.getDescription(), savedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO, quiz.getDifficulty());
 	}
 	
