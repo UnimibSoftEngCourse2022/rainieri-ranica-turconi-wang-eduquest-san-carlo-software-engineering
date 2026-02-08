@@ -2,9 +2,15 @@ package it.bicocca.eduquest.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.stream.Collectors;
+import java.util.Collections;
 
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.bicocca.eduquest.domain.answers.QuizAttempt;
 import it.bicocca.eduquest.domain.gamification.Mission;
@@ -24,7 +30,12 @@ public class GamificationServices {
 		this.missionsRepository = missionsRepository;
 	}
 	
+	@Transactional
 	public List<MissionProgressDTO> getAllMissionsProgressesByUserId(long userId, boolean onlyCompleted) {
+		List<MissionProgress> currentMissions = missionsProgressesRepository.findByStudentId(userId);
+		
+		
+		
 		List<MissionProgressDTO> missionsProgresses = new ArrayList<MissionProgressDTO>();
 		
 		for (MissionProgress progress : missionsProgressesRepository.findByStudentId(userId)) {
@@ -69,6 +80,48 @@ public class GamificationServices {
         		MissionProgress progress = new MissionProgress(mission, student, mission.getGoal());
         		missionsProgressesRepository.save(progress);
         	}
+        }
+    }
+    
+    private void updateAndSaveProgress(MissionProgress progress, int newCurrentCount) {
+    	progress.setCurrentCount(newCurrentCount);
+    	
+    	if (newCurrentCount >= progress.getGoal()) {
+    		progress.setCurrentCount(progress.getGoal());
+    		progress.setCompleted(true);
+    	}
+    	missionsProgressesRepository.save(progress);
+    }
+    
+    private boolean isMissionListExpired(List<MissionProgress> missions) {
+    	if (missions.isEmpty()) return true;
+    	MissionProgress sample = missions.get(0);
+        LocalDate assignmentDate = sample.getAssignmentDate();
+        if (assignmentDate == null) {
+        	return true;
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+        return assignmentDate.isBefore(thisMonday);
+    }
+    
+    @Transactional
+    private void refreshWeeklyMissions(long userId) {
+    	missionsProgressesRepository.deleteByStudentId(userId);
+    	
+    	List<Mission> allMissions = missionsRepository.findAll();
+    	Collections.shuffle(allMissions);
+        List<Mission> selectedMissions = allMissions.stream()
+                                                    .limit(4)
+                                                    .collect(Collectors.toList());
+        Student studentReference = new Student(); 
+        studentReference.setId(userId); 
+
+        for (Mission m : selectedMissions) {
+            MissionProgress mp = new MissionProgress(m, studentReference, m.getGoal());
+            missionsProgressesRepository.save(mp);
         }
     }
 }
