@@ -29,7 +29,7 @@ const handleLoginSubmit = async (event) => {
   if (response.ok) {
     const data = await response.json();
     const jwtToken = data.token;
-    window.localStorage.setItem("token", jwtToken);
+    globalThis.localStorage.setItem("token", jwtToken);
 
     let destination;
     if (data.role == STUDENT_ROLE) {

@@ -55,5 +55,5 @@ window.onload = async () => {
     if (attemptsDiv) attemptsDiv.innerHTML = `<h1>Your quizzes attempts</h1><quizzes-attempts-viewer user-id="${userData.id}"></quizzes-attempts-viewer>`;
 
     handleNavigation();
-    window.addEventListener("hashchange", handleNavigation);
+    globalThis.addEventListener("hashchange", handleNavigation);
 };

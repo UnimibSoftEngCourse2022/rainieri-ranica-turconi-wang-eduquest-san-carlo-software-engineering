@@ -21,7 +21,7 @@ export const endpoints = {
 }
 
 export const callApi = async(url, method, body = null) => {
-    const token = window.localStorage.getItem("token");
+    const token = globalThis.localStorage.getItem("token");
     const headers = {
         Accept: "application/json",
         "Content-Type": "application/json",

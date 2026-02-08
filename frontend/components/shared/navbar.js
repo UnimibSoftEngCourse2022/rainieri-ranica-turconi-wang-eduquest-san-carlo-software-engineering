@@ -55,7 +55,7 @@ export class Navbar extends BaseComponent {
     }
 
     handleLogout() {
-      window.localStorage.removeItem("token");
+      globalThis.localStorage.removeItem("token");
       globalThis.location = `../`;
     }
 }
