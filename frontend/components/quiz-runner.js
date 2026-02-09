@@ -139,10 +139,10 @@ export class QuizRunner extends BaseComponent {
   }
 
   async loadData() {
-    this.attemptData = await this.attemptsService.getAttemptById(this.quizAttemptId);
-    
-    if (!this.attemptData) {
-      this.quizError.innerHTML = "Failed to load quiz attempt data.";
+    try {
+      this.attemptData = await this.attemptsService.getAttemptById(this.quizAttemptId);
+    } catch (e) {
+      this.quizError.innerHTML = e;
       return;
     }
 
@@ -228,7 +228,12 @@ export class QuizRunner extends BaseComponent {
 
     this.questionRunner.answer = null;
     
-    const sessionData = await this.attemptsService.addAttempt(this.quizId, this.studentId, this.testId);
+    let sessionData;
+    try {
+      sessionData = await this.attemptsService.addAttempt(this.quizId, this.studentId, this.testId);
+    } catch (e) {
+      return;
+    }
     if (sessionData?.existingAnswers) {
         sessionData.existingAnswers.forEach(answer => {
           if (answer.questionId == currentQuestion.id) {
@@ -277,11 +282,11 @@ export class QuizRunner extends BaseComponent {
       requestBody.selectedOptionId = answer;
     }
 
-    const response = await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
-    if (response) {
+    try {
+      await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
       this.quizError.innerHTML = "";
       return true;
-    } else {
+    } catch(e) {
       this.quizError.innerHTML = `
       <alert-component type="danger" message="Error sending your answer, please try again later"></alert-component>
       `;
@@ -303,10 +308,10 @@ export class QuizRunner extends BaseComponent {
       await this.handleSaveAnswerToCurrentQuestion();
     }
 
-    const response = await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
-    if (response) {
+    try {
+      await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
       globalThis.location.href = globalThis.location.pathname;
-    } else {
+    } catch(e) {
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = "Finish Quiz";
