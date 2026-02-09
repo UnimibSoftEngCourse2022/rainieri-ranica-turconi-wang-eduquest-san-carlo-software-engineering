@@ -59,30 +59,18 @@ export class TestsViewer extends BaseComponent {
   async loadData() {
     const loader = this.querySelector(".spinner-border");
     const messageContainer = this.querySelector("#message-container");
+    
     try {
-        let tests = [];
-
-        if (this.role === "TEACHER") {
-            tests = await this.testsService.getTestsByAuthorId(this.userId);
-        } else {
-            tests = await this.testsService.getTests();
-        }
-
+        const tests = await this.fetchTests();
         this.allTests = tests || [];
 
         if (loader) loader.style.display = "none";
-
         if (messageContainer) messageContainer.innerHTML = "";
 
-        if (!tests || tests.length == 0) {
-            if (messageContainer) {
-                const msg = this.role === "TEACHER" 
-                    ? "You haven't created any tests yet." 
-                    : "There are no active tests to display.";
-                messageContainer.innerHTML = `<alert-component type="warning" message="${msg}"></alert-component>`;
-            }
+        if (this.allTests.length === 0) {
+            this.showEmptyState(messageContainer);
         } else {
-           this.displayTests(this.allTests);
+            this.displayTests(this.allTests);
         }
     } catch (e) {
         if (loader) loader.style.display = "none";
@@ -90,6 +78,23 @@ export class TestsViewer extends BaseComponent {
             messageContainer.innerHTML = `<alert-component type="danger" message="Cannot get the tests list, please try again later"></alert-component>`;
         }
     }
+  }
+
+  async fetchTests() {
+    if (this.role === "TEACHER") {
+        return await this.testsService.getTestsByAuthorId(this.userId);
+    }
+    return await this.testsService.getTests();
+  }
+
+  showEmptyState(container) {
+      if (!container) return;
+      
+      const msg = this.role === "TEACHER" 
+          ? "You haven't created any tests yet." 
+          : "There are no active tests to display.";
+      
+      container.innerHTML = `<alert-component type="warning" message="${msg}"></alert-component>`;
   }
 
   displayTests(testsList) {
@@ -102,12 +107,20 @@ export class TestsViewer extends BaseComponent {
           messageContainer.innerHTML = `<div class="alert alert-light">No tests found matching your search.</div>`;
           return;
       }
+      
       testsList.forEach(test => {
           const testItem = document.createElement("test-item");
           testItem.classList.add("col-12", "col-md-6", "col-lg-4");
+          
           testItem.testData = test;
           testItem.role = this.role;
           testItem.userId = this.userId;
+
+          if (this.userId) {
+            testItem.setAttribute("student-id", this.userId);
+          }
+          testItem.setAttribute("role", this.role);
+
           container.appendChild(testItem);
       });
   }
