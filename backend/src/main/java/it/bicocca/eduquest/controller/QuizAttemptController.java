@@ -127,30 +127,33 @@ public class QuizAttemptController {
 	
 	@PostMapping("/{quizAttemptId}/complete")
 	public ResponseEntity<Object> completeQuizAttempt(@PathVariable long quizAttemptId, Authentication authentication) {
+
 		String loggedIdString = authentication.getName();
-	    Long loggedId = Long.valueOf(loggedIdString);
-		
+		Long loggedId = Long.valueOf(loggedIdString);
+
 		try {
-			return ResponseEntity.ok(quizAttemptServices.completeQuizAttempt(quizAttemptId, loggedId));	
-		} catch (NullPointerException e) {
-			return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
+			return ResponseEntity.ok(quizAttemptServices.completeQuizAttempt(quizAttemptId, loggedId));
+
 		} catch (RuntimeException e) {
 			String msg = e.getMessage();
-			
-            // 404 -> attempt not found
-            if (msg.contains(CANNOT_FIND_MSG) || msg.contains(NOT_FOUND_MSG)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
-            }
-            
-            // 403
-            if (msg.contains("not your attempt")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
-            }
 
-            // 400 -> attempt already completed
-            return ResponseEntity.badRequest().body(msg);
+			if (msg == null) {
+				return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
+			}
+
+			if (msg.contains(CANNOT_FIND_MSG) || msg.contains(NOT_FOUND_MSG)) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
+			}
+
+			if (msg.contains("not your attempt")) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+			}
+
+			return ResponseEntity.badRequest().body(msg);
+
 		} catch (Exception e) {
 			return ResponseEntity.internalServerError().body("Generic error completing the quiz.");
 		}
 	}
+	
 }

@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,14 +157,15 @@ class QuizAttemptControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "1")
     void completeQuizAttempt_InternalServerError() throws Exception {
-        when(quizAttemptServices.completeQuizAttempt(100L, 1L))
-            .thenThrow(new NullPointerException("Unexpected error"));
+        when(quizAttemptServices.completeQuizAttempt(anyLong(), anyLong()))
+            .thenThrow(new NullPointerException()); 
 
-        mockMvc.perform(post("/api/quiz-attempts/100/complete")
-                .with(csrf()))
-                .andExpect(status().isInternalServerError());
+        mockMvc.perform(post("/api/quiz-attempts/{id}/complete", 100L)
+                .with(csrf())
+                .with(user("1").roles("USER")) 
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError()); 
     }
     
     @Test

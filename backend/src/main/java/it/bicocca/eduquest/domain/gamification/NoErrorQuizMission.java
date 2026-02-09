@@ -8,7 +8,7 @@ public class NoErrorQuizMission extends Mission {
 	
 	public NoErrorQuizMission() {
 		// Empty constructor
-	};
+	}
 	
 	public NoErrorQuizMission(int nQuizzes) {
 		this.numberOfQuizzes = nQuizzes;

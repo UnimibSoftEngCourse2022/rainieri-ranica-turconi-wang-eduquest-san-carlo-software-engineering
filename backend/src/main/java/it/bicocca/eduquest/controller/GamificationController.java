@@ -25,7 +25,7 @@ public class GamificationController {
 	private RankingServices rankingServices;
 	private ChallengeServices challengeServices;
 	
-	private final static String internalServerError = "Internal server error while getting all missions";
+	private static final String internalServerError = "Internal server error while getting all missions";
 	
 	public GamificationController(MissionsServices missionsServices, GamificationServices gamificationServices, RankingServices rankingServices, ChallengeServices challengeServices) {
 		this.missionsServices = missionsServices;
