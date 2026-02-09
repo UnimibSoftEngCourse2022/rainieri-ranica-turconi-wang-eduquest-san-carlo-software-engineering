@@ -15,11 +15,20 @@ export class ChallengesViewer extends BaseComponent {
   }
 
   render() {
-    this.innerHTML = '<collapsible-panel title=" " open><div id="challenges-container" class="row g-4"></div></collapsible-panel>';
+    this.innerHTML = `
+    <collapsible-panel title=" " open>
+      <input class="form-check-input" type="checkbox" value="1" id="show-only-active-challenges">
+      <label class="form-check-label" for="show-only-active-challenges" checked>
+        Show only in progress challenges
+      </label>
+      <div id="challenges-container" class="row g-4"></div>
+    </collapsible-panel>
+    `;
   }
 
   attachEventListeners() {
     document.addEventListener("challenge-added", (event) => this.loadData());
+    this.addEventListenerWithTracking("#show-only-active-challenges", "click", () => this.loadData());
   }
 
   get challengesContainer() { return this.querySelector("#challenges-container"); }
@@ -44,12 +53,15 @@ export class ChallengesViewer extends BaseComponent {
       `;
     }
 
-    if (challenges.length == 0) {
+    const showOnlyInActiveChallenges = this.querySelector("#show-only-active-challenges").checked;
+    const filteredChallenges = challenges.filter(challenge => !showOnlyInActiveChallenges || challenge.status == "ACTIVE");
+    
+    if (filteredChallenges.length == 0) {
       this.challengesContainer.innerHTML = `
       <alert-component type="info" message="No challenges to display"></alert-component>
       `;
     } else {
-      challenges.forEach(challenge => {
+      filteredChallenges.forEach(challenge => {
         const challengeElement = document.createElement("div");
         const challengeBadgeColor = challenge.status == "COMPLETED" ? `success` : `warning`;
 

@@ -45,7 +45,7 @@ export class QuizzesAttemptsViewer extends BaseComponent {
         const filteredAttempts = attempts.filter((attempt => !showOnlyInProgressAttempts || attempt.status == "STARTED"));
 
         if (!filteredAttempts || filteredAttempts.length === 0) {
-            this.quizzesAttempts.innerHTML = `<alert-component type="warning" message="Start a quiz to see your attempts here."></alert-component>`;
+            this.quizzesAttempts.innerHTML = `<alert-component type="primary" message="No attempts to show"></alert-component>`;
         } else {
             filteredAttempts.sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
             
