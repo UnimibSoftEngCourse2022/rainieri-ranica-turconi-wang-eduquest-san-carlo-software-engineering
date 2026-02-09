@@ -27,18 +27,30 @@ export class Quiz extends BaseComponent {
     const buttonText = isTeacher ? "Edit quiz" : "Run quiz";
     const btnId = `btn-run-${this._quizData.id}`;
 
+    const avgScore = this._quizData.quizStats?.averageScore || 0;
+    const totalAttempts = this._quizData.quizStats?.totalAttempts || 0;
+
     this.innerHTML = `
-    <div class="card my-2" style="border: 1px solid #ccc; padding: 10px;">
-        <h3>${this._quizData.title}</h3>
-        <p>${this._quizData.description}</p>
-        
-        <button id="${btnId}" class="btn btn-sm btn-primary">${buttonText}</button>
-        
-        <hr>
-        <small class="text-muted">
-            Average score: ${(this._quizData.quizStats?.averageScore || 0).toFixed(2)} | 
-            Total attempts: ${this._quizData.quizStats?.totalAttempts || 0}
-        </small>
+    <div class="card my-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e0e0e0; background-color: #fcfcfc;">
+        <div class="card-body d-flex flex-column align-items-center p-3">
+            
+            <h3 class="card-title mb-3 fw-normal">${this._quizData.title}</h3>
+            
+            <div class="mb-4 text-center text-muted">
+                ${this._quizData.description || "No description available"}
+            </div>
+            
+            <div class="mb-2">
+                <button id="${btnId}" class="btn btn-primary px-4">${buttonText}</button>
+            </div>
+            
+            <div style="border-top: 1px solid rgba(0,0,0,0.1); width: 100%; margin-top: 20px; padding-top: 15px;">
+                <div class="text-muted small text-center" style="white-space: nowrap;">
+                    Average score: ${Number(avgScore).toFixed(2)} | Total attempts: ${totalAttempts}
+                </div>
+            </div>
+
+        </div>
     </div>
     `;
 
@@ -68,6 +80,9 @@ export class Quiz extends BaseComponent {
 
     if (studentId) {
         try {
+            localStorage.setItem("currentQuizId", this._quizData.id);
+            localStorage.removeItem("currentTestId"); 
+
             await this.attemptsService.addAttempt(this._quizData.id, studentId, null);
             
             this.dispatchEvent(new CustomEvent("attempt-created", { 
@@ -75,8 +90,10 @@ export class Quiz extends BaseComponent {
                 composed: true 
             }));
 
+
         } catch (e) {
             console.error(e);
+            alert("Error starting quiz: " + e.message);
         }
     }
   }
