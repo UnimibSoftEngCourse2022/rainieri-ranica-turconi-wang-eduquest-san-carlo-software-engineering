@@ -106,34 +106,51 @@ export class UserSearch extends BaseComponent {
 
     async loadMissionsTable() {
         const badgesContainer = this.querySelector("#badges");
+        badgesContainer.innerHTML = "";
         if (this._userData.role === "STUDENT") {
-            let completedMissions;
+            let badges = [];
             try {
-                completedMissions = await this.gamificationService.getUserCompletedMissions(this._userData.id);
+                badges = await this.gamificationService.getUserBadges(this._userData.id);
             } catch {
                 badgesContainer.innerHTML = `
-                <alert-component type="danger" message="Error loading missions"></alert-component>
+                <alert-component type="danger" message="Error loading badges"></alert-component>
                 `;
             }
 
-            if (completedMissions.length == 0) {
+            if (!badges || badges.length === 0) {
                 badgesContainer.innerHTML = `
                 <alert-component type="warning" message="This user hasn't any badge"></alert-component>
                 `;
             }
 
-            completedMissions.forEach(missionProgress => {
-                const missionContainer = document.createElement("div");
-                missionContainer.classList.add("card");
-                missionContainer.style = "width: 18rem;";
-                missionContainer.innerHTML = `
-                <div class="card-body "col-12 col-md-6 col-lg-4">
-                    <h5 class="card-title">${missionProgress.mission.title}</h5>
-                    ${missionProgress.completed ? `<span class="badge text-bg-success">Completed</span>` : ``}
-                    <h6 class="card-subtitle mb-2 text-body-secondary">${missionProgress.mission.description}</h6>
+            badges.forEach(badge => {
+                const badgeCard = document.createElement("div");
+                badgeCard.classList.add("card", "mb-3", "me-3");
+                badgeCard.style = "width: 18rem;";
+                badgeCard.style.display = "inline-block";
+                let dateStr;
+                if (badge.obtainedDate) {
+                    dateStr = new Date(badge.obtainedDate).toLocaleDateString();
+                } else {
+                    dateStr = 'Unknown date';
+                }
+                badgeCard.innerHTML = `
+                <div class="card-body text-center">
+                    <div style="font-size: 2.5rem; margin-bottom: 10px;">🏆</div>                  
+                    <h5 class="card-title fw-bold" style="color: #b38f00;">
+                        ${badge.name} 
+                    </h5>
+                    <p class="card-text small text-muted">
+                        ${badge.description}
+                    </p>
+                    <div class="border-top pt-2 mt-3">
+                        <small class="text-muted" style="font-style: italic;">
+                            Earned on: ${dateStr}
+                        </small>
+                    </div>
                 </div>
                 `;
-                badgesContainer.appendChild(missionContainer);
+                badgesContainer.appendChild(badgeCard);
             });
         } else {
             badgesContainer.innerHTML = `

@@ -85,4 +85,19 @@ export class GamificationService {
             throw new Error(e);
         }
     }
+
+        async getUserBadges(userId) {
+        try {
+            const url = `http://localhost:8080/api/gamification/badges/${userId}`;
+            const response = await callApi(url, "GET");
+            if (!response.ok) {
+                const responseBody = await response.text();
+                throw new Error(responseBody);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error("Errore badge:", error);
+            throw error; 
+        }
+    }
 }
