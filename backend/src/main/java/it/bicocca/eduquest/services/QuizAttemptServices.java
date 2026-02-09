@@ -85,27 +85,37 @@ public class QuizAttemptServices {
 		User user = usersRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("Cannot find a student with the given ID"));
 		
 		if (!(user instanceof Student)) {
-			// FIX: RuntimeException -> IllegalArgumentException
 			throw new IllegalArgumentException("Given ID is associated to a Teacher, not a Student");
 		}
 		
-		// FIX: RuntimeException -> IllegalArgumentException
-		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Cannot find quiz with ID " + quizId));
-		
-		Optional<QuizAttempt> existingAttemptOpt = quizAttemptsRepository
-	            .findByStudentAndQuizAndStatus(user, quiz, QuizAttemptStatus.STARTED);
+		Optional<QuizAttempt> activeAttemptOpt = quizAttemptsRepository
+	            .findByStudentAndStatus(user, QuizAttemptStatus.STARTED);
 		
 		QuizAttempt quizAttempt;
 		
-		if (existingAttemptOpt.isPresent()) {
-			quizAttempt = existingAttemptOpt.get(); 
+		if (activeAttemptOpt.isPresent()) {
+			QuizAttempt existing = activeAttemptOpt.get(); 
+			if (existing.getQuiz().getId() == quizId) {
+				Long existingTestId = null;
+				if (existing.getTest() != null) {
+					existingTestId = existing.getTest().getId();
+				}
+				boolean isSameContext = (testId == null && existingTestId == null) || 
+                        (testId != null && existingTestId != null && testId.equals(existingTestId));
+				if (isSameContext) {
+		            quizAttempt = existing;
+		        } else {
+		            throw new IllegalStateException("You already have a " + (existingTestId == null ? "Practice Quiz" : "Test") + " in progress for this content. Please finish it first.");
+		        }
+			} else {
+				throw new IllegalStateException("You already have a quiz in progress: " + existing.getQuiz().getTitle() + ". You must complete it before starting a new one.");
+			}
 		} else {
+			Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException("Cannot find quiz with ID " + quizId));
 			quizAttempt = new QuizAttempt(user, quiz);
-			
 			if (testId != null) {
 				Test test = testRepository.findById(testId)
 						.orElseThrow(() -> new IllegalArgumentException("Test not found with ID " + testId));
-				
 				long attemptsDone = quizAttemptsRepository.countByStudentAndTest(user, test);
 				if (test.getMaxTries() > 0 && attemptsDone >= test.getMaxTries()) {
 					throw new IllegalStateException("Max attempts reached for this test (" + test.getMaxTries() + ")");
@@ -116,14 +126,14 @@ public class QuizAttemptServices {
 			quizAttemptsRepository.save(quizAttempt);
 		}
 		
-		List<QuestionDTO> safeQuestionsDTO = convertQuestionsToSafeDTOs(quiz.getQuestions());
+		List<QuestionDTO> safeQuestionsDTO = convertQuestionsToSafeDTOs(quizAttempt.getQuiz().getQuestions());
 		
 		List<AnswerDTO> existingAnswersDTO = new ArrayList<>();
 		for (Answer a : quizAttempt.getAnswers()) {
 			existingAnswersDTO.add(convertAnswerToDTO(a));
 		}
 		
-		return new QuizSessionDTO(quizAttempt.getId(), quiz.getTitle(), quiz.getDescription(), safeQuestionsDTO, existingAnswersDTO);
+		return new QuizSessionDTO(quizAttempt.getId(), quizAttempt.getQuiz().getTitle(), quizAttempt.getQuiz().getDescription(), safeQuestionsDTO, existingAnswersDTO);
 	}
 	
 	public QuizSessionDTO getQuizSession(long quizAttemptId) {

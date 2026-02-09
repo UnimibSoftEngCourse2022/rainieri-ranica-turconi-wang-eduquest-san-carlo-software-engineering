@@ -8,7 +8,7 @@ import jakarta.persistence.Entity;
 public class AudioSupport extends MultimediaSupport {
 
 	public AudioSupport() {
-		
+		// Default constructor
 	}
 
 	@Override
