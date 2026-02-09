@@ -15,6 +15,7 @@ export class QuizzesAttemptsViewer extends BaseComponent {
     document.addEventListener("attempt-created", () => {
         this.loadData();
     });
+    this.addEventListenerWithTracking("#show-only-in-progress-attempts", "click", () => this.loadData());
   }
 
   get quizzesAttempts() {
@@ -24,6 +25,10 @@ export class QuizzesAttemptsViewer extends BaseComponent {
   render() {
     this.innerHTML = `
     <collapsible-panel title=" " open>
+      <input class="form-check-input" type="checkbox" value="1" id="show-only-in-progress-attempts">
+      <label class="form-check-label" for="show-only-in-progress-attempts" checked>
+        Show only in progress attempts
+      </label>
       <div id="quizzes-attempts" class="container">Loading...</div>
     </collapsible-panel>
     `;
@@ -34,17 +39,19 @@ export class QuizzesAttemptsViewer extends BaseComponent {
     
     if (!this.userId) return;
 
+    const showOnlyInProgressAttempts = this.querySelector("#show-only-in-progress-attempts").checked;
     try {
         const attempts = await this.attemptsService.getAttemptsByStudentId(this.userId);
-        
-        if (!attempts || attempts.length === 0) {
+        const filteredAttempts = attempts.filter((attempt => !showOnlyInProgressAttempts || attempt.status == "STARTED"));
+
+        if (!filteredAttempts || filteredAttempts.length === 0) {
             this.quizzesAttempts.innerHTML = `<alert-component type="warning" message="Start a quiz to see your attempts here."></alert-component>`;
         } else {
-            attempts.sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
+            filteredAttempts.sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
             
             const listHtml = `
                 <div class="list-group">
-                    ${attempts.map(att => this.getQuizAttemptRow(att)).join('')}
+                    ${filteredAttempts.map(attempt => this.getQuizAttemptRow(attempt)).join('')}
                 </div>`;
             this.quizzesAttempts.innerHTML = listHtml;
         }
@@ -54,23 +61,23 @@ export class QuizzesAttemptsViewer extends BaseComponent {
     }
   }
 
-  getQuizAttemptRow(att) {
-    if (att.status === "COMPLETED") {
-        const pct = att.score && att.maxScore ? (att.score / att.maxScore) : 0;
+  getQuizAttemptRow(attempt) {
+    if (attempt.status === "COMPLETED") {
+        const pct = attempt.score && attempt.maxScore ? (attempt.score / attempt.maxScore) : 0;
         const color = pct > 0.6 ? "success" : "danger";
         return `
         <div class="list-group-item d-flex justify-content-between align-items-center">
-            ${att.quizTitle}
-            <span class="badge text-bg-${color}">${att.status} (${(pct * 100).toFixed(0)}%)</span>
+            ${attempt.quizTitle}
+            <span class="badge text-bg-${color}">${attempt.status} (${(pct * 100).toFixed(0)}%)</span>
         </div>`;
     } else {
         return `
         <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-           onclick="sessionStorage.setItem('currentQuizId', '${att.quizId}'); 
-                    sessionStorage.setItem('currentTestId', '${att.testId || ''}'); 
+           onclick="sessionStorage.setItem('currentQuizId', '${attempt.quizId}'); 
+                    sessionStorage.setItem('currentTestId', '${attempt.testId || ''}'); 
                     globalThis.location.hash = '#quiz-runner'; return false;">
-            ${att.quizTitle}
-            <span class="badge text-bg-secondary">${att.status}</span>
+            ${attempt.quizTitle}
+            <span class="badge text-bg-secondary">${attempt.status}</span>
         </a>`;
     }
   }

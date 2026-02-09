@@ -119,7 +119,7 @@ export class TestItem extends BaseComponent {
 
                 await this.attemptsService.addAttempt(this._testData.quiz.id, studentId, this._testData.id);
                 
-                window.location.reload();
+                globalThis.location.reload();
             } catch (e) {
                 console.error(e);
                 alert("Error starting test: " + e.message);
