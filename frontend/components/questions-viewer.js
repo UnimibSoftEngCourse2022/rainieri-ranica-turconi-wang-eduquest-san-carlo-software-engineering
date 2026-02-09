@@ -113,13 +113,11 @@ export class QuestionsViewer extends BaseComponent {
   }
 
   async addQuestionToQuiz(questionId) {
-    const response = await this.quizService.addQuestionToQuiz(this.quizId, questionId);
-    if (response) {
-      this.dispatchEvent(new CustomEvent("question-added-to-quiz", {
-        bubbles: true,
-        composed: true
-      }));
-    } else {
+    try {
+      await this.quizService.addQuestionToQuiz(this.quizId, questionId);
+      this.dispatchCustomEvent("question-added-to-quiz");
+    } catch(e) {
+      console.error(e);
       const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
       addQuestionResult.innerHTML = `
       <alert-component type="danger" message="Error adding question" timeout="3000"></alert-component>
