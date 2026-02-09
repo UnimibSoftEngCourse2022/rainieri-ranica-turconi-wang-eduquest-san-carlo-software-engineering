@@ -21,10 +21,14 @@ import it.bicocca.eduquest.domain.events.QuizCompletedEvent;
 import it.bicocca.eduquest.domain.gamification.Challenge;
 import it.bicocca.eduquest.domain.gamification.ChallengeStatus;
 import it.bicocca.eduquest.repository.ChallengeRepository;
+import it.bicocca.eduquest.services.GamificationServices;
 
 @ExtendWith(MockitoExtension.class) 
 class ChallengeListenerTest {
 
+	@Mock
+	private GamificationServices gamificationServices;
+	
     @Mock
     private ChallengeRepository challengeRepository;
 

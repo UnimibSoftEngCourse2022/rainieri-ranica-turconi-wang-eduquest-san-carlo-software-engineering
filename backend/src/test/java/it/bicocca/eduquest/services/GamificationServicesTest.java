@@ -16,10 +16,11 @@ import java.util.Collections;
 import it.bicocca.eduquest.repository.MissionsProgressesRepository;
 import it.bicocca.eduquest.repository.MissionsRepository;
 import it.bicocca.eduquest.dto.gamification.MissionProgressDTO;
-import it.bicocca.eduquest.domain.gamification.Mission;
-import it.bicocca.eduquest.domain.gamification.MissionProgress;
+import it.bicocca.eduquest.domain.gamification.*;
 import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.domain.answers.QuizAttempt;
+import it.bicocca.eduquest.domain.answers.QuizAttemptStatus;
+import it.bicocca.eduquest.repository.BadgeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class GamificationServicesTest {
@@ -29,6 +30,9 @@ class GamificationServicesTest {
 
     @Mock
     private MissionsRepository missionsRepository;
+    
+    @Mock
+    private BadgeRepository badgeRepository;
 
     @InjectMocks
     private GamificationServices gamificationServices;
@@ -62,23 +66,21 @@ class GamificationServicesTest {
     }
     
     @Test
-    void updateMissionsProgresses_ShouldCreateMissingProgress_IfNotExist() {
-                Student student = new Student(); student.setId(1L);
+    void updateMissionsProgresses_ShouldDoNothing_IfNoMissionsExist() {
+        Student student = new Student(); 
+        student.setId(1L);
         QuizAttempt attempt = new QuizAttempt();
         attempt.setStudent(student);
 
-        Mission mission = createMission(11L, "New mission", 5);
-        when(missionsRepository.findAll()).thenReturn(List.of(mission));
-
-        when(missionsProgressesRepository.findByMissionIdAndStudentId(mission.getId(), student.getId()))
-            .thenReturn(Collections.emptyList());
-        
+        // Simuliamo che lo studente NON abbia missioni attive
         when(missionsProgressesRepository.findByStudentId(student.getId()))
             .thenReturn(Collections.emptyList());
 
+        // Chiamiamo il metodo
         gamificationServices.updateMissionsProgresses(attempt);
 
-        verify(missionsProgressesRepository).save(any(MissionProgress.class));
+        // VERIFICA CHE NON ABBIA SALVATO NULLA (Corretto per la nuova logica)
+        verify(missionsProgressesRepository, never()).save(any(MissionProgress.class));
     }
 
     @Test
@@ -87,7 +89,7 @@ class GamificationServicesTest {
         QuizAttempt attempt = new QuizAttempt();
         attempt.setStudent(student);
 
-        Mission mission = mock(Mission.class);
+        QuizzesNumberMission mission = mock(QuizzesNumberMission.class);
         lenient().when(mission.getId()).thenReturn(10L);   
         lenient().when(mission.getGoal()).thenReturn(10); 
         
@@ -97,11 +99,6 @@ class GamificationServicesTest {
         progress.setId(500L); 
         progress.setCurrentCount(9); 
         progress.setCompleted(false);
-
-        when(missionsRepository.findAll()).thenReturn(List.of(mission));
-        
-        lenient().when(missionsProgressesRepository.findByMissionIdAndStudentId(anyLong(), anyLong()))
-            .thenReturn(List.of(progress));
         
         when(missionsProgressesRepository.findByStudentId(student.getId()))
             .thenReturn(List.of(progress));
@@ -147,14 +144,9 @@ class GamificationServicesTest {
         Student student = new Student(); student.setId(1L);
         QuizAttempt attempt = new QuizAttempt(); attempt.setStudent(student);
 
-        Mission mission = createMission(10L, "Done", 10);
+        QuizzesNumberMission mission = new QuizzesNumberMission(10); 
         MissionProgress progress = new MissionProgress(mission, student, 10);
         progress.setCompleted(true); 
-
-        when(missionsRepository.findAll()).thenReturn(List.of(mission));
-        
-        lenient().when(missionsProgressesRepository.findByMissionIdAndStudentId(10L, 1L))
-            .thenReturn(List.of(progress));
         
         when(missionsProgressesRepository.findByStudentId(1L))
             .thenReturn(List.of(progress));
@@ -168,16 +160,14 @@ class GamificationServicesTest {
     void updateMissionsProgressesGoalNotReached() {
         Student student = new Student(); student.setId(1L);
         QuizAttempt attempt = new QuizAttempt(); attempt.setStudent(student);
+        attempt.setStatus(QuizAttemptStatus.COMPLETED);
 
-        Mission mission = createMission(10L, "Ongoing", 10); 
+        QuizzesNumberMission mission = new QuizzesNumberMission(10); 
         
         MissionProgress progress = new MissionProgress(mission, student, 10);
         progress.setCurrentCount(2);
         progress.setCompleted(false);
-
-        when(missionsRepository.findAll()).thenReturn(List.of(mission));
-        lenient().when(missionsProgressesRepository.findByMissionIdAndStudentId(10L, 1L))
-            .thenReturn(List.of(progress));
+        
         when(missionsProgressesRepository.findByStudentId(1L))
             .thenReturn(List.of(progress));
 
@@ -187,8 +177,8 @@ class GamificationServicesTest {
         verify(missionsProgressesRepository).save(captor.capture());
 
         MissionProgress saved = captor.getValue();
-        assertEquals(3, saved.getCurrentCount(), "Dovrebbe incrementare da 2 a 3");
-        assertFalse(saved.isCompleted(), "Non dovrebbe essere completata (3 < 10)");
+        assertEquals(3, saved.getCurrentCount());
+        assertFalse(saved.isCompleted());
     }
 
     @Test
@@ -219,7 +209,6 @@ class GamificationServicesTest {
         
         MissionProgress progress = new MissionProgress(mission, student, 10);
         progress.setCompleted(true); 
-        when(missionsRepository.findAll()).thenReturn(Collections.emptyList());
         
         when(missionsProgressesRepository.findByStudentId(1L))
             .thenReturn(List.of(progress));
@@ -245,7 +234,7 @@ class GamificationServicesTest {
         progress.setCurrentCount(0);
         progress.setCompleted(false);
 
-        when(missionsRepository.findAll()).thenReturn(Collections.emptyList());
+        lenient().when(missionsRepository.findAll()).thenReturn(Collections.emptyList());
         when(missionsProgressesRepository.findByStudentId(1L)).thenReturn(List.of(progress));
 
         gamificationServices.updateMissionsProgresses(attempt);

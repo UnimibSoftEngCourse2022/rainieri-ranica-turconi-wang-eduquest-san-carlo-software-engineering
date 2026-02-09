@@ -1,9 +1,8 @@
 package it.bicocca.eduquest.domain.gamification;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import it.bicocca.eduquest.domain.users.Student;
+import java.time.*;
 
 @Entity
 public class Badge {
@@ -12,14 +11,28 @@ public class Badge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;   // ho aggiunto questi vedete se vi vanno bene 
-    private String iconUrl; // questo per l'immagine
+    private String name;
+    private String description;
+    
+    private LocalDate obtainedDate;
+    
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
 
     public Badge() {}
 
-    public Badge(String name, String iconUrl) {
+    public Badge(Mission mission, Student student) {
+        this.name = mission.getTitle();
+        this.description = mission.getDescription();
+        this.student = student;
+        this.obtainedDate = LocalDate.now();
+    }
+
+    public Badge(String name, Student student) {
         this.name = name;
-        this.iconUrl = iconUrl;
+        this.student = student;
+        this.obtainedDate = LocalDate.now();
     }
 
     public Long getId() {
@@ -38,11 +51,28 @@ public class Badge {
         this.name = name;
     }
 
-    public String getIconUrl() {
-        return iconUrl;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
-    }
+	public LocalDate getObtainedDate() {
+		return obtainedDate;
+	}
+
+	public Student getStudent() {
+		return student;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setObtainedDate(LocalDate obtainedDate) {
+		this.obtainedDate = obtainedDate;
+	}
+
+	public void setStudent(Student student) {
+		this.student = student;
+	}
+
 }

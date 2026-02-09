@@ -9,6 +9,7 @@ import it.bicocca.eduquest.domain.events.QuizCompletedEvent;
 import it.bicocca.eduquest.domain.gamification.Challenge;
 import it.bicocca.eduquest.domain.gamification.ChallengeStatus;
 import it.bicocca.eduquest.repository.ChallengeRepository;
+import it.bicocca.eduquest.services.GamificationServices;
 
 import java.util.List;
 import java.time.LocalDateTime;
@@ -17,12 +18,14 @@ import java.time.LocalDateTime;
 public class ChallengeListener {
 
     private final ChallengeRepository challengeRepository;
+    private final GamificationServices gamificationServices;
 
-    public ChallengeListener(ChallengeRepository challengeRepository) {
-        this.challengeRepository = challengeRepository;
-    }
+    public ChallengeListener(ChallengeRepository challengeRepository, GamificationServices gamificationServices) {
+		this.challengeRepository = challengeRepository;
+		this.gamificationServices = gamificationServices;
+	}
 
-    @EventListener
+	@EventListener
     @Transactional
     public void handleChallengeUpdate(QuizCompletedEvent event) {
         QuizAttempt attempt = event.getAttempt();
@@ -85,5 +88,8 @@ public class ChallengeListener {
         challenge.setStatus(ChallengeStatus.COMPLETED);
         challenge.setCompletedAt(LocalDateTime.now());
         
+        if (challenge.getWinner() != null) {
+            gamificationServices.updateMissionsProgresses(challenge.getWinner().getId(), true);
+        }
     }
 }
