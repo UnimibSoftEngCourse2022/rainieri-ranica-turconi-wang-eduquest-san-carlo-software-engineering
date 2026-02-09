@@ -77,10 +77,6 @@ public class GamificationServices {
         	
         	Mission mission = missionProgress.getMission(); 
         	
-        	if(mission instanceof ChallengeNumberMission) {
-        		continue;
-        	}
-        	
         	int newProgress = mission.getProgress(missionProgress.getCurrentCount(), quizAttempt);
             updateAndSaveProgress(missionProgress, newProgress);
         }

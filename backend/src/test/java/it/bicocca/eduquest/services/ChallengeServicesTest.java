@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
+import java.util.Random;
 import java.util.List;
 import java.time.LocalDateTime;
 
@@ -131,7 +132,7 @@ class ChallengeServicesTest {
         Quiz q = new Quiz(); q.setId(10L); q.setTitle("Test");
         
         Challenge ch = new Challenge();
-        ch.setId((long)(Math.random() * 1000));
+        ch.setId((long)(new Random().nextLong() * 1000));
         ch.setChallenger(c);
         ch.setOpponent(o);
         ch.setQuiz(q);

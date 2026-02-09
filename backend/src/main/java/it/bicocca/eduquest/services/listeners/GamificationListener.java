@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.bicocca.eduquest.domain.answers.*;
 import it.bicocca.eduquest.domain.events.QuizCompletedEvent;
-import it.bicocca.eduquest.repository.*;
 import it.bicocca.eduquest.services.GamificationServices;
 
 @Component

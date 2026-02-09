@@ -27,12 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.bicocca.eduquest.dto.quiz.QuizAddDTO;
 import it.bicocca.eduquest.dto.quiz.QuizDTO;
 import it.bicocca.eduquest.dto.quiz.QuizEditDTO;
-import it.bicocca.eduquest.dto.quiz.QuizStatsDTO;
 import it.bicocca.eduquest.security.JwtUtils; 
 import it.bicocca.eduquest.services.QuizServices;
 
 @WebMvcTest(QuizController.class)
-public class QuizControllerTest {
+class QuizControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

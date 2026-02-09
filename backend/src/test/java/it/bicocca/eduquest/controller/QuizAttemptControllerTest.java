@@ -27,7 +27,7 @@ import it.bicocca.eduquest.security.JwtUtils;
 import it.bicocca.eduquest.services.QuizAttemptServices;
 
 @WebMvcTest(QuizAttemptController.class)
-public class QuizAttemptControllerTest {
+class QuizAttemptControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

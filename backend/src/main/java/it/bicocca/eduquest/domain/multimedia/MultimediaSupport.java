@@ -14,10 +14,6 @@ public abstract class MultimediaSupport {
     @Column(nullable = false)
     private String url; // Cloudinary or YouTube
 
-    /* @Enumerated(EnumType.STRING)
-    @Column(name = "media_type", insertable = false, updatable = false)
-    private MultimediaType type; */
-
     private String caption;
 
 	public long getId() {
