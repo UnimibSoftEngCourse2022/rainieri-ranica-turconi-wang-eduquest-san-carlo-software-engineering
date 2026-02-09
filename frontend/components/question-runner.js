@@ -75,7 +75,7 @@ export class QuestionRunner extends BaseComponent {
                 value="${option.id}" 
                 id="closed-option-${option.id}" 
                 style="font-size: 1.375em;"
-                ${this._previousAnswer === option.id ? `checked` : ``}>
+                ${this._previousAnswer == option.id ? `checked` : ``}>
         <span class="pt-1">${option.text}</span>
         `;
         questionContainer.appendChild(selection);
