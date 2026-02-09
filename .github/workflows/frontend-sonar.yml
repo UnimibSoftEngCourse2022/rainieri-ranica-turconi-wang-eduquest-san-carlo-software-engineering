@@ -1,7 +1,7 @@
 name: SonarCloud Frontend
 on:
   push:
-    branches: [ "main", "develop", "master" ]
+    branches: [ "main", "develop", "frontend-services-refactoring" ]
     paths:
       - 'frontend/**'
 
