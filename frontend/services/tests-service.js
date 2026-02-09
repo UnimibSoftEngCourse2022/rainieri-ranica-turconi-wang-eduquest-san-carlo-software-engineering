@@ -4,20 +4,28 @@ export class TestsService {
     async getTests() {
         try {
             const response = await callApi(endpoints.tests, "GET");
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             const tests = await response.json();
             return tests;
         } catch (e) {
-            return [];
+            throw new Error(e);
         }
     }
 
     async getTestsByAuthorId(authorId) {
         try {
             const response = await callApi(endpoints.tests+`?authorId=${authorId}`, "GET");
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             const tests = await response.json();
             return tests;
         } catch (e) {
-            return [];
+            throw new Error(e);
         }
     }
 
@@ -25,7 +33,8 @@ export class TestsService {
         try {
             const response = await callApi(`${endpoints.tests}/${testId}`, "GET");
             if (!response.ok) {
-                throw new Error("Impossible to fetch test details");
+                const errorBody = await response.text();
+                throw new Error(errorBody);
             }
             return await response.json();
         } catch (e) {
@@ -37,33 +46,40 @@ export class TestsService {
     async createTest(testData) {
         try {
             const response = await callApi(endpoints.tests, "POST", testData);
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             return response.ok;
         } catch (e) {
-            return false;
+            throw new Error(e);
         }
     }
 
     async deleteTest(testId) {
         try {
             const response = await callApi(`${endpoints.tests}/${testId}`, "DELETE");
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             return response.ok;
         } catch (e) {
-            return false;
+            throw new Error(e);
         }
     }
 
     async getMyAttempts(testId) {
         try {
             const response = await callApi(`${endpoints.tests}/${testId}/my-attempts`, "GET");
-            
-            if (response.ok) {
-                return await response.json();
-            } else {
-                return [];
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
             }
+            return await response.json();
         } catch (e) {
             console.error("Errore fetching tentativi test:", e);
-            return [];
+            throw new Error(e);
         }
     }
 }

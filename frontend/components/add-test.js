@@ -100,16 +100,15 @@ export class AddTest extends BaseComponent {
   }
 
   async submitData(requestBody) {
-    const success = await this.testsService.createTest(requestBody);
-    if (success) {
+    try {
+        await this.testsService.createTest(requestBody);
+
         this.addTestResult.innerHTML = `
         <alert-component type="success" message="Test created successfully" timeout="2000"></alert-component>
         `
-        this.dispatchEvent(new CustomEvent("test-created", {
-            bubbles: true,
-            composed: true
-        }))
-    } else {
+        this.dispatchCustomEvent("test-created");
+    } catch (e) {
+        console.error(e);
         this.addTestResult.innerHTML = `
         <alert-component type="danger" message="Error during test creation" timeout="3000"></alert-component>
         `

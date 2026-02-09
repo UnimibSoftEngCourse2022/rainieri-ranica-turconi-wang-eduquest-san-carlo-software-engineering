@@ -103,9 +103,11 @@ export class TestItem extends BaseComponent {
   async handleButtonClick(event) {
     if (this._role === "TEACHER") {
         if (confirm("Are you sure you want to delete this test?")) {
-            const success = await this.testsService.deleteTest(this._testData.id);
-            if (success) {
+            try {
+                await this.testsService.deleteTest(this._testData.id);
                 this.dispatchEvent(new CustomEvent("test-deleted", { bubbles: true, composed: true }));
+            } catch (e) {
+                console.error(e);
             }
         }
     } else {
