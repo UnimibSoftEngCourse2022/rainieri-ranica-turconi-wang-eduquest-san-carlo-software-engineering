@@ -107,9 +107,19 @@ export class UserSearch extends BaseComponent {
     async loadMissionsTable() {
         const badgesContainer = this.querySelector("#badges");
         if (this._userData.role === "STUDENT") {
-            const completedMissions = await this.gamificationService.getUserCompletedMissions(this._userData.id);
-            if (!completedMissions) {
-                return;
+            let completedMissions;
+            try {
+                completedMissions = await this.gamificationService.getUserCompletedMissions(this._userData.id);
+            } catch {
+                badgesContainer.innerHTML = `
+                <alert-component type="danger" message="Error loading missions"></alert-component>
+                `;
+            }
+
+            if (completedMissions.length == 0) {
+                badgesContainer.innerHTML = `
+                <alert-component type="warning" message="This user hasn't any badge"></alert-component>
+                `;
             }
 
             completedMissions.forEach(missionProgress => {

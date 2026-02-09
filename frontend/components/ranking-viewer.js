@@ -32,10 +32,22 @@ export class RankingViewer extends BaseComponent {
       const rankingTitle = this.querySelector("#ranking-title");
 
       if (this._rankingType === "quizzes-number") {
-        ranking = await this.gamificationService.getRankingByCompletedQuizzes();
-        rankingTitleHTML = `<h4>Number of completed quizzes</h4>`;
+        try {
+          ranking = await this.gamificationService.getRankingByCompletedQuizzes();
+          rankingTitleHTML = `<h4>Number of completed quizzes</h4>`;
+        } catch {
+          rankingTable.innerHTML = `
+          <alert-component type="danger" message="Error getting ranking"></alert-component>
+          `;
+        }
       } else if (this._rankingType === "average-score") {
-        ranking = await this.gamificationService.getRankingByAverageScore();
+        try {
+          ranking = await this.gamificationService.getRankingByAverageScore();
+        } catch {
+          rankingTable.innerHTML = `
+          <alert-component type="danger" message="Error getting ranking"></alert-component>
+          `;
+        }
         rankingTitleHTML = `<h4>Average score</h4>`;
       } else {
         rankingTitle.innerHTML = ``;

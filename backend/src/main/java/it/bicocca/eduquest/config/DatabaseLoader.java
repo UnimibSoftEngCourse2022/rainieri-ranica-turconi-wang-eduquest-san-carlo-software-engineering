@@ -49,6 +49,9 @@ public class DatabaseLoader implements CommandLineRunner {
         Student student = new Student("Luigi", "Bianchi", "l.bianchi@campus.unimib.it", criptedPassword);
         usersRepository.save(student);
         
+        Student student1 = new Student("Francesco", "Brembilla", "f.brembilla@campus.unimib.it", criptedPassword);
+        usersRepository.save(student1);
+        
         logger.info("Users created: Teacher ID={}, Student ID={}", teacher.getId(), student.getId());
 
         ClosedQuestion q1 = new ClosedQuestion("Qual è la capitale d'Italia?", "Geografia", teacher, Difficulty.EASY);

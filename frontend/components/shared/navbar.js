@@ -8,8 +8,10 @@ export class Navbar extends BaseComponent {
     }
 
     async render() {
-      const user = await this.usersService.getMyUserInfo();
-      if (!user) {
+      let user;
+      try {
+        user = await this.usersService.getMyUserInfo();
+      } catch {
         globalThis.location = `../`;
         return;
       }

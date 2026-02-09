@@ -25,17 +25,20 @@ export class ChallengesViewer extends BaseComponent {
   get challengesContainer() { return this.querySelector("#challenges-container"); }
 
   async loadData() {
-    this.userData = await this.usersService.getMyUserInfo();
-    if (!this.userData) {
+    try {
+      this.userData = await this.usersService.getMyUserInfo();
+    } catch {
       this.innerHTML = `
-      <alert-component type="danger" message="Cannot load user data, please try again later"></alert-component>
+      <alert-component type="danger" message="Error loading challenges"></alert-component>
       `;
       return;
     }
 
     this.challengesContainer.innerHTML = ``;
-    const challenges = await this.gamificationService.getMyChallenges();
-    if (!challenges) {
+    let challenges;
+    try {
+      challenges = await this.gamificationService.getMyChallenges();
+    } catch {
       this.challengesContainer.innerHTML = `
       <alert-component type="danger" message="Error loading your challenges, please try again later"></alert-component>
       `;
@@ -78,7 +81,7 @@ export class ChallengesViewer extends BaseComponent {
 
             </div>
 
-            ${challenge.status == "COMPLETED" ? `<h4>Winner: ${challenge.winnerName} ${challenge.winnerSurname}` : null}
+            ${challenge.status == "COMPLETED" ? `<h4>Winner: ${challenge.winnerName} ${challenge.winnerSurname}` : ``}
         </div>
         `
         this.challengesContainer.appendChild(challengeElement);

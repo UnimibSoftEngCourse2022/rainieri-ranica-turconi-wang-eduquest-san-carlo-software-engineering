@@ -4,36 +4,30 @@ export class QuestionsService {
     async getQuestions() {
         try {
             const response = await callApi(endpoints.questions, "GET");
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             const questions = await response.json();
             return questions;
         } catch (e) {
+            throw new Error(e);
         }
     }
 
     async getQuestionByAuthorId(authorId) {
         try {
             const response = await callApi(`${endpoints.questions}?authorId=${authorId}`, "GET");
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             const quizzes = await response.json();
             return quizzes;
         } catch (e) {
+            throw new Error(e);
         }
     }
-
-    /* async createQuestion(questionData) {
-        appStore.updateAppState({ loading: true });
-        try {
-            const response = await callApi(endpoints.questions, "POST", questionData);
-
-            if (response.ok) {
-                appStore.updateAppState({ loading: false });
-            } else {
-                appStore.updateAppState({ loading: false, error: true });
-            }
-            return await response.json();
-        } catch (e) {
-            appStore.updateAppState({ loading: false, error: true });
-        }
-    } */
 
     async createQuestion(formData) {
         try {
@@ -46,12 +40,15 @@ export class QuestionsService {
                 },
                 body: formData
             });
-            if (response.ok) {
-                return await response.json();
-            } else {
-                console.error("Errore server:", await response.text())
+            
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
             }
+
+            return await response.json();
         } catch (e) {
+            throw new Error(e);
         }
     }
 }

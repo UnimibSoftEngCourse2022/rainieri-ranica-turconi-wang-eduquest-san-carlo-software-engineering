@@ -61,42 +61,52 @@ export class TestItem extends BaseComponent {
     const action = event.target.dataset.action;
 
     if (action === "delete" && this._role === "TEACHER") {
-        if (confirm("Are you sure you want to delete this test?")) {
-            const success = await this.testsService.deleteTest(this._testData.id);
-            if (success) {
-                this.dispatchEvent(new CustomEvent("test-deleted", { bubbles: true, composed: true }));
-            }
-        }
-        return;
+        await this.handleDelete();
+    } else if (action === "run" && this._role === "STUDENT") {
+        await this.handleRun();
     }
+  }
 
-    if (action === "run" && this._role === "STUDENT") {
-        let studentId = this.getAttribute("student-id");
+  async handleDelete() {
+    if (confirm("Are you sure you want to delete this test?")) {
+        const success = await this.testsService.deleteTest(this._testData.id);
+        if (success) {
+            this.dispatchEvent(new CustomEvent("test-deleted", { bubbles: true, composed: true }));
+        }
+    }
+  }
+
+  async handleRun() {
+    const studentId = this.getStudentId();
+
+    if (studentId) {
+        try {
+            await this.attemptsService.addAttempt(this._testData.quiz.id, studentId, this._testData.id);
+            
+            this.dispatchEvent(new CustomEvent("attempt-created", { 
+                bubbles: true, 
+                composed: true 
+            }));
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+  }
+
+  getStudentId() {
+      let studentId = this.getAttribute("student-id");
     
-        if (!studentId) {
-            const userJson = localStorage.getItem("user");
-            if (userJson) {
-                try {
-                    const user = JSON.parse(userJson);
-                    studentId = user.id;
-                } catch (e) { console.error(e); }
-            }
-        }
-
-        if (studentId) {
-            try {
-                await this.attemptsService.addAttempt(this._testData.quiz.id, studentId, this._testData.id);
-                
-                this.dispatchEvent(new CustomEvent("attempt-created", { 
-                    bubbles: true, 
-                    composed: true 
-                }));
-
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    }
+      if (!studentId) {
+          const userJson = localStorage.getItem("user");
+          if (userJson) {
+              try {
+                  const user = JSON.parse(userJson);
+                  return user.id;
+              } catch (e) { console.error(e); }
+          }
+      }
+      return studentId;
   }
 }
 

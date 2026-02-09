@@ -20,18 +20,18 @@ window.onload = async () => {
   let url = new URL(globalThis.location);
   let searchedUserId = url.searchParams.get("id");
 
-  const searchedUserData = await new UsersService().getUserInfoById(searchedUserId);
-  if (!searchedUserData) {
+  try {
+    const searchedUserData = await new UsersService().getUserInfoById(searchedUserId);
+    const profileViewer = document.createElement("profile-viewer");
+    pageDiv.appendChild(profileViewer);
+    profileViewer.userData =  searchedUserData;
+  } catch {
     const alert = document.createElement("alert-component");
     alert.setAttribute("type", "danger text-center");
     alert.setAttribute("message", `Cannot find an user with ID '${searchedUserId}'`);
     pageDiv.appendChild(alert);
     return;
   }
-  
-  const profileViewer = document.createElement("profile-viewer");
-  pageDiv.appendChild(profileViewer);
-  profileViewer.userData =  searchedUserData;
 };
 
 const createSearchBar = (root) => {

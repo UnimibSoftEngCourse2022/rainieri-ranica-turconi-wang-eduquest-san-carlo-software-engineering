@@ -66,17 +66,17 @@ export class AddQuiz extends BaseComponent {
   }
 
   async submitData(requestBody) {
-    const response = await this.quizService.createQuiz(requestBody);
-    if (response) {
-        this.addQuizResult.innerHTML = `
-        <alert-component type="success" message="Quiz created successfully" timeout="2000"></alert-component>
-        `
-
-        this.dispatchCustomEvent("quiz-created");
-    } else {
-        this.addQuizResult.innerHTML = `
-        <alert-component type="danger" message="Error during the quiz creation" timeout="4000"></alert-component>
-        `
+    try {
+      await this.quizService.createQuiz(requestBody);
+      this.addQuizResult.innerHTML = `
+      <alert-component type="success" message="Quiz created successfully" timeout="2000"></alert-component>
+      `;
+      this.dispatchCustomEvent("quiz-created");
+    } catch (e) {
+      console.error(e);
+      this.addQuizResult.innerHTML = `
+      <alert-component type="danger" message="Error during the quiz creation" timeout="4000"></alert-component>
+      `
     }
   }
 }

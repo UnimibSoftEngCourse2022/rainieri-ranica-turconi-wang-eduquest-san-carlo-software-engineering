@@ -44,7 +44,7 @@ export class AddChallenge extends BaseComponent {
                 />
             </div>
             <div id="other-fields"></div>
-            <button type="submit" class="btn btn-primary" id="add-challenge-button">Add question</button>
+            <button type="submit" class="btn btn-primary" id="add-challenge-button">Add challenge</button>
             <div class="container my-2" id="add-challenge-result"></div>
         </form>
     </div>
@@ -66,14 +66,14 @@ export class AddChallenge extends BaseComponent {
     const quizId = this.querySelector("#quiz-id-input").value;
     const duration = this.querySelector("#duration-input").value;
 
-    const response = await this.gamificationService.addChallenge(opponentId, quizId, duration);
-    if (response) {
+    try {
+        await this.gamificationService.addChallenge(opponentId, quizId, duration);
         this.addChallengeResult.innerHTML = `
         <alert-component type="success" message="Challenge added correctly" timeout="2000"></alert-component>
         `;
         this.addChallengeForm.reset();
         this.dispatchCustomEvent("challenge-added");
-    } else {
+    } catch {
         this.addChallengeResult.innerHTML = `
         <alert-component type="danger" message="Error adding the challenge" timeout="2000"></alert-component>
         `;

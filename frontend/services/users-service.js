@@ -4,24 +4,42 @@ export class UsersService {
     async getUserInfoById(userId) {
         try {
             const response = await callApi(`${endpoints.users}/${userId}`, "GET");
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             const userData = await response.json();
             return userData;
-        } catch (e) {}
+        } catch (e) {
+            throw new Error(e);
+        }
     }
 
     async getMyUserInfo() {
         try {
             const response = await callApi(`${endpoints.users}/me`, "GET");
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             const userData = await response.json();
             return userData;
-        } catch (e) {}
+        } catch (e) {
+            throw new Error(e);
+        }
     }
 
     async register(userData) {
         try {
             const response = await callApi(`${endpoints.auth.register}`, "POST", userData);
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
             const responseData = await response.json();
             return responseData;
-        } catch (e) {}
+        } catch (e) {
+            throw new Error(e);
+        }
     }
 }

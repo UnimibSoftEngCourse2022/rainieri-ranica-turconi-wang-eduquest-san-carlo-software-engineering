@@ -51,21 +51,19 @@ export class QuestionsViewer extends BaseComponent {
   }
 
   async loadData() {
-    let questions = null;
-    if (this.authorId) {
-      questions = await this.questionsService.getQuestionByAuthorId(this.authorId);
-    } else {
-      questions = await this.questionsService.getQuestions();
-    }
-    
-    this.allQuestions = questions || [];
-
-    if (questions != null && questions != undefined) {
+    try {
+      let questions = null;
+      if (this.authorId) {
+        questions = await this.questionsService.getQuestionByAuthorId(this.authorId);
+      } else {
+        questions = await this.questionsService.getQuestions();
+      }      
+      this.allQuestions = questions || [];
       this.showQuestions(questions)
-    } else {
+    } catch {
       this.questions.innerHTML = `
-        <alert-component type="danger" message="Cannot get questions, please try again"></alert-component>
-`
+      <alert-component type="danger" message="Cannot get questions, please try again"></alert-component>
+      `;
     }
   }
 
@@ -115,13 +113,11 @@ export class QuestionsViewer extends BaseComponent {
   }
 
   async addQuestionToQuiz(questionId) {
-    const response = await this.quizService.addQuestionToQuiz(this.quizId, questionId);
-    if (response) {
-      this.dispatchEvent(new CustomEvent("question-added-to-quiz", {
-        bubbles: true,
-        composed: true
-      }));
-    } else {
+    try {
+      await this.quizService.addQuestionToQuiz(this.quizId, questionId);
+      this.dispatchCustomEvent("question-added-to-quiz");
+    } catch(e) {
+      console.error(e);
       const addQuestionResult = this.querySelector(`#add-question-${questionId}-result`);
       addQuestionResult.innerHTML = `
       <alert-component type="danger" message="Error adding question" timeout="3000"></alert-component>

@@ -55,12 +55,17 @@ export class QuizzesViewer extends BaseComponent {
     const loader = this.querySelector(".spinner-border");
     const messageContainer = this.querySelector("#message-container");
     let quizzes = []
-    if (this.role == "STUDENT") {
-      quizzes = await this.quizService.getQuizzes();
-    } else if (this.role == "TEACHER") {
-      quizzes = await this.quizService.getQuizzesByAuthorId(this.userId);
+    try {
+      if (this.role == "STUDENT") {
+        quizzes = await this.quizService.getQuizzes();
+      } else if (this.role == "TEACHER") {
+        quizzes = await this.quizService.getQuizzesByAuthorId(this.userId);
+      }
+    } catch (e) {
+      console.error(e);
+      messageContainer.innerHTML = `<alert-component type="danger" message="Error loading quizzes"></alert-component>`
     }
-    
+
     this.allQuizzes = quizzes;
 
     if (loader) {
@@ -68,7 +73,9 @@ export class QuizzesViewer extends BaseComponent {
     }
 
     if (quizzes.length == 0) {
-        messageContainer.innerHTML = `<alert-component type="warning" message="There is not quiz to display"></alert-component>`
+        messageContainer.innerHTML = `
+        <alert-component type="warning" message="There is not quiz to display"></alert-component>
+        `;
     } else {
         this.displayQuizzes(this.allQuizzes);
     }

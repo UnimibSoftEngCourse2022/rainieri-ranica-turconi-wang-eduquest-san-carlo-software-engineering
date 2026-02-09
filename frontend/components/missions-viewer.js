@@ -10,7 +10,14 @@ export class MissionsViewer extends BaseComponent {
     }
 
     async render() {
-        const missionsProgresses = await this.GamificationService.getUserMissionsProgresses();
+        let missionsProgresses;
+        try {
+            missionsProgresses = await this.GamificationService.getUserMissionsProgresses();
+        } catch {
+            this.innerHTML = `<alert-component type="danger" message="Error getting missions progresses"></alert-component>`
+            return;
+        }
+
         if (missionsProgresses.length == 0) {
             this.innerHTML = `<alert-component type="warning" message="Complete your first quiz to see the missions!"></alert-component>`
             return;

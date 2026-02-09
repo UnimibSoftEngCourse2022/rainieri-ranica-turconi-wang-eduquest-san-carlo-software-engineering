@@ -72,16 +72,9 @@ export class UserSearch extends HTMLElement {
   
       try {
           const userData = await this.userService.getUserInfoById(id);
-          
-          if (userData) {
-              this.populateForm(userData); 
-          } else {
-              this.showError("User not found");
-          }
-  
-      } catch (error) {
-          console.error(error);
-          this.showError("Errore connessione");
+          this.populateForm(userData); 
+    } catch (error) {
+          this.showError(error);
       }
     }
  

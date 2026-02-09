@@ -73,14 +73,17 @@ export class QuizEditor extends BaseComponent {
   }
 
   async loadData() {
-    const quizData = await this.quizService.getQuizById(this.quizId);
-    if (quizData) {        
+    try {
+        const quizData = await this.quizService.getQuizById(this.quizId);
         this.quizTitleInput.value = quizData.title;
         this.quizDescriptionInput.value = quizData.description;
         this.showQuizQuestions(quizData);
         this.showQuizStats(quizData.quizStats);
-    } else {
-        this.innerHTML = `<alert-component type="danger" message="Error trying to show the quiz, please try again later" timeout="5000"></alert-component>`;
+    } catch (e) {
+        console.error(e);
+        this.innerHTML = `
+        <alert-component type="danger" message="Error trying to show the quiz" timeout="5000"></alert-component>
+        `;
     }
   }
 
@@ -118,10 +121,11 @@ export class QuizEditor extends BaseComponent {
   }
 
   async removeQuestionFromQuiz(questionId) {
-    const response = await this.quizService.removeQuestionFromQuiz(this.quizId, questionId);
-
-    if (response) {
+    try {
+        await this.quizService.removeQuestionFromQuiz(this.quizId, questionId);
         this.loadData();
+    } catch (e) {
+        console.error(e);
     }
   }
 
@@ -132,13 +136,18 @@ export class QuizEditor extends BaseComponent {
     const quizData = {
         title, description
     };
-    const response = await this.quizService.modifyQuiz(this.quizId, quizData);
-
+    
     const resultDiv = this.querySelector("#quiz-general-info-result");
-    if (response) {
-        resultDiv.innerHTML = `<alert-component type="success" message="Quiz modified correctly" timeout="5000"></alert-component>`
-    } else {
-        resultDiv.innerHTML = `<alert-component type="danger" message="Error modifying quiz" timeout="5000"></alert-component>`
+    try {
+        await this.quizService.modifyQuiz(this.quizId, quizData);
+        resultDiv.innerHTML = `
+        <alert-component type="success" message="Quiz modified correctly" timeout="5000"></alert-component>
+        `;
+    } catch (e) {
+        console.error(e);
+        resultDiv.innerHTML = `
+        <alert-component type="danger" message="Error modifying quiz" timeout="5000"></alert-component>
+        `;
     }
   }
 

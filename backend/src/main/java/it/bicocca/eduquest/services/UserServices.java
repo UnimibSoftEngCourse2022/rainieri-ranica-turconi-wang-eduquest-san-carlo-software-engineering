@@ -37,6 +37,10 @@ public class UserServices {
             throw new IllegalArgumentException("Email already registered!");
         }
 
+        if (dto.getEmail().isBlank() || dto.getPassword().isBlank()) {
+        	throw new IllegalArgumentException("Email and password cannot be blank");
+        }
+        
         User newUser;
         if (dto.getRole() == Role.TEACHER) {
             newUser = new Teacher(dto.getName(), dto.getSurname(), dto.getEmail(), dto.getPassword());
