@@ -79,11 +79,28 @@ export class Quiz extends BaseComponent {
     }
 
     if (studentId) {
+        const cardBody = this.querySelector(".card-body");
         try {
+            const sessionData = await this.attemptsService.addAttempt(this._quizData.id, studentId, null);
+            const isResuming = 
+                (this._quizData.attemptStatus === "STARTED") || 
+                (this._quizData.status === "STARTED") ||
+                (sessionData.existingAnswers && sessionData.existingAnswers.length > 0);
+            if (isResuming) {
+                if (cardBody) {
+                    cardBody.insertAdjacentHTML('beforeend', `
+                    <alert-component type="danger" message="This quiz has already started! Resume it from the Dashboard." timeout="3000"></alert-component>`);
+                }
+            } else {
+                 if (cardBody) {
+                    cardBody.insertAdjacentHTML('beforeend', `
+                    <alert-component type="success" message="Quiz started! Good luck." timeout="2000"></alert-component>`);
+                }
+                this._quizData.status = "STARTED"; 
+                this._quizData.attemptStatus = "STARTED";
+            }
             localStorage.setItem("currentQuizId", this._quizData.id);
             localStorage.removeItem("currentTestId"); 
-
-            await this.attemptsService.addAttempt(this._quizData.id, studentId, null);
             
             this.dispatchEvent(new CustomEvent("attempt-created", { 
                 bubbles: true, 
@@ -93,7 +110,10 @@ export class Quiz extends BaseComponent {
 
         } catch (e) {
             console.error(e);
-            alert("Error starting quiz: " + e.message);
+            let msg = e.message || "Unknown error";
+            msg = msg.replace(/^Error:\s*/i, "");
+            this.querySelector(".card-body").insertAdjacentHTML('beforeend', `
+            <alert-component type="danger" message="${msg}" timeout="3000"></alert-component>`);
         }
     }
   }

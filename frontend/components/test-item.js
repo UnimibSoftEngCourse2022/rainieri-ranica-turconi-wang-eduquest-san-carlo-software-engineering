@@ -113,16 +113,46 @@ export class TestItem extends BaseComponent {
     } else {
         const studentId = this.getStudentId();
         if (studentId) {
+            const cardBody = this.querySelector(".card-body");
+            const oldAlerts = this.querySelectorAll("alert-component");
+            oldAlerts.forEach(a => a.remove());
             try {
+                const sessionData = await this.attemptsService.addAttempt(this._testData.quiz.id, studentId, this._testData.id);
+                if (sessionData.testId && sessionData.testId !== this._testData.id) {
+                     throw new Error("You have another Test/Quiz in progress.");
+                }
+                const isResuming = 
+                    (this._testData.attemptStatus === "STARTED") || 
+                    (this._testData.status === "STARTED") ||
+                    (sessionData.existingAnswers && sessionData.existingAnswers.length > 0);
+                if (isResuming) {
+                    if (cardBody) {
+                        cardBody.insertAdjacentHTML('beforeend', `
+                        <alert-component type="danger" message="This test has already started! Resume it from the Dashboard." timeout="3000"></alert-component>`);
+                    }
+                } else {
+                    if (cardBody) {
+                        cardBody.insertAdjacentHTML('beforeend', `
+                        <alert-component type="success" message="Test started! Good luck." timeout="2000"></alert-component>`);
+                    }
+                    this._testData.status = "STARTED";
+                    this._testData.attemptStatus = "STARTED";
+                }
                 localStorage.setItem("currentQuizId", this._testData.quiz.id);
                 localStorage.setItem("currentTestId", this._testData.id);
-
-                await this.attemptsService.addAttempt(this._testData.quiz.id, studentId, this._testData.id);
                 
-                globalThis.location.reload();
+                this.dispatchEvent(new CustomEvent("attempt-created", { 
+                bubbles: true, 
+                composed: true 
+                }));
             } catch (e) {
                 console.error(e);
-                alert("Error starting test: " + e.message);
+                let msg = e.message || "Unknown error";
+                msg = msg.replace(/^Error:\s*/i, "");
+                if (cardBody) {
+                    this.querySelector(".card-body").insertAdjacentHTML('beforeend', `
+                    <alert-component type="danger" message="${e.message}" timeout="3000"></alert-component>`);
+                }
             }
         }
     }

@@ -18,6 +18,7 @@ import it.bicocca.eduquest.domain.users.User;
 public interface QuizAttemptsRepository extends JpaRepository<QuizAttempt, Long> {
 	
 	Optional<QuizAttempt> findByStudentAndQuizAndStatus(User student, Quiz quiz, QuizAttemptStatus status);
+	Optional<QuizAttempt> findByStudentAndStatus(User student, QuizAttemptStatus status);
 	List<QuizAttempt> findByStudentId(Long studentId);
 	List<QuizAttempt> findByStudentIdAndTestId(Long studentId, Long testId);
 	

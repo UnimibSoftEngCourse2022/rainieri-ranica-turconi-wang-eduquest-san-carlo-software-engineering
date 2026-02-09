@@ -117,11 +117,11 @@ export class QuizRunner extends BaseComponent {
 
       } catch (e) {
           console.error(e);
-          const errorMsg = e.message || "";
-          if (errorMsg.toLowerCase().includes("attempts")) {
-              await this.showMaxAttemptsView(errorMsg); 
-              return;
-          }
+          const errorMsg = (e.message || "").toLowerCase();
+          if (errorMsg.includes("attempts") || errorMsg.includes("quiz") || errorMsg.includes("progress")) {
+            await this.showMaxAttemptsView(e.message);
+            return;
+        }
           this.quizError.innerHTML = `<alert-component type="danger" message="${errorMsg || "Error starting quiz"}"></alert-component>`;
       }
   }
@@ -324,13 +324,17 @@ export class QuizRunner extends BaseComponent {
     }
   }
 
-  async showMaxAttemptsView(customMessage="Max attempts reached.") { 
+  async showMaxAttemptsView(customMessage="Accesso Negato") { 
     this.innerHTML = `
         <div class="container text-center mt-5">
-            <div class="alert alert-danger p-4 shadow mx-auto" style="max-width: 600px;">
-                <h3>Accesso Negato</h3>
-                <p>${customMessage}</p>
-                 <button class="btn btn-secondary mt-3" onclick="globalThis.location.href = globalThis.location.pathname">Home</button>
+            <div class="alert alert-danger p-5 shadow mx-auto" style="max-width: 600px;">
+                <h3 class="mb-3">Cannot start quiz</h3>
+                <p class="fs-5">${customMessage}</p>
+                <div class="mt-4">
+                    <button class="btn btn-primary btn-lg" onclick="window.location.hash = '#student-dashboard'">
+                        Return to home
+                    </button>
+                </div>
             </div>
         </div>
     `;

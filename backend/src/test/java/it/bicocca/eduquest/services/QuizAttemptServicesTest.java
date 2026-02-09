@@ -70,7 +70,7 @@ class QuizAttemptServicesTest {
 
         when(usersRepository.findById(studentId)).thenReturn(Optional.of(student));
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
-        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(student, quiz, QuizAttemptStatus.STARTED))
+        when(quizAttemptsRepository.findByStudentAndStatus(student, QuizAttemptStatus.STARTED))
                 .thenReturn(Optional.empty());
 
         when(quizAttemptsRepository.save(any(QuizAttempt.class))).thenAnswer(invocation -> {
@@ -104,8 +104,7 @@ class QuizAttemptServicesTest {
         existingAttempt.addAnswer(existingAns);
 
         when(usersRepository.findById(studentId)).thenReturn(Optional.of(student));
-        when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
-        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(student, quiz, QuizAttemptStatus.STARTED))
+        when(quizAttemptsRepository.findByStudentAndStatus(student, QuizAttemptStatus.STARTED))
                 .thenReturn(Optional.of(existingAttempt));
 
         QuizSessionDTO result = quizAttemptServices.startQuiz(quizId, studentId);
@@ -456,7 +455,7 @@ class QuizAttemptServicesTest {
 
         when(usersRepository.findById(userId)).thenReturn(Optional.of(student));
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
-        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(any(), any(), any())).thenReturn(Optional.empty());
+        when(quizAttemptsRepository.findByStudentAndStatus(any(), any())).thenReturn(Optional.empty());
         
         when(testRepository.findById(testId)).thenReturn(Optional.of(testEntity));
         when(quizAttemptsRepository.countByStudentAndTest(student, testEntity)).thenReturn(1L); 
@@ -490,7 +489,7 @@ class QuizAttemptServicesTest {
 
         when(usersRepository.findById(userId)).thenReturn(Optional.of(student));
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(quiz));
-        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(any(), any(), any())).thenReturn(Optional.empty());
+        lenient().when(quizAttemptsRepository.findByStudentAndStatus(any(), any())).thenReturn(Optional.empty());
         
         when(testRepository.findById(testId)).thenReturn(Optional.of(testEntity));
         when(quizAttemptsRepository.countByStudentAndTest(student, testEntity)).thenReturn(2L);
@@ -505,7 +504,7 @@ class QuizAttemptServicesTest {
     void startQuizNotFound() {
         when(usersRepository.findById(1L)).thenReturn(Optional.of(new Student()));
         when(quizRepository.findById(1L)).thenReturn(Optional.of(new Quiz()));
-        when(quizAttemptsRepository.findByStudentAndQuizAndStatus(any(), any(), any())).thenReturn(Optional.empty());
+        when(quizAttemptsRepository.findByStudentAndStatus(any(), any())).thenReturn(Optional.empty());
         
         when(testRepository.findById(999L)).thenReturn(Optional.empty());
 
