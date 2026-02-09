@@ -19,18 +19,23 @@ import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.dto.gamification.*;
 import it.bicocca.eduquest.repository.MissionsProgressesRepository;
 import it.bicocca.eduquest.repository.MissionsRepository;
+import it.bicocca.eduquest.repository.BadgeRepository;
 import it.bicocca.eduquest.domain.gamification.ChallengeNumberMission;
+import it.bicocca.eduquest.domain.gamification.Badge;
 
 @Service
 public class GamificationServices {
-	private MissionsProgressesRepository missionsProgressesRepository;
-	private MissionsRepository missionsRepository;
+	private final MissionsProgressesRepository missionsProgressesRepository;
+	private final MissionsRepository missionsRepository;
+	private final BadgeRepository badgeRepository;
 	
-	public GamificationServices(MissionsProgressesRepository missionsProgressesRepository, MissionsRepository missionsRepository) {
+	public GamificationServices(MissionsProgressesRepository missionsProgressesRepository,
+			MissionsRepository missionsRepository, BadgeRepository badgeRepository) {
 		this.missionsProgressesRepository = missionsProgressesRepository;
 		this.missionsRepository = missionsRepository;
+		this.badgeRepository = badgeRepository;
 	}
-	
+
 	@Transactional
 	public List<MissionProgressDTO> getAllMissionsProgressesByUserId(long userId, boolean onlyCompleted) {
 		if (isMissionListExpired(missionsProgressesRepository.findByStudentId(userId))) {
@@ -53,6 +58,14 @@ public class GamificationServices {
 		
 		return missionsProgresses;
 	}
+	
+	public List<BadgeDTO> getStudentBadges(long studentId) {
+        List<Badge> badges = badgeRepository.findByStudentId(studentId);
+        
+        return badges.stream()
+            .map(b -> new BadgeDTO(b.getId(), b.getName(), b.getDescription(),  b.getObtainedDate()))
+            .collect(Collectors.toList());
+    }
 	
 	public void updateMissionsProgresses(QuizAttempt quizAttempt) {
         Student student = ((Student)Hibernate.unproxy(quizAttempt.getStudent()));
@@ -96,7 +109,11 @@ public class GamificationServices {
     	
     	if (newCurrentCount >= progress.getGoal()) {
     		progress.setCurrentCount(progress.getGoal());
-    		progress.setCompleted(true);
+    		if (!progress.isCompleted()) {
+                progress.setCompleted(true);
+                Badge newBadge = new Badge(progress.getMission(), (Student)progress.getStudent());
+                badgeRepository.save(newBadge);
+            }
     	}
     	missionsProgressesRepository.save(progress);
     }

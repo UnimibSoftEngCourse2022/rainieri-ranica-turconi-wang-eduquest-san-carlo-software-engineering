@@ -65,6 +65,15 @@ public class GamificationController {
         }
 	}
 	
+	@GetMapping("/badges/{userId}")
+    public ResponseEntity<Object> getStudentBadges(@PathVariable long userId) {
+        try {
+        	return ResponseEntity.ok(gamificationServices.getStudentBadges(userId));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+	
 	@GetMapping("/ranking/quizzesCompleted")
 	public ResponseEntity<Object> getRankingByNumberOfQuizzesCompleted(Authentication authentication) {
 		try {

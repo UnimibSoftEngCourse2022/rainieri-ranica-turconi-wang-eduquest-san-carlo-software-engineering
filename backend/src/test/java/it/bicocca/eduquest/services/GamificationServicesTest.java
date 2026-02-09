@@ -20,6 +20,7 @@ import it.bicocca.eduquest.domain.gamification.*;
 import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.domain.answers.QuizAttempt;
 import it.bicocca.eduquest.domain.answers.QuizAttemptStatus;
+import it.bicocca.eduquest.repository.BadgeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class GamificationServicesTest {
@@ -29,6 +30,9 @@ class GamificationServicesTest {
 
     @Mock
     private MissionsRepository missionsRepository;
+    
+    @Mock
+    private BadgeRepository badgeRepository;
 
     @InjectMocks
     private GamificationServices gamificationServices;
