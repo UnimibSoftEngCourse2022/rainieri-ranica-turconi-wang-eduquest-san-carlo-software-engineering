@@ -80,8 +80,7 @@ public class UserServices {
     			.orElseThrow(() -> new IllegalArgumentException("User not found"));
     	
     	StudentStatsDTO statsDTO = null;
-    	if (user instanceof Student) {
-    		Student student = (Student)user;
+    	if (user instanceof Student student) {
     		StudentStats stats = student.getStats();
     		statsDTO = new StudentStatsDTO(stats.getQuizzesCompleted(), stats.getTotalAnswerGiven(), stats.getTotalCorrectAnswers(), stats.getAverageQuizzesScore());
     	}
@@ -105,8 +104,8 @@ public class UserServices {
 		List<UserInfoDTO> users = new ArrayList<>();
 		for (User user : usersRepository.findAll()) {
 			StudentStatsDTO statsDTO = null;
-			if (user instanceof Student) {
-				StudentStats stats = ((Student)user).getStats();
+			if (user instanceof Student student) {
+				StudentStats stats = student.getStats();
 				statsDTO = new StudentStatsDTO(stats.getQuizzesCompleted(), stats.getTotalAnswerGiven(), stats.getTotalCorrectAnswers(), stats.getAverageQuizzesScore());
 			}
 			UserInfoDTO userInfo = new UserInfoDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getRole(), statsDTO);

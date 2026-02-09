@@ -56,13 +56,13 @@ public class ChallengeServices {
 		User opponent = usersRepository.findById(challengeCreateDTO.getOpponentId()).orElseThrow(() -> new RuntimeException("Opponent not found"));
 		
 		if (challenger instanceof Teacher) {
-			throw new RuntimeException("A teacher cannot create a challenge");
+			throw new IllegalArgumentException("A teacher cannot create a challenge");
 		}
 		if (opponent instanceof Teacher) {
-			throw new RuntimeException("You cannot send a challenge to a teacher, only to a student");
+			throw new IllegalArgumentException("You cannot send a challenge to a teacher, only to a student");
 		}
 		if (opponent.equals(challenger)) {
-			throw new RuntimeException("You cannot challenge yourself!");
+			throw new IllegalArgumentException("You cannot challenge yourself!");
 		}
 		
 		Quiz quiz = quizRepository.findById(challengeCreateDTO.getQuizId()).orElseThrow(() -> new RuntimeException("Quiz not found"));

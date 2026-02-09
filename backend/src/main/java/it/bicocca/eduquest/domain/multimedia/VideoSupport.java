@@ -10,7 +10,7 @@ public class VideoSupport extends MultimediaSupport {
 	private Boolean isYoutube;
 
 	public VideoSupport() {
-
+		// Default constructor
 	}
 
 	public Boolean getIsYoutube() {
