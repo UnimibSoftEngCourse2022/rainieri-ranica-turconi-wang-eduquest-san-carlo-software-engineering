@@ -6,12 +6,16 @@ export class TestItem extends BaseComponent {
   setupComponent() {
     this.testsService = new TestsService();
     this.attemptsService = new AttemptsService();
-    this.render();
+    
+    if (this._testData) {
+        this.updateStats();
+    }
   }
 
   set testData(testData) {
     this._testData = testData;
     this.render();
+    this.updateStats(); 
   }
 
   set userId(userId) {
@@ -25,29 +29,45 @@ export class TestItem extends BaseComponent {
   }
 
   render() {
-    const title = this._testData.quiz ? this._testData.quiz.title : `Test #${this._testData.id}`;
-    const btnId = `btn-test-${this._testData.id}`;
+    if (!this._testData) return;
+
+    const quizTitle = this._testData.quiz ? this._testData.quiz.title : "Test";
     
-    let actionButton = "";
-    if (this._role === "STUDENT") {
-      actionButton = `<button id="${btnId}" class="btn btn-sm btn-primary" data-action="run">Run test</button>`;
-    } else {
-      actionButton = `<button id="${btnId}" class="btn btn-sm btn-danger" data-action="delete">Delete</button>`;
+    const btnId = `btn-test-${this._testData.id}`;
+    const statsId = `stats-test-${this._testData.id}`; 
+    
+    const isTeacher = this._role === "TEACHER";
+    const buttonText = isTeacher ? "Delete" : "Run test";
+    const btnClass = isTeacher ? "btn-danger" : "btn-primary";
+    
+    let statsHtml = "";
+    if (!isTeacher) {
+        statsHtml = `
+            <div style="border-top: 1px solid rgba(0,0,0,0.1); width: 100%; margin-top: 20px; padding-top: 15px;">
+                <div id="${statsId}" class="text-muted small text-center" style="white-space: nowrap;">
+                    Average score: 0.00 | Total attempts: 0
+                </div>
+            </div>
+        `;
     }
 
     this.innerHTML = `
-      <div class="card my-2" style="border: 1px solid #ccc; padding: 10px;">
-        <h3>${title}</h3>
-        <p>
-            <strong>Time Limit:</strong> ${this._testData.maxDuration} min<br>
-            <strong>Max Attempts:</strong> ${this._testData.maxTries}
-        </p>
-        <div class="mt-2">${actionButton}</div>
-        <hr>
-        <small class="text-muted">
-            Average score: ${(this._testData.testAverageScore || 0).toFixed(2)} | 
-            Total attempts: ${this._testData.testTotalAttempts || 0}
-        </small>
+      <div class="card my-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e0e0e0; background-color: #fcfcfc;">
+        <div class="card-body d-flex flex-column align-items-center p-3">
+            
+            <h3 class="card-title mb-3 fw-normal">${quizTitle}</h3>
+            
+            <div class="mb-4 text-center text-dark">
+                <div class="mb-1"><strong>Time Limit:</strong> ${this._testData.maxDuration} min</div>
+                <div><strong>Max Attempts:</strong> ${this._testData.maxTries}</div>
+            </div>
+            
+            <div class="mb-2">
+                <button id="${btnId}" class="btn ${btnClass} px-4">${buttonText}</button>
+            </div>
+
+            ${statsHtml}
+        </div>
       </div>
     `;
 
@@ -57,46 +77,57 @@ export class TestItem extends BaseComponent {
     }
   }
 
+  async updateStats() {
+      if (this._role === "TEACHER") return;
+      if (!this.testsService) return; 
+
+      try {
+          const myAttempts = await this.testsService.getMyAttempts(this._testData.id);
+          
+          if (myAttempts && Array.isArray(myAttempts) && myAttempts.length > 0) {
+              
+              const count = myAttempts.length;
+              const sumScore = myAttempts.reduce((acc, curr) => acc + (curr.score || 0), 0);
+              const avg = sumScore / count;
+
+              const statsEl = this.querySelector(`#stats-test-${this._testData.id}`);
+              if (statsEl) {
+                  statsEl.innerHTML = `Average score: ${avg.toFixed(2)} | Total attempts: ${count}`;
+                  }
+          }
+      } catch (e) {
+          console.error(e);
+      }
+  }
+
   async handleButtonClick(event) {
-    const action = event.target.dataset.action;
-
-    if (action === "delete" && this._role === "TEACHER") {
-        await this.handleDelete();
-    } else if (action === "run" && this._role === "STUDENT") {
-        await this.handleRun();
-    }
-  }
-
-  async handleDelete() {
-    if (confirm("Are you sure you want to delete this test?")) {
-        const success = await this.testsService.deleteTest(this._testData.id);
-        if (success) {
-            this.dispatchEvent(new CustomEvent("test-deleted", { bubbles: true, composed: true }));
+    if (this._role === "TEACHER") {
+        if (confirm("Are you sure you want to delete this test?")) {
+            const success = await this.testsService.deleteTest(this._testData.id);
+            if (success) {
+                this.dispatchEvent(new CustomEvent("test-deleted", { bubbles: true, composed: true }));
+            }
         }
-    }
-  }
+    } else {
+        const studentId = this.getStudentId();
+        if (studentId) {
+            try {
+                localStorage.setItem("currentQuizId", this._testData.quiz.id);
+                localStorage.setItem("currentTestId", this._testData.id);
 
-  async handleRun() {
-    const studentId = this.getStudentId();
-
-    if (studentId) {
-        try {
-            await this.attemptsService.addAttempt(this._testData.quiz.id, studentId, this._testData.id);
-            
-            this.dispatchEvent(new CustomEvent("attempt-created", { 
-                bubbles: true, 
-                composed: true 
-            }));
-
-        } catch (e) {
-            console.error(e);
+                await this.attemptsService.addAttempt(this._testData.quiz.id, studentId, this._testData.id);
+                
+                window.location.reload();
+            } catch (e) {
+                console.error(e);
+                alert("Error starting test: " + e.message);
+            }
         }
     }
   }
 
   getStudentId() {
       let studentId = this.getAttribute("student-id");
-    
       if (!studentId) {
           const userJson = localStorage.getItem("user");
           if (userJson) {

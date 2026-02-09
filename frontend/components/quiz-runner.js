@@ -17,23 +17,16 @@ export class QuizRunner extends BaseComponent {
     this.quizService = new QuizService();
     this.testsService = new TestsService();
 
-    this.quizId = sessionStorage.getItem("currentQuizId");
-    this.testId = sessionStorage.getItem("currentTestId");
+    this.quizId = localStorage.getItem("currentQuizId") || sessionStorage.getItem("currentQuizId");
+    this.testId = localStorage.getItem("currentTestId") || sessionStorage.getItem("currentTestId");
     
     let rawId = this.getAttribute("student-id");
-
     if (!rawId) {
         const userJson = localStorage.getItem("user"); 
         if (userJson) {
-            try {
-                const userObj = JSON.parse(userJson);
-                rawId = userObj.id;
-            } catch (e) {
-                console.error("Error parsing user from localStorage", e);
-            }
+            try { rawId = JSON.parse(userJson).id; } catch (e) { console.error(e); }
         }
     }
-
     this.studentId = rawId ? Number.parseInt(rawId) : null; 
 
     this.render();
@@ -41,11 +34,11 @@ export class QuizRunner extends BaseComponent {
   }
   
   get questionRunner() { return this.querySelector("question-runner"); }
-  get quizErrorSpace() { return this.querySelector("quiz-error"); }
   get quizHeader() { return this.querySelector("#quiz-title"); }
+  get quizDate() { return this.querySelector("#quiz-date"); }
   get quizTimer() { return this.querySelector("#quiz-timer"); }
   get quizError() { return this.querySelector("#quiz-error"); }
-  get questionsViewer() { return document.getElementById("questions-viewer"); }
+  get questionsContainer() { return document.getElementById("questions-container"); }
   get questionNumber() { return this.querySelector("#question-number"); }
   get nextQuestionButton() { return this.querySelector("#next-question-button"); }
   get previousQuestionButton() { return this.querySelector("#previous-question-button"); }
@@ -54,14 +47,18 @@ export class QuizRunner extends BaseComponent {
   render() {
     this.innerHTML = `
     <div class="card text-center container mt-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-          <div id="quiz-title">Loading...</div>
-          <div id="quiz-timer" class="fw-bold text-danger"></div>
+      <div class="card-header">
+          <h4 id="quiz-title" class="m-0">Loading...</h4>
+          <div id="quiz-date" class="small text-muted"></div>
       </div>
       
       <div class="card-body">
-          <div id="questions-viewer"></div>
-          <question-runner></question-runner>
+          <div id="quiz-timer" class="fw-bold fs-4 mb-3" style="display:none;"></div>
+          
+          <div id="questions-container">
+              <div id="questions-viewer"></div>
+              <question-runner></question-runner>
+          </div>
       </div>
       
       <div class="card-footer">
@@ -81,7 +78,6 @@ export class QuizRunner extends BaseComponent {
       const ok = await this.handleSaveAnswerToCurrentQuestion();
       if (ok) {
         this.currentQuestionIndex++;
-        this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
         this.updateQuestionViewer();
       }
     });
@@ -90,7 +86,6 @@ export class QuizRunner extends BaseComponent {
       const ok = await this.handleSaveAnswerToCurrentQuestion();
       if (ok) {
         this.currentQuestionIndex--;
-        this.currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
         this.updateQuestionViewer();
       }
     })
@@ -102,49 +97,40 @@ export class QuizRunner extends BaseComponent {
 
   async initQuiz() {
       if (!this.quizId || !this.studentId) {
-          this.quizError.innerHTML = `<alert-component type="danger" message="Missing Quiz ID or User not logged in."></alert-component>`;
+          this.quizError.innerHTML = `<alert-component type="danger" message="Error: Missing Data."></alert-component>`;
           return;
       }
 
       try {
           const sessionData = await this.attemptsService.addAttempt(this.quizId, this.studentId, this.testId);
-          
-          if (!sessionData) {
-              throw new Error("Could not start quiz session.");
-          }
+          if (!sessionData) throw new Error("Could not start session.");
 
           this.sessionData = sessionData;
           this.quizAttemptId = sessionData.attemptId || sessionData.id;
           
-          if (!this.quizAttemptId) {
-             throw new Error("No attempt ID returned from server.");
-          }
+          if (!this.quizAttemptId) throw new Error("No attempt ID.");
           
           await this.loadData();
-
+          
           const btn = this.querySelector("#next-question-button");
           if(btn) btn.disabled = false;
 
       } catch (e) {
           console.error(e);
           const errorMsg = e.message || "";
-          
-          if (errorMsg.toLowerCase().includes("attempts") || errorMsg.toLowerCase().includes("tentativi") || errorMsg.toLowerCase().includes("tries")) {
+          if (errorMsg.toLowerCase().includes("attempts")) {
               await this.showMaxAttemptsView(errorMsg); 
               return;
           }
-          
           this.quizError.innerHTML = `<alert-component type="danger" message="${errorMsg || "Error starting quiz"}"></alert-component>`;
       }
   }
 
   async loadData() {
-    try {
-      this.attemptData = await this.attemptsService.getAttemptById(this.quizAttemptId);
-    } catch {
-      this.quizError.innerHTML = `
-      <alert-component type="danger" message="Error loading quiz attempt data"></alert-component>
-      `;
+    this.attemptData = await this.attemptsService.getAttemptById(this.quizAttemptId);
+    
+    if (!this.attemptData) {
+      this.quizError.innerHTML = "Failed to load attempt data.";
       return;
     }
 
@@ -153,73 +139,112 @@ export class QuizRunner extends BaseComponent {
 
     this.renderHeader();
     this.updateQuestionViewer();
-
-    if (this.testId) {
-        await this.setupTimer();
-    }
+    
+    await this.setupTimer();
   }
 
   async setupTimer() {
-    try {
-        const test = await this.testsService.getTestById(this.testId);
-        
-        if (test && test.maxDuration > 0) {
-            const maxDurationMinutes = test.maxDuration;
-            const startTime = new Date(this.attemptData.startedAt).getTime();
-            const endTime = startTime + (maxDurationMinutes * 60 * 1000);
-            
-            this.updateTimerDisplay(endTime);
+    if (!this.quizTimer) return;
 
-            this.timerInterval = setInterval(() => {
-                const now = Date.now();
-                const distance = endTime - now;
+    let maxDuration = 0;
 
-                if (distance < 0) {
-                    clearInterval(this.timerInterval);
-                    this.quizTimer.innerHTML = "TIME EXPIRED";
-                    this.handleTimeExpired(); 
-                } else {
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                    this.quizTimer.innerHTML = `Time Left: ${minutes}m ${seconds}s`;
-                }
-            }, 1000);
-        }
-    } catch (e) {
-        console.error("Error setting up timer", e);
+    // 1. Chiamata API esplicita per ottenere la durata corretta
+    if (this.testId && this.testId !== "null" && this.testId !== "undefined") {
+        try {
+            const test = await this.testsService.getTestById(this.testId);
+            if (test && test.maxDuration) {
+                maxDuration = test.maxDuration;
+            }
+        } catch (e) { console.error("Error fetching test details", e); }
     }
+
+    // 2. Fallback
+    if (!maxDuration) {
+        if (this.attemptData.maxDuration) maxDuration = this.attemptData.maxDuration;
+        else if (this.attemptData.test && this.attemptData.test.maxDuration) maxDuration = this.attemptData.test.maxDuration;
+    }
+
+    this.quizTimer.style.display = 'block';
+
+    if (maxDuration > 0) {
+        const startTime = new Date(this.attemptData.startedAt).getTime();
+        const endTime = startTime + (maxDuration * 60 * 1000);
+        
+        if (Date.now() >= endTime) {
+            this.handleTimeExpired(true);
+            return;
+        }
+
+        this.updateTimerDisplay(endTime, maxDuration);
+
+        this.timerInterval = setInterval(() => {
+            const now = Date.now();
+            const distance = endTime - now;
+
+            if (distance < 0) {
+                clearInterval(this.timerInterval);
+                this.quizTimer.innerHTML = "TEMPO SCADUTO";
+                this.handleTimeExpired(); 
+            } else {
+                this.updateTimerDisplay(endTime, maxDuration);
+            }
+        }, 1000);
+    } 
   }
 
-  updateTimerDisplay(endTime) {
+  updateTimerDisplay(endTime, totalMinutes) {
+     if(!this.quizTimer) return;
      const now = Date.now();
      const distance = endTime - now;
+     
      if (distance > 0) {
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        this.quizTimer.innerHTML = `Time Left: ${minutes}m ${seconds}s`;
+        const m = minutes < 10 ? "0" + minutes : minutes;
+        const s = seconds < 10 ? "0" + seconds : seconds;
+        
+        const colorClass = minutes < 1 ? "text-danger" : "text-dark";
+        this.quizTimer.innerHTML = `<span class="${colorClass}">Tempo: ${m}:${s} / ${totalMinutes} min</span>`;
      }
   }
 
-  async handleTimeExpired() {
-      this.quizError.innerHTML = `<alert-component type="danger" message="Time is up! Submitting quiz..."></alert-component>`;
-      const btn = this.querySelector("#next-question-button");
-      if(btn) btn.disabled = true;
+  async handleTimeExpired(immediate = false) {
+      if (this.timerInterval) clearInterval(this.timerInterval);
       
-      setTimeout(() => this.handleCompleteQuiz(), 2000);
+      this.quizError.innerHTML = `<alert-component type="danger" message="Tempo scaduto!"></alert-component>`;
+      
+      if (this.questionsContainer) {
+          this.questionsContainer.innerHTML = `
+            <div class="alert alert-warning p-4 mt-3">
+                <h4>Tempo Esaurito</h4>
+                <p>Sto inviando i risultati...</p>
+            </div>
+          `;
+      }
+      
+      const btns = this.querySelectorAll("button");
+      btns.forEach(b => b.disabled = true);
+
+      if (!immediate) {
+          try { await this.handleSaveAnswerToCurrentQuestion(); } catch(e) {}
+      }
+      
+      setTimeout(() => this.handleCompleteQuiz(), 1500);
   }
 
   disconnectedCallback() {
-      if (this.timerInterval) {
-          clearInterval(this.timerInterval);
-      }
+      if (this.timerInterval) clearInterval(this.timerInterval);
       super.disconnectedCallback();
   }
 
   renderHeader() {
     if (!this.attemptData) return;
-    const [startDate, completeStartTime] = this.attemptData.startedAt.split("T")
-    const [startTime] = completeStartTime.split(".")
-    this.quizHeader.innerHTML = `<h4>${this.attemptData.quizTitle}</h4>Started at: ${startTime}, ${startDate}`
+    let dateStr = "";
+    try {
+        dateStr = new Date(this.attemptData.startedAt).toLocaleString();
+    } catch(e) { dateStr = this.attemptData.startedAt; }
+    this.quizHeader.textContent = this.attemptData.quizTitle || "Quiz";
+    this.quizDate.textContent = `Inizio: ${dateStr}`;
   }
 
   async updateQuestionViewer() {
@@ -227,113 +252,85 @@ export class QuizRunner extends BaseComponent {
     
     const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
     this.questionRunner.question = currentQuestion;
-
     this.questionRunner.answer = null;
     
-    let sessionData;
-    try {
-      sessionData = await this.attemptsService.addAttempt(this.quizId, this.studentId, this.testId);
-    } catch {
-      this.quizError.innerHTML = `
-      <alert-component type="danger" message="Error getting session data" timeout=5000></alert-component>
-      `;
-    }
-    if (sessionData?.existingAnswers) {
-        sessionData.existingAnswers.forEach(answer => {
-          if (answer.questionId == currentQuestion.id) {
-            let answerValue = ``;
-            if (answer.questionType == "OPENED") {
-              answerValue = answer.textOpenAnswer;
-            } else if (answer.questionType == "CLOSED") {
-              answerValue = answer.selectedOptionId;
-            }
-            this.questionRunner.answer = answerValue;
-          }
-        });
+    if (this.sessionData && this.sessionData.existingAnswers) {
+        const found = this.sessionData.existingAnswers.find(a => a.questionId == currentQuestion.id);
+        if (found) {
+             if (found.questionType == "OPENED") this.questionRunner.answer = found.textOpenAnswer;
+             else if (found.questionType == "CLOSED") this.questionRunner.answer = found.selectedOptionId;
+        }
     }
     this.questionRunner.render();
 
-    this.questionNumber.innerHTML = (this.currentQuestionIndex + 1) + "/" + this.quizQuestions.length;
+    this.questionNumber.innerHTML = `${this.currentQuestionIndex + 1} / ${this.quizQuestions.length}`;
     this.previousQuestionButton.disabled = (this.currentQuestionIndex == 0);
     this.nextQuestionButton.disabled = (this.currentQuestionIndex == this.quizQuestions.length - 1);
     this.completeQuizButton.disabled = (this.currentQuestionIndex < this.quizQuestions.length - 1);
+
+    if (this.currentQuestionIndex == this.quizQuestions.length - 1) {
+        this.nextQuestionButton.style.display = 'none';
+        this.completeQuizButton.style.display = 'inline-block';
+    } else {
+        this.nextQuestionButton.style.display = 'inline-block';
+        this.completeQuizButton.style.display = 'none';
+    }
   }
 
   async handleSaveAnswerToCurrentQuestion() {
     const currentQuestion = this.quizQuestions[this.currentQuestionIndex];
-    
-    const requestBody = {
-      questionId: currentQuestion.id
-    }
-    
     const answer = this.questionRunner.answer;
 
-    if (!answer) {
-      return true;
-    }
+    if (!answer) return true;
 
-    if (answer == null || answer == undefined || answer === "") {
-      this.quizError.innerHTML = `
-      <alert-component type="warning" message="Please provide an answer before proceeding."></alert-component>
-      `
-      return false;
-    }
-
-    const currentQuestionType = this.quizQuestions[this.currentQuestionIndex].questionType;
-    if (currentQuestionType === "OPENED") {
-      requestBody.textOpenAnswer = answer;
-    } else if (currentQuestionType === "CLOSED") {
-      requestBody.selectedOptionId = answer;
-    }
+    const requestBody = { 
+        questionId: currentQuestion.id,
+        textOpenAnswer: currentQuestion.questionType === "OPENED" ? answer : null,
+        selectedOptionId: currentQuestion.questionType === "CLOSED" ? answer : null
+    };
 
     try {
-      await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
-      this.quizError.innerHTML = "";
-      return true;
-    } catch {
-      this.quizError.innerHTML = `
-      <alert-component type="danger" message="Error sending your answer, please try again later"></alert-component>
-      `;
-      return false;
+        await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
+        
+        if (this.sessionData && this.sessionData.existingAnswers) {
+             this.sessionData.existingAnswers = this.sessionData.existingAnswers.filter(a => a.questionId != currentQuestion.id);
+             this.sessionData.existingAnswers.push({...requestBody, questionType: currentQuestion.questionType});
+        }
+        
+        this.quizError.innerHTML = "";
+        return true;
+    } catch(e) {
+        return false;
     }
   }
 
   async handleCompleteQuiz() {
     if (this.timerInterval) clearInterval(this.timerInterval);
+    const btn = this.querySelector("#complete-quiz-button");
+    if (btn) { btn.disabled = true; btn.innerHTML = "Processing..."; }
 
-    const btn = this.querySelector("#next-question-button");
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = "Processing...";
-    }
-
-    // First I save the answer to the last question
-    if (this.currentQuestionIndex == this.quizQuestions.length - 1) {
-      await this.handleSaveAnswerToCurrentQuestion();
+    if (this.questionsContainer && this.questionsContainer.innerHTML !== "") {
+        if (this.currentQuestionIndex == this.quizQuestions.length - 1) {
+            try { await this.handleSaveAnswerToCurrentQuestion(); } catch(e) {}
+        }
     }
 
     try {
-      await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
-      globalThis.location.href = globalThis.location.pathname;
-    } catch {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = "Finish Quiz";
-      }
-      this.quizError.innerHTML = `
-      <alert-component type="danger" message="Error completing quiz attempt"></alert-component>
-      `;
+        await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
+        window.location.href = window.location.pathname; 
+    } catch(e) {
+        if (btn) { btn.disabled = false; btn.innerHTML = "Complete Quiz"; }
+        this.quizError.innerHTML = `<alert-component type="danger" message="Errore completamento."></alert-component>`;
     }
   }
 
-  async showMaxAttemptsView(customMessage="Max attempts reached for this test.") { 
-    const displayMessage = customMessage;
-
+  async showMaxAttemptsView(customMessage="Max attempts reached.") { 
     this.innerHTML = `
         <div class="container text-center mt-5">
-            <div class="alert alert-danger p-4 shadow mx-auto" style="max-width: 600px; border-left: 5px solid #dc3545;" role="alert">
-                <h3 class="alert-heading mb-3 fw-bold">Access Denied</h3>
-                <p class="mb-0 fs-5">${displayMessage}</p>
+            <div class="alert alert-danger p-4 shadow mx-auto" style="max-width: 600px;">
+                <h3>Accesso Negato</h3>
+                <p>${customMessage}</p>
+                 <button class="btn btn-secondary mt-3" onclick="globalThis.location.href = globalThis.location.pathname">Home</button>
             </div>
         </div>
     `;
