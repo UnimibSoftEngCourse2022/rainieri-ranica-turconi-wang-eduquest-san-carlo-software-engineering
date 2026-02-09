@@ -25,7 +25,7 @@ public class GamificationController {
 	private RankingServices rankingServices;
 	private ChallengeServices challengeServices;
 	
-	private static final String internalServerError = "Internal server error while getting all missions";
+	private final String internalServerError = "Internal server error while getting all missions";
 	
 	public GamificationController(MissionsServices missionsServices, GamificationServices gamificationServices, RankingServices rankingServices, ChallengeServices challengeServices) {
 		this.missionsServices = missionsServices;
@@ -56,17 +56,12 @@ public class GamificationController {
 	}
 	
 	@GetMapping("/missions/progresses/{userId}")
-	public ResponseEntity<Object> getMissionsByUserId(
-	    Authentication authentication, 
-	    @PathVariable Long userId, 
-	    @RequestParam(required = false) Boolean onlyCompleted) {
+	public ResponseEntity<Object> getMissionsByUserId(Authentication authentication, @PathVariable Long userId, @RequestParam(required = false) boolean onlyCompleted) {
+       
 		try {
-			boolean safeOnlyCompleted = (onlyCompleted != null) ? onlyCompleted : false;
-            
-            return ResponseEntity.ok(gamificationServices.getAllMissionsProgressesByUserId(userId, safeOnlyCompleted));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Internal server error while getting all missions");
+            return ResponseEntity.ok(gamificationServices.getAllMissionsProgressesByUserId(userId, onlyCompleted));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
         }
 	}
 	

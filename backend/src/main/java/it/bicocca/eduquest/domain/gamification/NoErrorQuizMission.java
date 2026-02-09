@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 public class NoErrorQuizMission extends Mission {
 	private int numberOfQuizzes;
 	
-	public NoErrorQuizMission (){}
+	public NoErrorQuizMission() {};
 	
 	public NoErrorQuizMission(int nQuizzes) {
 		this.numberOfQuizzes = nQuizzes;
