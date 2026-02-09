@@ -233,7 +233,7 @@ export class QuizRunner extends BaseComponent {
     let sessionData;
     try {
       sessionData = await this.attemptsService.addAttempt(this.quizId, this.studentId, this.testId);
-    } catch (Error) {
+    } catch {
       this.quizError.innerHTML = `
       <alert-component type="danger" message="Error getting session data" timeout=5000></alert-component>
       `;

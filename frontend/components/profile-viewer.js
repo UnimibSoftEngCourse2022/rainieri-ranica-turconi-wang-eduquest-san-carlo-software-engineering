@@ -110,7 +110,7 @@ export class UserSearch extends BaseComponent {
             let completedMissions;
             try {
                 completedMissions = await this.gamificationService.getUserCompletedMissions(this._userData.id);
-            } catch (Error) {
+            } catch {
                 badgesContainer.innerHTML = `
                 <alert-component type="danger" message="Error loading missions"></alert-component>
                 `;

@@ -35,7 +35,7 @@ export class RankingViewer extends BaseComponent {
         try {
           ranking = await this.gamificationService.getRankingByCompletedQuizzes();
           rankingTitleHTML = `<h4>Number of completed quizzes</h4>`;
-        } catch (Error) {
+        } catch {
           rankingTable.innerHTML = `
           <alert-component type="danger" message="Error getting ranking"></alert-component>
           `;
@@ -43,7 +43,7 @@ export class RankingViewer extends BaseComponent {
       } else if (this._rankingType === "average-score") {
         try {
           ranking = await this.gamificationService.getRankingByAverageScore();
-        } catch (Error) {
+        } catch {
           rankingTable.innerHTML = `
           <alert-component type="danger" message="Error getting ranking"></alert-component>
           `;
