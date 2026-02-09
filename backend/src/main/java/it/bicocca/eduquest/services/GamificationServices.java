@@ -19,6 +19,7 @@ import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.dto.gamification.*;
 import it.bicocca.eduquest.repository.MissionsProgressesRepository;
 import it.bicocca.eduquest.repository.MissionsRepository;
+import it.bicocca.eduquest.domain.gamification.ChallengeNumberMission;
 
 @Service
 public class GamificationServices {
@@ -32,6 +33,10 @@ public class GamificationServices {
 	
 	@Transactional
 	public List<MissionProgressDTO> getAllMissionsProgressesByUserId(long userId, boolean onlyCompleted) {
+		if (isMissionListExpired(missionsProgressesRepository.findByStudentId(userId))) {
+			refreshWeeklyMissions(userId);
+		}
+		
 		List<MissionProgressDTO> missionsProgresses = new ArrayList<>();
 		
 		for (MissionProgress progress : missionsProgressesRepository.findByStudentId(userId)) {
@@ -51,33 +56,40 @@ public class GamificationServices {
 	
 	public void updateMissionsProgresses(QuizAttempt quizAttempt) {
         Student student = ((Student)Hibernate.unproxy(quizAttempt.getStudent()));
-		this.fillMissingMissionProgress(student);
         
         for (MissionProgress missionProgress : missionsProgressesRepository.findByStudentId(student.getId())) {
         	if (missionProgress.isCompleted()) {
         		continue;
         	}
-
-        	Mission mission = missionProgress.getMission();        	
         	
-        	missionProgress.setCurrentCount(mission.getProgress(missionProgress.getCurrentCount(), quizAttempt));
-        	if (missionProgress.getCurrentCount() == missionProgress.getGoal()) {
-        		missionProgress.setCompleted(true);
+        	Mission mission = missionProgress.getMission(); 
+        	
+        	if(mission instanceof ChallengeNumberMission) {
+        		continue;
         	}
-        	missionsProgressesRepository.save(missionProgress);
+        	
+        	int newProgress = mission.getProgress(missionProgress.getCurrentCount(), quizAttempt);
+            updateAndSaveProgress(missionProgress, newProgress);
         }
 	}
 	
-    // Creates the instances of MissionProgress for each mission in the DB, if the Student doesn't have one yet
-    private void fillMissingMissionProgress(Student student) {
-    	for (Mission mission : missionsRepository.findAll()) {
-        	List<MissionProgress> missionProgress = missionsProgressesRepository.findByMissionIdAndStudentId(mission.getId(), student.getId());
-        	if (missionProgress.isEmpty()) {
-        		MissionProgress progress = new MissionProgress(mission, student, mission.getGoal());
-        		missionsProgressesRepository.save(progress);
+	public void updateMissionsProgresses(long studentId, boolean isVictory) {
+		for (MissionProgress missionProgress : missionsProgressesRepository.findByStudentId(studentId)) {
+			if (missionProgress.isCompleted()) {
+				continue;
+			}
+			
+			Mission mission = missionProgress.getMission();
+			
+			if(!(mission instanceof ChallengeNumberMission)) {
+        		continue;
         	}
-        }
-    }
+			
+			if (isVictory) {
+				updateAndSaveProgress(missionProgress, missionProgress.getCurrentCount()+1);
+			}
+		}
+	}
     
     private void updateAndSaveProgress(MissionProgress progress, int newCurrentCount) {
     	progress.setCurrentCount(newCurrentCount);

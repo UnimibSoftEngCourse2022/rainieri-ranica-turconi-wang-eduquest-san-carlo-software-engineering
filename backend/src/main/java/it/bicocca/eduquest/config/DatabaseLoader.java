@@ -7,9 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.bicocca.eduquest.domain.gamification.Mission;
-import it.bicocca.eduquest.domain.gamification.NoErrorQuizMission;
-import it.bicocca.eduquest.domain.gamification.QuizzesNumberMission;
+import it.bicocca.eduquest.domain.gamification.*;
 import it.bicocca.eduquest.domain.quiz.*;
 import it.bicocca.eduquest.domain.users.*;
 import it.bicocca.eduquest.repository.*;
@@ -98,9 +96,17 @@ public class DatabaseLoader implements CommandLineRunner {
         Mission mission4 = new NoErrorQuizMission(5);
         missionsRepository.save(mission4);
         
-        // TODO aggiungere missioni tipo "completa 4 quiz difficili/facili/... rispondendo correttamente ad almeno 80% delle domande"
+        Mission mission5 = new ChallengeNumberMission(1);
+        missionsRepository.save(mission5);
         
-        // TODO aggiungere missioni tipo "rispondi correttamente a n* domande difficili/facili/..."
+        Mission mission6 = new ChallengeNumberMission(5);
+        missionsRepository.save(mission6);
+        
+        Mission mission7 = new CorrectedAnswerNumberMission(5);
+        missionsRepository.save(mission7);
+        
+        Mission mission8 = new CorrectedAnswerNumberMission(25);
+        missionsRepository.save(mission8);
         
         logger.info("Quizzes created and populated!");
         logger.info("The database is ready!");
