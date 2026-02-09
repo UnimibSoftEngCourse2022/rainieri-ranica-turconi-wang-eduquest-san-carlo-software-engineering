@@ -84,18 +84,12 @@ public class GamificationServices {
 	
 	public void updateMissionsProgresses(long studentId, boolean isVictory) {
 		for (MissionProgress missionProgress : missionsProgressesRepository.findByStudentId(studentId)) {
-			if (missionProgress.isCompleted()) {
-				continue;
-			}
-			
 			Mission mission = missionProgress.getMission();
-			
-			if(!(mission instanceof ChallengeNumberMission)) {
-        		continue;
-        	}
-			
-			if (isVictory) {
-				updateAndSaveProgress(missionProgress, missionProgress.getCurrentCount()+1);
+
+			if (!missionProgress.isCompleted() && mission instanceof ChallengeNumberMission) {
+				if (isVictory) {
+					updateAndSaveProgress(missionProgress, missionProgress.getCurrentCount() + 1);
+				}
 			}
 		}
 	}

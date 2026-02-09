@@ -202,46 +202,58 @@ public class QuizAttemptServices {
 	}
 	
 	private List<QuestionDTO> convertQuestionsToSafeDTOs(List<Question> questions) {
-		List<QuestionDTO> safeQuestions = new ArrayList<>();
-		
-		for (Question question : questions) {
-			QuestionStats stats = question.getStats();
-			QuestionStatsDTO questionStatsDTO = new QuestionStatsDTO(stats.getAverageSuccess(), stats.getTotalAnswers(), stats.getCorrectAnswer());
-			
-			QuestionDTO questionDTO;
-			
-			if (question.getQuestionType() == QuestionType.OPENED) {
-				questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, null, question.getAuthor().getId(), questionStatsDTO);   
+	    List<QuestionDTO> safeQuestions = new ArrayList<>();
+
+	    for (Question question : questions) {
+	        QuestionStats stats = question.getStats();
+	        QuestionStatsDTO questionStatsDTO = new QuestionStatsDTO(
+	            stats.getAverageSuccess(), 
+	            stats.getTotalAnswers(), 
+	            stats.getCorrectAnswer()
+	        );
+
+	        QuestionDTO questionDTO;
+
+	        if (question.getQuestionType() == QuestionType.OPENED) {
+	            questionDTO = new QuestionDTO(
+	                question.getId(), question.getText(), question.getDifficulty(), 
+	                question.getTopic(), question.getQuestionType(), null, null, 
+	                question.getAuthor().getId(), questionStatsDTO
+	            );
 	        } else if (question.getQuestionType() == QuestionType.CLOSED) {
 	            List<ClosedQuestionOptionDTO> safeOptions = new ArrayList<>();
-	            for (ClosedQuestionOption optionDTO : ((ClosedQuestion)question).getOptions()) {
-	                safeOptions.add(new ClosedQuestionOptionDTO(optionDTO.getId(), optionDTO.getText(), false)); 
+	            for (ClosedQuestionOption optionDTO : ((ClosedQuestion) question).getOptions()) {
+	                safeOptions.add(new ClosedQuestionOptionDTO(optionDTO.getId(), optionDTO.getText(), false));
 	            }
-	            questionDTO = new QuestionDTO(question.getId(), question.getText(), question.getDifficulty(), question.getTopic(), question.getQuestionType(), null, safeOptions, question.getAuthor().getId(), questionStatsDTO);
-	        } else { 
-				throw new IllegalArgumentException("Not supported question type."); 
-			}
-			if (question.getMultimedia() != null) {
-				MultimediaSupport media = question.getMultimedia();
-				MultimediaDTO mediaDTO = new MultimediaDTO();
-				mediaDTO.setUrl(media.getUrl());
-				mediaDTO.setType(media.getType());
-				
-				if (media instanceof VideoSupport) {
-					mediaDTO.setIsYoutube(((VideoSupport) media).getIsYoutube());
-				} else {
-					mediaDTO.setIsYoutube(false);
-				}
-				
-				questionDTO.setMultimedia(mediaDTO);
-			}
-			
-			safeQuestions.add(questionDTO);
-		}
-		
-		return safeQuestions;
+	            questionDTO = new QuestionDTO(
+	                question.getId(), question.getText(), question.getDifficulty(), 
+	                question.getTopic(), question.getQuestionType(), null, safeOptions, 
+	                question.getAuthor().getId(), questionStatsDTO
+	            );
+	        } else {
+	            throw new IllegalArgumentException("Not supported question type.");
+	        }
+
+	        if (question.getMultimedia() != null) {
+	            MultimediaSupport media = question.getMultimedia();
+	            MultimediaDTO mediaDTO = new MultimediaDTO();
+	            mediaDTO.setUrl(media.getUrl());
+	            mediaDTO.setType(media.getType());
+
+	            if (media instanceof VideoSupport videoSupport) {
+	                mediaDTO.setIsYoutube(videoSupport.getIsYoutube());
+	            } else {
+	                mediaDTO.setIsYoutube(false);
+	            }
+
+	            questionDTO.setMultimedia(mediaDTO);
+	        }
+
+	        safeQuestions.add(questionDTO);
+	    }
+
+	    return safeQuestions;
 	}
-	
 	private AnswerDTO convertAnswerToDTO(Answer answer) {
 		AnswerDTO answerDTO = new AnswerDTO();
 		
@@ -249,7 +261,6 @@ public class QuizAttemptServices {
 		answerDTO.setQuizAttemptId(answer.getQuizAttempt().getId());
 		answerDTO.setQuestionId(answer.getQuestion().getId());
 
-		// FIX: Pattern Matching for instanceof
 		if (answer instanceof OpenAnswer openAnswer) {
 			answerDTO.setQuestionType(QuestionType.OPENED);
 			answerDTO.setTextOpenAnswer(openAnswer.getText());

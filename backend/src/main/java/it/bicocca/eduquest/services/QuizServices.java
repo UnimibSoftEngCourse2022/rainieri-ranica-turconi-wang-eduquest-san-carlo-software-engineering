@@ -387,11 +387,13 @@ public class QuizServices {
 	        MultimediaDTO mediaDTO = new MultimediaDTO();
 	        mediaDTO.setUrl(media.getUrl());
 	        mediaDTO.setType(media.getType());
-	        if (media instanceof VideoSupport) {
-	            mediaDTO.setIsYoutube(((VideoSupport) media).getIsYoutube());
+	        
+	        if (media instanceof VideoSupport videoSupport) {
+	            mediaDTO.setIsYoutube(videoSupport.getIsYoutube());
 	        } else {
 	            mediaDTO.setIsYoutube(false);
 	        }
+
 	        questionDTO.setMultimedia(mediaDTO);
 	    }
 	    return questionDTO;

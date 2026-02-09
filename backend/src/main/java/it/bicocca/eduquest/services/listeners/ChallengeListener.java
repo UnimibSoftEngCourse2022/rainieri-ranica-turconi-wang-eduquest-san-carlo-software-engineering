@@ -32,43 +32,42 @@ public class ChallengeListener {
         User user = attempt.getStudent();
         Long quizId = attempt.getQuiz().getId();
 
-        // Check if there is an active challenge for this user and this quiz
         List<Challenge> challengesOpt = challengeRepository.findActiveChallengeForUserAndQuiz(user.getId(), quizId);
-        
+
         if (challengesOpt.isEmpty()) {
             return;
         }
 
         for (Challenge challenge : challengesOpt) {
-        	// Check whether it has expired before proceeding
-        	if (challenge.isExpired()) {
+            if (challenge.isExpired()) {
                 challenge.setStatus(ChallengeStatus.EXPIRED);
                 challengeRepository.save(challenge);
                 return;
             }
 
-            // Connect the attempt to the right student
+            boolean isUpdated = false;
+
             if (challenge.getChallenger().getId().equals(user.getId())) {
-            	if (challenge.getChallengerAttempt() != null) {
-            		continue;
-            	}
-                challenge.setChallengerAttempt(attempt);
-            } else {
-            	if (challenge.getOpponentAttempt() != null) {
-            		continue;
-            	}
-            	challenge.setOpponentAttempt(attempt);
+                if (challenge.getChallengerAttempt() == null) {
+                    challenge.setChallengerAttempt(attempt);
+                    isUpdated = true;
+                }
+            } 
+            else {
+                if (challenge.getOpponentAttempt() == null) {
+                    challenge.setOpponentAttempt(attempt);
+                    isUpdated = true;
+                }
             }
 
-            // Check if both have played
-            if (challenge.getChallengerAttempt() != null && challenge.getOpponentAttempt() != null) {
-                closeChallenge(challenge);
+            if (isUpdated) {
+                if (challenge.getChallengerAttempt() != null && challenge.getOpponentAttempt() != null) {
+                    closeChallenge(challenge);
+                }
+                challengeRepository.save(challenge);
+                
+                break; 
             }
-
-            challengeRepository.save(challenge);
-            
-            // If I arrived here, I used the attempt for the first challenge and I won't use it for the next ones
-            break;
         }
     }
 
