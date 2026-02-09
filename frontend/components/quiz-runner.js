@@ -141,8 +141,10 @@ export class QuizRunner extends BaseComponent {
   async loadData() {
     try {
       this.attemptData = await this.attemptsService.getAttemptById(this.quizAttemptId);
-    } catch (e) {
-      this.quizError.innerHTML = e;
+    } catch {
+      this.quizError.innerHTML = `
+      <alert-component type="danger" message="Error loading quiz attempt data"></alert-component>
+      `;
       return;
     }
 
@@ -288,7 +290,7 @@ export class QuizRunner extends BaseComponent {
       await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
       this.quizError.innerHTML = "";
       return true;
-    } catch(Error) {
+    } catch {
       this.quizError.innerHTML = `
       <alert-component type="danger" message="Error sending your answer, please try again later"></alert-component>
       `;
@@ -313,7 +315,7 @@ export class QuizRunner extends BaseComponent {
     try {
       await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
       globalThis.location.href = globalThis.location.pathname;
-    } catch(Error) {
+    } catch {
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = "Finish Quiz";

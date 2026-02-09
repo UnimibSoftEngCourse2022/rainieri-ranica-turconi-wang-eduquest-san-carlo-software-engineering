@@ -27,9 +27,9 @@ export class ChallengesViewer extends BaseComponent {
   async loadData() {
     try {
       this.userData = await this.usersService.getMyUserInfo();
-    } catch (e) {
+    } catch {
       this.innerHTML = `
-      <alert-component type="danger" message="${e}"></alert-component>
+      <alert-component type="danger" message="Error loading challenges"></alert-component>
       `;
       return;
     }

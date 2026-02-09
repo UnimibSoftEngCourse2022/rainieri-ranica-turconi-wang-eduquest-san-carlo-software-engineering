@@ -20,9 +20,9 @@ export class AddTest extends BaseComponent {
         const userId = userData.id;
         this.quizzes = await this.quizService.getQuizzesByAuthorId(userId) || [];
         this.render();
-    } catch (e) {
+    } catch {
         this.innerHTML = `
-        <alert-component type="danger" message="${e}"></alert-component>
+        <alert-component type="danger" message="Error loading quizzes"></alert-component>
         `
     }
   }

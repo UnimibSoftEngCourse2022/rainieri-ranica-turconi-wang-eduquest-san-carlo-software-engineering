@@ -73,7 +73,7 @@ export class AddChallenge extends BaseComponent {
         `;
         this.addChallengeForm.reset();
         this.dispatchCustomEvent("challenge-added");
-    } catch(Error) {
+    } catch {
         this.addChallengeResult.innerHTML = `
         <alert-component type="danger" message="Error adding the challenge" timeout="2000"></alert-component>
         `;
