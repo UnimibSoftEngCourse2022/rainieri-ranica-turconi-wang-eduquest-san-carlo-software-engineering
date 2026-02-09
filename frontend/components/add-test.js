@@ -15,10 +15,16 @@ export class AddTest extends BaseComponent {
   }
 
   async loadQuizzes() {
-      const userData = await this.usersService.getMyUserInfo();
-      const userId = userData.id;
-      this.quizzes = await this.quizService.getQuizzesByAuthorId(userId) || [];
-      this.render();
+    try {
+        const userData = await this.usersService.getMyUserInfo();
+        const userId = userData.id;
+        this.quizzes = await this.quizService.getQuizzesByAuthorId(userId) || [];
+        this.render();
+    } catch (e) {
+        this.innerHTML = `
+        <alert-component type="danger" message="${e}"></alert-component>
+        `
+    }
   }
 
   attachEventListeners() {

@@ -1,4 +1,5 @@
 import { UsersService } from "../services/users-service.js";
+import "../components/shared/alert.js";
 
 const NAME_INPUT_TAG_ID = "name-input";
 const SURNAME_INPUT_TAG_ID = "surname-input";
@@ -8,8 +9,6 @@ const REGISTER_RESULT_TAG_ID = "register-result";
 
 const REGISTER_SUCCESS_DIV =
   "<div class='alert alert-success' role='alert'>Registration has completed successfully! Now you can <a href='../login/'>login</a></div>";
-const REGISTER_ERROR_DIV =
-  "<div class='alert alert-danger' role='alert'>Registration error, please check your data</div>";
 const REGISTER_CONNECTION_ERROR_DIV =
   "<div class='alert alert-danger' role='alert'>Connection to the server failed, please try again later</div>";
 
@@ -35,11 +34,13 @@ registerForm.addEventListener("submit", async (event) => {
 
   const usersService = new UsersService();
 
-  const response = await usersService.register(requestBody);
-  if (response) {
+  try {
+    const response = await usersService.register(requestBody);
     resultContainer.innerHTML = REGISTER_SUCCESS_DIV;
-  } else {
-    resultContainer.innerHTML = REGISTER_ERROR_DIV;
+  } catch (e) {
+    resultContainer.innerHTML = `
+    <alert-component type="danger" message="${e}" timeout=5000></alert-component>
+    `;
     setTimeout(() => {
         resultContainer.innerHTML = "";
     }, 5000);

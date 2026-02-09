@@ -44,7 +44,7 @@ export class AddChallenge extends BaseComponent {
                 />
             </div>
             <div id="other-fields"></div>
-            <button type="submit" class="btn btn-primary" id="add-challenge-button">Add question</button>
+            <button type="submit" class="btn btn-primary" id="add-challenge-button">Add challenge</button>
             <div class="container my-2" id="add-challenge-result"></div>
         </form>
     </div>
