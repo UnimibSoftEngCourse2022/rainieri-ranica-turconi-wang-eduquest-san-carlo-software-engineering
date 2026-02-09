@@ -51,21 +51,19 @@ export class QuestionsViewer extends BaseComponent {
   }
 
   async loadData() {
-    let questions = null;
-    if (this.authorId) {
-      questions = await this.questionsService.getQuestionByAuthorId(this.authorId);
-    } else {
-      questions = await this.questionsService.getQuestions();
-    }
-    
-    this.allQuestions = questions || [];
-
-    if (questions != null && questions != undefined) {
+    try {
+      let questions = null;
+      if (this.authorId) {
+        questions = await this.questionsService.getQuestionByAuthorId(this.authorId);
+      } else {
+        questions = await this.questionsService.getQuestions();
+      }      
+      this.allQuestions = questions || [];
       this.showQuestions(questions)
-    } else {
+    } catch {
       this.questions.innerHTML = `
-        <alert-component type="danger" message="Cannot get questions, please try again"></alert-component>
-`
+      <alert-component type="danger" message="Cannot get questions, please try again"></alert-component>
+      `;
     }
   }
 

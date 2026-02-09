@@ -239,19 +239,17 @@ export class AddQuestion extends BaseComponent {
 
   async submitData(formData) {
     this.addQuestionResult.innerHTML = `<loading-spinner></loading-spinner>`;
-    const response = await this.questionsService.createQuestion(formData);
-    if (response) {
+    try {
+        await this.questionsService.createQuestion(formData);
         this.addQuestionResult.innerHTML = `
         <alert-component type="success" message="Question added successfully" timeout="3000"></alert-component>
         `;
         this.addQuestionForm.reset();
         this.updateQuestionFields();
-
-        this.dispatchEvent(new CustomEvent('question-added', {
-            bubbles: true,
-            composed: true 
-        }));
-    } else {
+    
+        this.dispatchCustomEvent('question-added');
+    } catch (e) {
+        console.error(e);
         this.addQuestionResult.innerHTML = `
         <alert-component type="danger" message="Error creating question" timeout="4000"></alert-component>
         `;
