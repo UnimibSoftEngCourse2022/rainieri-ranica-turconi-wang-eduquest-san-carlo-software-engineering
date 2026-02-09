@@ -35,7 +35,7 @@ registerForm.addEventListener("submit", async (event) => {
   const usersService = new UsersService();
 
   try {
-    const response = await usersService.register(requestBody);
+    await usersService.register(requestBody);
     resultContainer.innerHTML = REGISTER_SUCCESS_DIV;
   } catch (e) {
     resultContainer.innerHTML = `

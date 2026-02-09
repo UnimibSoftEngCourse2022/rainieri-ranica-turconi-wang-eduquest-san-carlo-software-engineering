@@ -231,8 +231,10 @@ export class QuizRunner extends BaseComponent {
     let sessionData;
     try {
       sessionData = await this.attemptsService.addAttempt(this.quizId, this.studentId, this.testId);
-    } catch (e) {
-      return;
+    } catch (Error) {
+      this.quizError.innerHTML = `
+      <alert-component type="danger" message="Error getting session data" timeout=5000></alert-component>
+      `;
     }
     if (sessionData?.existingAnswers) {
         sessionData.existingAnswers.forEach(answer => {
@@ -286,7 +288,7 @@ export class QuizRunner extends BaseComponent {
       await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
       this.quizError.innerHTML = "";
       return true;
-    } catch(e) {
+    } catch(Error) {
       this.quizError.innerHTML = `
       <alert-component type="danger" message="Error sending your answer, please try again later"></alert-component>
       `;
@@ -311,13 +313,13 @@ export class QuizRunner extends BaseComponent {
     try {
       await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
       globalThis.location.href = globalThis.location.pathname;
-    } catch(e) {
+    } catch(Error) {
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = "Finish Quiz";
       }
       this.quizError.innerHTML = `
-      <alert-component type="danger" message="Error completing the quiz. Please try again."></alert-component>
+      <alert-component type="danger" message="Error completing quiz attempt"></alert-component>
       `;
     }
   }
