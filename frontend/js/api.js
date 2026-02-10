@@ -14,9 +14,9 @@ export const endpoints = {
     missions: `${API_BASE}/gamification/missions`,
     missionsProgresses: `${API_BASE}/gamification/missions/progresses`,
     rankings: {
-        byCompletedQuizzes: `${API_BASE}/gamification/ranking/quizzesCompleted`,
-        byAverageScore: `${API_BASE}/gamification/ranking/averageScore`,
-        byCorrectAnswers: `${API_BASE}/gamification/ranking/correctAnswers`
+        byCompletedQuizzes: `${API_BASE}/gamification/ranking?rankingType=completedQuizzes`,
+        byAverageScore: `${API_BASE}/gamification/ranking?rankingType=quizzesScore`,
+        byCorrectAnswers: `${API_BASE}/gamification/ranking?rankingType=correctAnswers`
     },
     challenges: `${API_BASE}/gamification/challenges`
 }

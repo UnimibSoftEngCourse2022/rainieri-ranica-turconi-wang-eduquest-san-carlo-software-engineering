@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import it.bicocca.eduquest.services.GamificationServices;
 import it.bicocca.eduquest.services.MissionsServices;
 import it.bicocca.eduquest.services.RankingServices;
+import it.bicocca.eduquest.services.ranking.StrategyNotFoundException;
 import it.bicocca.eduquest.services.ChallengeServices;
 import it.bicocca.eduquest.dto.gamification.*;
 
@@ -25,7 +26,7 @@ public class GamificationController {
 	private RankingServices rankingServices;
 	private ChallengeServices challengeServices;
 	
-	private static final String INTERNAL_SERVER_ERROR = "Internal server error while getting all missions";
+	private static final String INTERNAL_SERVER_ERROR = "Internal server error";
 	
 	public GamificationController(MissionsServices missionsServices, GamificationServices gamificationServices, RankingServices rankingServices, ChallengeServices challengeServices) {
 		this.missionsServices = missionsServices;
@@ -80,31 +81,15 @@ public class GamificationController {
         }
     }
 	
-	@GetMapping("/ranking/quizzesCompleted")
-	public ResponseEntity<Object> getRankingByNumberOfQuizzesCompleted(Authentication authentication) {
+	@GetMapping("/ranking")
+	public ResponseEntity<Object> getRanking(@RequestParam String rankingType, Authentication authentication) {
 		try {
-            return ResponseEntity.ok(rankingServices.getRankingByNumberOfQuizzesCompleted());
+            return ResponseEntity.ok(rankingServices.getRanking(rankingType));
+        } catch (StrategyNotFoundException e) {
+        	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(INTERNAL_SERVER_ERROR);
         }
-	}
-	
-	@GetMapping("/ranking/averageScore")
-	public ResponseEntity<Object> getRankingByAverageScore(Authentication authentication) {
-		try {
-            return ResponseEntity.ok(rankingServices.getRankingByAverageQuizzesScore());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(INTERNAL_SERVER_ERROR);
-        }
-	}
-	
-	@GetMapping("/ranking/correctAnswers")
-	public ResponseEntity<Object> getRankingByCorrectAnswers(Authentication authentication) {
-		try {
-			return ResponseEntity.ok(rankingServices.getRankingByCorrectAnswers());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(INTERNAL_SERVER_ERROR);
-		}
 	}
 	
 	@GetMapping("/challenges")
