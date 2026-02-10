@@ -11,7 +11,9 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.time.LocalDate;
 
 import it.bicocca.eduquest.repository.MissionsProgressesRepository;
 import it.bicocca.eduquest.repository.MissionsRepository;
@@ -47,12 +49,14 @@ class GamificationServicesTest {
         p1.setId(111L); 
         p1.setCurrentCount(5);
         p1.setCompleted(false);
+        p1.setAssignmentDate(LocalDate.now());
 
         Mission m2 = createMission(22L, "Win", 1);
         MissionProgress p2 = new MissionProgress(m2, student, 1);
         p2.setId(222L); 
         p2.setCurrentCount(1);
         p2.setCompleted(true);
+        p2.setAssignmentDate(LocalDate.now());
 
         when(missionsProgressesRepository.findByStudentId(userId))
             .thenReturn(List.of(p1, p2));
@@ -66,20 +70,65 @@ class GamificationServicesTest {
     }
     
     @Test
+    void getAllMissionsProgresses_ShouldRefresh_WhenListEmpty() {
+        long userId = 1L;
+        when(missionsProgressesRepository.findByStudentId(userId))
+            .thenReturn(Collections.emptyList()) 
+            .thenReturn(new ArrayList<>()); 
+
+        gamificationServices.getAllMissionsProgressesByUserId(userId, false);
+
+        verify(missionsProgressesRepository).deleteByStudentId(userId);
+    }
+
+    @Test
+    void getAllMissionsProgresses_ShouldRefresh_WhenDateNull() {
+        long userId = 1L;
+        Student student = new Student(); student.setId(userId);
+        
+        Mission m = createMission(1L, "T", 1);
+        MissionProgress p = new MissionProgress(m, student, 1);
+        p.setId(100L);
+        p.setAssignmentDate(null);
+
+        when(missionsProgressesRepository.findByStudentId(userId))
+            .thenReturn(List.of(p)); 
+
+        gamificationServices.getAllMissionsProgressesByUserId(userId, false);
+
+        verify(missionsProgressesRepository).deleteByStudentId(userId);
+    }
+    
+    @Test
+    void getAllMissionsProgresses_ShouldRefresh_WhenDateIsOld() {
+        long userId = 1L;
+        Student student = new Student(); student.setId(userId);
+        
+        Mission m = createMission(1L, "T", 1);
+        MissionProgress p = new MissionProgress(m, student, 1);
+        p.setId(101L);
+        p.setAssignmentDate(LocalDate.now().minusWeeks(2));
+
+        when(missionsProgressesRepository.findByStudentId(userId))
+            .thenReturn(List.of(p)); 
+
+        gamificationServices.getAllMissionsProgressesByUserId(userId, false);
+
+        verify(missionsProgressesRepository).deleteByStudentId(userId);
+    }
+
+    @Test
     void updateMissionsProgresses_ShouldDoNothing_IfNoMissionsExist() {
         Student student = new Student(); 
         student.setId(1L);
         QuizAttempt attempt = new QuizAttempt();
         attempt.setStudent(student);
 
-        // Simuliamo che lo studente NON abbia missioni attive
         when(missionsProgressesRepository.findByStudentId(student.getId()))
             .thenReturn(Collections.emptyList());
 
-        // Chiamiamo il metodo
         gamificationServices.updateMissionsProgresses(attempt);
 
-        // VERIFICA CHE NON ABBIA SALVATO NULLA (Corretto per la nuova logica)
         verify(missionsProgressesRepository, never()).save(any(MissionProgress.class));
     }
 
@@ -110,8 +159,93 @@ class GamificationServicesTest {
         
         MissionProgress savedProgress = captor.getValue();
         
-        assertEquals(10, savedProgress.getCurrentCount(), "Count to 10");
-        assertTrue(savedProgress.isCompleted(), "Mission completed");
+        assertEquals(10, savedProgress.getCurrentCount());
+        assertTrue(savedProgress.isCompleted());
+        verify(badgeRepository).save(any(Badge.class));
+    }
+    
+    @Test
+    void updateMissionsProgresses_ShouldSkip_ChallengeNumberMission() {
+        Student student = new Student(); student.setId(1L);
+        QuizAttempt attempt = new QuizAttempt(); attempt.setStudent(student);
+
+        ChallengeNumberMission challengeMission = mock(ChallengeNumberMission.class);
+        MissionProgress progress = new MissionProgress(challengeMission, student, 5);
+        
+        when(missionsProgressesRepository.findByStudentId(1L))
+            .thenReturn(List.of(progress));
+
+        gamificationServices.updateMissionsProgresses(attempt);
+
+        verify(missionsProgressesRepository, never()).save(any());
+    }
+
+    @Test
+    void updateMissionsProgresses_Victory_ShouldSkip_NonChallengeMission() {
+        long studentId = 1L;
+        Student student = new Student(); student.setId(studentId);
+        
+        Mission normalMission = createMission(1L, "Normal", 10);
+        MissionProgress progress = new MissionProgress(normalMission, student, 10);
+        
+        when(missionsProgressesRepository.findByStudentId(studentId))
+            .thenReturn(List.of(progress));
+            
+        gamificationServices.updateMissionsProgresses(studentId, true);
+        
+        verify(missionsProgressesRepository, never()).save(any());
+    }
+
+    @Test
+    void updateMissionsProgresses_Victory_ShouldUpdate_ChallengeMission() {
+        long studentId = 1L;
+        Student student = new Student(); student.setId(studentId);
+        
+        ChallengeNumberMission challengeMission = mock(ChallengeNumberMission.class);
+         
+        MissionProgress progress = new MissionProgress(challengeMission, student, 5);
+        progress.setCurrentCount(0);
+        
+        when(missionsProgressesRepository.findByStudentId(studentId))
+            .thenReturn(List.of(progress));
+            
+        gamificationServices.updateMissionsProgresses(studentId, true);
+        
+        verify(missionsProgressesRepository).save(progress);
+        assertEquals(1, progress.getCurrentCount());
+    }
+    
+    @Test
+    void updateMissionsProgresses_Victory_ShouldSkip_CompletedChallengeMission() {
+        long studentId = 1L;
+        Student student = new Student(); student.setId(studentId);
+        
+        ChallengeNumberMission challengeMission = mock(ChallengeNumberMission.class);
+        MissionProgress progress = new MissionProgress(challengeMission, student, 5);
+        progress.setCompleted(true);
+        
+        when(missionsProgressesRepository.findByStudentId(studentId))
+            .thenReturn(List.of(progress));
+            
+        gamificationServices.updateMissionsProgresses(studentId, true);
+        
+        verify(missionsProgressesRepository, never()).save(any());
+    }
+
+    @Test
+    void updateMissionsProgresses_Victory_False_ShouldNotUpdate() {
+        long studentId = 1L;
+        Student student = new Student(); student.setId(studentId);
+        
+        ChallengeNumberMission challengeMission = mock(ChallengeNumberMission.class);
+        MissionProgress progress = new MissionProgress(challengeMission, student, 5);
+        
+        when(missionsProgressesRepository.findByStudentId(studentId))
+            .thenReturn(List.of(progress));
+            
+        gamificationServices.updateMissionsProgresses(studentId, false);
+        
+        verify(missionsProgressesRepository, never()).save(any());
     }
 
     private Mission createMission(Long id, String title, int goal) {
@@ -179,6 +313,7 @@ class GamificationServicesTest {
         MissionProgress saved = captor.getValue();
         assertEquals(3, saved.getCurrentCount());
         assertFalse(saved.isCompleted());
+        verify(badgeRepository, never()).save(any());
     }
 
     @Test
@@ -197,6 +332,22 @@ class GamificationServicesTest {
         verify(missionsProgressesRepository).deleteByStudentId(userId);
 
         verify(missionsProgressesRepository, times(4)).save(any(MissionProgress.class));
+    }
+    
+    @Test
+    void getStudentBadges_ShouldMapCorrectly() {
+        long studentId = 1L;
+        Student student = new Student(); student.setId(studentId);
+        Mission mission = createMission(10L, "BadgeMission", 5);
+        Badge badge = new Badge(mission, student);
+        badge.setId(100L);
+        
+        when(badgeRepository.findByStudentId(studentId)).thenReturn(List.of(badge));
+        
+        var results = gamificationServices.getStudentBadges(studentId);
+        
+        assertEquals(1, results.size());
+        assertEquals("BadgeMission", results.get(0).getName());
     }
     
     @Test
