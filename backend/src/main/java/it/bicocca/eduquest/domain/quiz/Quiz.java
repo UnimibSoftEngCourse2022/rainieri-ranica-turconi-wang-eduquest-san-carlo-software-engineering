@@ -50,6 +50,8 @@ public class Quiz {
 	@Embedded
 	private QuizStats stats;
 	
+	private boolean isPublic = false;
+	
 	public Quiz() {
 		super();
 		this.stats = new QuizStats();
@@ -157,6 +159,14 @@ public class Quiz {
 		this.questions = questions;
 	}
 	
+	public boolean isPublic() {
+		return isPublic;
+	}
+
+	public void setPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+
 	public void addQuestion(Question question) {
 		this.questions.add(question);
 	}

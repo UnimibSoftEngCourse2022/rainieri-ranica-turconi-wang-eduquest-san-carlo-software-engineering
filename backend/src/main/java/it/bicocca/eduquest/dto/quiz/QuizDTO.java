@@ -2,6 +2,7 @@ package it.bicocca.eduquest.dto.quiz;
 
 import java.util.List;
 import it.bicocca.eduquest.domain.quiz.Difficulty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QuizDTO {
 	private long id;
@@ -11,6 +12,8 @@ public class QuizDTO {
 	private final List<QuestionDTO> questions;
 	private final QuizStatsDTO quizStats;
 	private final Difficulty difficulty;
+	@JsonProperty("isPublic")
+	private boolean isPublic;
 	
 	public QuizDTO() {
 		this.title = "";
@@ -21,7 +24,7 @@ public class QuizDTO {
 		this.difficulty = null;
     }
 
-	public QuizDTO(long id, String title, String description, long teacherAuthorId, List<QuestionDTO> questions, QuizStatsDTO quizStats, Difficulty difficulty) {
+	public QuizDTO(long id, String title, String description, long teacherAuthorId, List<QuestionDTO> questions, QuizStatsDTO quizStats, Difficulty difficulty, boolean isPublic) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
@@ -29,6 +32,7 @@ public class QuizDTO {
 		this.questions = questions;
 		this.quizStats = quizStats;
 		this.difficulty = difficulty;
+		this.isPublic = isPublic;
 	}
 
 	public long getId() {
@@ -61,6 +65,14 @@ public class QuizDTO {
 
 	public Difficulty getDifficulty() {
 		return difficulty;
+	}
+
+	public boolean isPublic() {
+		return isPublic;
+	}
+
+	public void setPublic(boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 	
 }

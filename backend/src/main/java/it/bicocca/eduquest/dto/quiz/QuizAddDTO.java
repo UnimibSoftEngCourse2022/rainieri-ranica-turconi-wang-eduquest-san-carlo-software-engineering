@@ -1,8 +1,12 @@
 package it.bicocca.eduquest.dto.quiz;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class QuizAddDTO {
 	private String title;
 	private String description;
+	@JsonProperty("isPublic")
+	private boolean isPublic;
 
 	public QuizAddDTO() {
 		
@@ -11,6 +15,7 @@ public class QuizAddDTO {
 	public QuizAddDTO(String title, String description) {
 		this.title = title;
 		this.description = description;
+		this.isPublic = false;
 	}
 	
 	public String getTitle() {
@@ -27,6 +32,14 @@ public class QuizAddDTO {
 	
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public boolean isPublic() {
+		return isPublic;
+	}
+
+	public void setPublic(boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 	
 }

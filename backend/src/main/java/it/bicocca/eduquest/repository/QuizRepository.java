@@ -10,4 +10,5 @@ import it.bicocca.eduquest.domain.quiz.Quiz;
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Long>{
 	List<Quiz> findByAuthorId(long authorId);
+	List<Quiz> findByIsPublicTrue();
 }

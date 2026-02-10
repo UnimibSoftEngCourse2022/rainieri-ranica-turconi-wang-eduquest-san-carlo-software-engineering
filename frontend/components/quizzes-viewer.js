@@ -74,7 +74,7 @@ export class QuizzesViewer extends BaseComponent {
 
     if (quizzes.length == 0) {
         messageContainer.innerHTML = `
-        <alert-component type="warning" message="There is not quiz to display"></alert-component>
+        <alert-component type="warning" message="There are no quizzes to display"></alert-component>
         `;
     } else {
         this.displayQuizzes(this.allQuizzes);

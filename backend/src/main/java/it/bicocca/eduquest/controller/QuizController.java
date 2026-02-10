@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import it.bicocca.eduquest.dto.quiz.QuizAddDTO;
 import it.bicocca.eduquest.dto.quiz.QuizEditDTO;
 import it.bicocca.eduquest.services.QuizServices;
+import it.bicocca.eduquest.domain.users.*;
+import it.bicocca.eduquest.repository.UsersRepository;
 
 @RestController
 @RequestMapping("/api/quizzes")
@@ -16,19 +18,28 @@ public class QuizController {
 	private static final String CANNOT_EDIT_MSG = "cannot edit";
 	
 	private final QuizServices quizService;
+	private final UsersRepository usersRepository;
 	
-	public QuizController(QuizServices quizService) {
+	public QuizController(QuizServices quizService, UsersRepository usersRepository) {
 		this.quizService = quizService;
+		this.usersRepository = usersRepository;
 	}
 
 	@GetMapping
-	public ResponseEntity<Object> getQuizzesByAuthorId(@RequestParam(required = false) Long authorId) {
+	public ResponseEntity<Object> getQuizzesByAuthorId(@RequestParam(required = false) Long authorId, Authentication authentication) {
 		try {
-			if (authorId != null) {
+			String userIdString = authentication.getName();
+			long userId = Long.parseLong(userIdString);
+			User user = usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+			if (user instanceof Student) {
+                return ResponseEntity.ok(quizService.getAllPublicQuizzes());
+            } else {
+            	if (authorId != null) {
 				return ResponseEntity.ok(quizService.getQuizzesByAuthorId(authorId));				
-			} else {
+            	} else {
 				return ResponseEntity.ok(quizService.getAllQuizzes());
-			}
+            	}
+            }
 		} catch (RuntimeException e) {
 			// 500 internal error -> list recovery fails
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

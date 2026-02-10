@@ -26,6 +26,7 @@ export class QuizEditor extends BaseComponent {
 
   get quizTitleInput() { return this.querySelector("#title-input"); }
   get quizDescriptionInput() { return this.querySelector("#description-input"); }
+  get quizIsPublicInput() { return this.querySelector("#is-public-input"); }
   get quizQuestions() { return this.querySelector("#questions"); }
   get quizStats() { return this.querySelector("#stats"); }
 
@@ -59,6 +60,15 @@ export class QuizEditor extends BaseComponent {
                     id="description-input"
                 />
             </div>
+            <div class="mb-4 form-check text-start d-inline-block border p-3 rounded bg-light">
+                <input type="checkbox" class="form-check-input" id="is-public-input">
+                <label class="form-check-label fw-bold" for="is-public-input">
+                    Make Public 🔓
+                </label>
+                <div class="form-text">
+                    If checked, students will see this quiz in their Practice Dashboard.
+                </div>
+            </div>
             <input type="submit" class="btn btn-primary form-control" value="Save changes"></input>
             <div id="quiz-general-info-result"></div>
         </form>
@@ -77,6 +87,9 @@ export class QuizEditor extends BaseComponent {
         const quizData = await this.quizService.getQuizById(this.quizId);
         this.quizTitleInput.value = quizData.title;
         this.quizDescriptionInput.value = quizData.description;
+        if (this.quizIsPublicInput) {
+            this.quizIsPublicInput.checked = quizData.isPublic;
+        }
         this.showQuizQuestions(quizData);
         this.showQuizStats(quizData.quizStats);
     } catch (e) {
@@ -132,21 +145,22 @@ export class QuizEditor extends BaseComponent {
   async handleSaveQuizGeneralInfo() {
     const title = this.querySelector("#title-input").value;
     const description = this.querySelector("#description-input").value;
+    const isPublic = this.querySelector("#is-public-input").checked;
 
     const quizData = {
-        title, description
+        title, description, isPublic
     };
     
     const resultDiv = this.querySelector("#quiz-general-info-result");
     try {
         await this.quizService.modifyQuiz(this.quizId, quizData);
         resultDiv.innerHTML = `
-        <alert-component type="success" message="Quiz modified correctly" timeout="5000"></alert-component>
+        <alert-component type="success" message="Quiz modified correctly" timeout="2000"></alert-component>
         `;
     } catch (e) {
         console.error(e);
         resultDiv.innerHTML = `
-        <alert-component type="danger" message="Error modifying quiz" timeout="5000"></alert-component>
+        <alert-component type="danger" message="Error modifying quiz" timeout="3000"></alert-component>
         `;
     }
   }
