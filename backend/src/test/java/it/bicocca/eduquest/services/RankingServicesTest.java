@@ -29,23 +29,20 @@ class RankingServicesTest {
 
     private List<Student> mockStudents;
 
-    @Mock
     private CompletedQuizzesStrategy quizzesStrategy;
-    @Mock
     private AverageQuizzesScoreStrategy averageStrategy;
-    @Mock
     private CorrectAnswersStrategy answersStrategy;
     
     @BeforeEach
     void setUp() {
-    	lenient().when(quizzesStrategy.getRankingType()).thenReturn("completedQuizzes");
-        lenient().when(averageStrategy.getRankingType()).thenReturn("quizzesScore");
-        lenient().when(answersStrategy.getRankingType()).thenReturn("correctAnswers");
+    	quizzesStrategy = new CompletedQuizzesStrategy(studentsRepository);
+    	averageStrategy = new AverageQuizzesScoreStrategy(studentsRepository);
+    	answersStrategy = new CorrectAnswersStrategy(studentsRepository);
         
         mockStudents = new ArrayList<>();
-        mockStudents.add(createStudent(1L, "Mario", "Rossi", 10, 8.5));
-        mockStudents.add(createStudent(2L, "Luigi", "Verdi", 5, 6.0));
-        mockStudents.add(createStudent(3L, "Peach", "Toadstool", 20, 9.5));
+        mockStudents.add(createStudent(1L, "Mario", "Rossi", 10, 8.5, 5));
+        mockStudents.add(createStudent(2L, "Luigi", "Verdi", 5, 6.0, 4));
+        mockStudents.add(createStudent(3L, "Peach", "Toadstool", 20, 9.5, 3));
         
         List<RankingStrategy> strategies = List.of(quizzesStrategy, averageStrategy, answersStrategy);
         rankingServices = new RankingServices(strategies);
@@ -83,7 +80,7 @@ class RankingServicesTest {
     
     @Test
     void getRankingByCorrectAnswersReturnMappedDTOs() throws StrategyNotFoundException {
-        when(studentsRepository.getRankingByAverageScore()).thenReturn(mockStudents);
+        when(studentsRepository.getRankingByCorrectAnswers()).thenReturn(mockStudents);
 
         List<StudentInfoForRankingDTO> result = rankingServices.getRanking("correctAnswers");
 
@@ -91,16 +88,16 @@ class RankingServicesTest {
 
         StudentInfoForRankingDTO dto1 = result.get(0);
         assertEquals("Mario", dto1.getName());
-        assertEquals(8.5, dto1.getValue()); 
+        assertEquals(5, dto1.getValue()); 
 
-        verify(studentsRepository).getRankingByAverageScore();
+        verify(studentsRepository).getRankingByCorrectAnswers();
     }
 
     @Test
     void buildRankingDTOLimitTo10Entries() throws StrategyNotFoundException {
         List<Student> manyStudents = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
-            manyStudents.add(createStudent((long)i, "S" + i, "Cognome", 5, 5.0));
+            manyStudents.add(createStudent((long)i, "S" + i, "Cognome", 5, 5.0, 5));
         }
 
         when(studentsRepository.getRankingByCompletedQuizzes()).thenReturn(manyStudents);
@@ -122,7 +119,7 @@ class RankingServicesTest {
         assertTrue(result.isEmpty());
     }
 
-    private Student createStudent(Long id, String name, String surname, int quizzes, double avgScore) {
+    private Student createStudent(Long id, String name, String surname, int quizzes, double avgScore, int correctAnswers) {
         Student s = new Student();
         s.setId(id);
         s.setName(name);
@@ -131,6 +128,7 @@ class RankingServicesTest {
         StudentStats stats = new StudentStats();
         stats.setQuizzesCompleted(quizzes);
         stats.setAverageQuizzesScore(avgScore);
+        stats.setTotalCorrectAnswers(correctAnswers);
         s.setStats(stats);
         
         return s;
