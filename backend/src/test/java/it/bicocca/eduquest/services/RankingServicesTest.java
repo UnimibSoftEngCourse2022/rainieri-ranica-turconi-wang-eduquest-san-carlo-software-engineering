@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -18,6 +17,7 @@ import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.domain.users.StudentStats;
 import it.bicocca.eduquest.dto.gamification.StudentInfoForRankingDTO;
 import it.bicocca.eduquest.repository.StudentsRepository;
+import it.bicocca.eduquest.services.ranking.*;
 
 @ExtendWith(MockitoExtension.class)
 class RankingServicesTest {
@@ -25,39 +25,67 @@ class RankingServicesTest {
     @Mock
     private StudentsRepository studentsRepository;
 
-    @InjectMocks
     private RankingServices rankingServices;
 
     private List<Student> mockStudents;
 
+    @Mock
+    private CompletedQuizzesStrategy quizzesStrategy;
+    @Mock
+    private AverageQuizzesScoreStrategy averageStrategy;
+    @Mock
+    private CorrectAnswersStrategy answersStrategy;
+    
     @BeforeEach
     void setUp() {
+    	lenient().when(quizzesStrategy.getRankingType()).thenReturn("completedQuizzes");
+        lenient().when(averageStrategy.getRankingType()).thenReturn("quizzesScore");
+        lenient().when(answersStrategy.getRankingType()).thenReturn("correctAnswers");
+        
         mockStudents = new ArrayList<>();
         mockStudents.add(createStudent(1L, "Mario", "Rossi", 10, 8.5));
         mockStudents.add(createStudent(2L, "Luigi", "Verdi", 5, 6.0));
         mockStudents.add(createStudent(3L, "Peach", "Toadstool", 20, 9.5));
+        
+        List<RankingStrategy> strategies = List.of(quizzesStrategy, averageStrategy, answersStrategy);
+        rankingServices = new RankingServices(strategies);
     }
 
     @Test
-    void getRankingByNumberOfQuizzesCompletedReturnMappedDTOs() {
+    void getRankingByNumberOfQuizzesCompletedReturnMappedDTOs() throws StrategyNotFoundException {
         when(studentsRepository.getRankingByCompletedQuizzes()).thenReturn(mockStudents);
 
-        List<StudentInfoForRankingDTO> result = rankingServices.getRankingByNumberOfQuizzesCompleted();
+        List<StudentInfoForRankingDTO> result = rankingServices.getRanking("completedQuizzes");
 
         assertEquals(3, result.size());
         
         StudentInfoForRankingDTO dto1 = result.get(0);
         assertEquals("Mario", dto1.getName());
-        assertEquals(10.0, dto1.getValue()); 
+        assertEquals(10.0, dto1.getValue());
         
         verify(studentsRepository).getRankingByCompletedQuizzes();
     }
 
     @Test
-    void getRankingByAverageQuizzesScoreReturnMappedDTOs() {
+    void getRankingByAverageQuizzesScoreReturnMappedDTOs() throws StrategyNotFoundException {
         when(studentsRepository.getRankingByAverageScore()).thenReturn(mockStudents);
 
-        List<StudentInfoForRankingDTO> result = rankingServices.getRankingByAverageQuizzesScore();
+        List<StudentInfoForRankingDTO> result = rankingServices.getRanking("quizzesScore");
+
+        assertEquals(3, result.size());
+
+        StudentInfoForRankingDTO dto1 = result.get(0);
+        assertEquals("Mario", dto1.getName());
+        assertEquals(8.5, dto1.getValue()); 
+
+        verify(studentsRepository).getRankingByAverageScore();
+    }
+    
+    @Test
+    void getRankingByCorrectAnswersReturnMappedDTOs() throws StrategyNotFoundException {
+        when(studentsRepository.getRankingByAverageScore()).thenReturn(mockStudents);
+
+        List<StudentInfoForRankingDTO> result = rankingServices.getRanking("correctAnswers");
 
         assertEquals(3, result.size());
 
@@ -69,7 +97,7 @@ class RankingServicesTest {
     }
 
     @Test
-    void buildRankingDTOLimitTo10Entries() {
+    void buildRankingDTOLimitTo10Entries() throws StrategyNotFoundException {
         List<Student> manyStudents = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             manyStudents.add(createStudent((long)i, "S" + i, "Cognome", 5, 5.0));
@@ -77,7 +105,7 @@ class RankingServicesTest {
 
         when(studentsRepository.getRankingByCompletedQuizzes()).thenReturn(manyStudents);
 
-        List<StudentInfoForRankingDTO> result = rankingServices.getRankingByNumberOfQuizzesCompleted();
+        List<StudentInfoForRankingDTO> result = rankingServices.getRanking("completedQuizzes");
 
         assertEquals(10, result.size(), "La classifica deve essere limitata a 10 elementi");
         assertEquals("S0", result.get(0).getName()); 
@@ -85,10 +113,10 @@ class RankingServicesTest {
     }
 
     @Test
-    void getRankingHandleEmptyList() {
+    void getRankingHandleEmptyList() throws StrategyNotFoundException {
         when(studentsRepository.getRankingByCompletedQuizzes()).thenReturn(Collections.emptyList());
 
-        List<StudentInfoForRankingDTO> result = rankingServices.getRankingByNumberOfQuizzesCompleted();
+        List<StudentInfoForRankingDTO> result = rankingServices.getRanking("completedQuizzes");
 
         assertNotNull(result);
         assertTrue(result.isEmpty());

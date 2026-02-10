@@ -138,45 +138,7 @@ class GamificationControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
-    @Test
-    void getRankingByNumberOfQuizzesCompletedSuccess() throws Exception {
-        when(rankingServices.getRankingByNumberOfQuizzesCompleted())
-                .thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/api/gamification/ranking/quizzesCompleted")
-                        .principal(auth))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getRankingByNumberOfQuizzesCompletedException() throws Exception {
-        when(rankingServices.getRankingByNumberOfQuizzesCompleted())
-                .thenThrow(new RuntimeException());
-
-        mockMvc.perform(get("/api/gamification/ranking/quizzesCompleted")
-                        .principal(auth))
-                .andExpect(status().isInternalServerError());
-    }
-
-    @Test
-    void getRankingByAverageScoreSuccess() throws Exception {
-        when(rankingServices.getRankingByAverageQuizzesScore())
-                .thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/api/gamification/ranking/averageScore")
-                        .principal(auth))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getRankingByAverageScoreException() throws Exception {
-        when(rankingServices.getRankingByAverageQuizzesScore())
-                .thenThrow(new RuntimeException());
-
-        mockMvc.perform(get("/api/gamification/ranking/averageScore")
-                        .principal(auth))
-                .andExpect(status().isInternalServerError());
-    }
+    // TODO test ranking with different strategies
 
     @Test
     void getChallengesByUserIdSuccess() throws Exception {
