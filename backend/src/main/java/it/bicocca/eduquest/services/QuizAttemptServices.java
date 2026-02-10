@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import it.bicocca.eduquest.dto.multimedia.*;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 
 @Service
 @Transactional
@@ -51,7 +52,7 @@ public class QuizAttemptServices {
 	public QuizAttemptDTO getQuizAttemptById(long id, long userId) {
 		QuizAttempt quizAttempt = quizAttemptsRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find quiz attempt with the given ID"));
 		if (quizAttempt.getStudent().getId() != userId) {
-			throw new RuntimeException("Not authorized");
+			throw new AccessDeniedException("Not authorized");
 		}
 		return new QuizAttemptDTO(quizAttempt.getId(), quizAttempt.getQuiz().getId(), quizAttempt.getQuiz().getTitle(), 
 				   quizAttempt.getStudent().getId(), quizAttempt.getStudent().getName(), 

@@ -17,7 +17,7 @@ enum RankingType {
 @Service
 public class RankingServices {
 	private StudentsRepository studentsRepository;
-	private static final int ranking_dimension = 10;
+	private static final int RANKING_DIMENSION = 10;
 	
 	public RankingServices(StudentsRepository studentsRepository) {
 		this.studentsRepository = studentsRepository;
@@ -37,7 +37,7 @@ public class RankingServices {
 		List<StudentInfoForRankingDTO> ranking = new ArrayList<>();
 		int currentPosition = 0;
 		for (Student student : students) {
-			if (currentPosition >= ranking_dimension) {
+			if (currentPosition >= RANKING_DIMENSION) {
 				break;
 			}
 			
