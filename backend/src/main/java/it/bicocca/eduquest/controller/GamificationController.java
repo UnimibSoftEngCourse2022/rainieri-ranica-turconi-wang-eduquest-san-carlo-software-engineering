@@ -103,7 +103,7 @@ public class GamificationController {
 		try {
 			return ResponseEntity.ok(rankingServices.getRankingByCorrectAnswers());
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(INTERNAL_SERVER_ERROR);
 		}
 	}
 	
