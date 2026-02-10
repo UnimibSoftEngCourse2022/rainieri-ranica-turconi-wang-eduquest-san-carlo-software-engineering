@@ -92,6 +92,7 @@ public class QuizAttemptServices {
 	            .findByStudentAndStatus(user, QuizAttemptStatus.STARTED);
 		
 		QuizAttempt quizAttempt;
+		boolean isResumed = false;
 		
 		if (activeAttemptOpt.isPresent()) {
 			QuizAttempt existing = activeAttemptOpt.get(); 
@@ -104,6 +105,7 @@ public class QuizAttemptServices {
                         (testId != null && existingTestId != null && testId.equals(existingTestId));
 				if (isSameContext) {
 		            quizAttempt = existing;
+		            isResumed = true;
 		        } else {
 		            throw new IllegalStateException("You already have a " + (existingTestId == null ? "Practice Quiz" : "Test") + " in progress for this content. Please finish it first.");
 		        }
@@ -133,7 +135,7 @@ public class QuizAttemptServices {
 			existingAnswersDTO.add(convertAnswerToDTO(a));
 		}
 		
-		return new QuizSessionDTO(quizAttempt.getId(), quizAttempt.getQuiz().getTitle(), quizAttempt.getQuiz().getDescription(), safeQuestionsDTO, existingAnswersDTO);
+		return new QuizSessionDTO(quizAttempt.getId(), quizAttempt.getQuiz().getTitle(), quizAttempt.getQuiz().getDescription(), isResumed, safeQuestionsDTO, existingAnswersDTO);
 	}
 	
 	public QuizSessionDTO getQuizSession(long quizAttemptId) {
@@ -148,7 +150,7 @@ public class QuizAttemptServices {
 			existingAnswersDTO.add(convertAnswerToDTO(a));
 		}
 		
-		return new QuizSessionDTO(quizAttempt.getId(), quiz.getTitle(), quiz.getDescription(), safeQuestionsDTO, existingAnswersDTO);
+		return new QuizSessionDTO(quizAttempt.getId(), quiz.getTitle(), quiz.getDescription(), true, safeQuestionsDTO, existingAnswersDTO);
 	}
 	
 
