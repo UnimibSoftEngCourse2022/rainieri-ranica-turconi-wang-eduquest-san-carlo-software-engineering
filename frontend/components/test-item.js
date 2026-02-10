@@ -102,13 +102,22 @@ export class TestItem extends BaseComponent {
 
   async handleButtonClick(event) {
     if (this._role === "TEACHER") {
-        if (confirm("Are you sure you want to delete this test?")) {
-            try {
-                await this.testsService.deleteTest(this._testData.id);
-                this.dispatchEvent(new CustomEvent("test-deleted", { bubbles: true, composed: true }));
-            } catch (e) {
-                console.error(e);
-            }
+        const btn = event.target;
+        if (btn.dataset.confirm !== "true") {
+            btn.dataset.confirm = "true";
+            btn.textContent = "Confirm delete?";
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-warning", "text-dark");
+            return;
+        }
+        try {
+            btn.textContent = "Deleting...";
+            btn.disabled = true;
+            await this.testsService.deleteTest(this._testData.id);
+            this.remove();
+            this.dispatchEvent(new CustomEvent("test-deleted", { bubbles: true, composed: true }));
+        } catch (e) {
+            console.error(e);
         }
     } else {
         const studentId = this.getStudentId();

@@ -21,6 +21,7 @@ public interface QuizAttemptsRepository extends JpaRepository<QuizAttempt, Long>
 	Optional<QuizAttempt> findByStudentAndStatus(User student, QuizAttemptStatus status);
 	List<QuizAttempt> findByStudentId(Long studentId);
 	List<QuizAttempt> findByStudentIdAndTestId(Long studentId, Long testId);
+	List<QuizAttempt> findByTest(Test test);
 	
 	long countByStudentAndTest(User student, Test test);
 

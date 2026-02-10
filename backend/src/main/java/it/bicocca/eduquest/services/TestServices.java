@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.bicocca.eduquest.domain.answers.QuizAttempt;
 import it.bicocca.eduquest.domain.quiz.Quiz;
@@ -132,9 +133,12 @@ public class TestServices {
         return dto;
     }
     
+    @Transactional
     public void deleteTest(long testId) {
-        if (!testRepository.existsById(testId)) {
-            throw new IllegalArgumentException("Test with ID " + testId + " not found.");
+    	Test test = testRepository.findById(testId).orElseThrow(() -> new IllegalArgumentException("Test not found"));
+    	List<QuizAttempt> attempts = quizAttemptsRepository.findByTest(test);
+        if (!attempts.isEmpty()) {
+        	quizAttemptsRepository.deleteAll(attempts);
         }
         testRepository.deleteById(testId);
     }

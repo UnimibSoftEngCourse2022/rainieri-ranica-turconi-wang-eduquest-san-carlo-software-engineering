@@ -122,6 +122,10 @@ export class TestsViewer extends BaseComponent {
           }
           testItem.setAttribute("role", this.role);
 
+          testItem.addEventListener("test-deleted", () => {
+              this.loadData();
+          });
+
           container.appendChild(testItem);
       });
   }
