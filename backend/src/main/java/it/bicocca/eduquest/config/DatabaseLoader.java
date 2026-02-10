@@ -2,6 +2,7 @@ package it.bicocca.eduquest.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value; 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -17,13 +18,18 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseLoader.class);
 
-	private final UsersRepository usersRepository;
+    private final UsersRepository usersRepository;
     private final QuizRepository quizRepository;
     private final QuestionsRepository questionsRepository;
     private final MissionsRepository missionsRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DatabaseLoader(UsersRepository usersRepository, QuizRepository quizRepository, QuestionsRepository questionsRepository, PasswordEncoder passwordEncoder, MissionsRepository missionsRepository) {
+    @Value("${app.default.password}")
+    private String defaultPassword;
+
+    public DatabaseLoader(UsersRepository usersRepository, QuizRepository quizRepository, 
+                          QuestionsRepository questionsRepository, PasswordEncoder passwordEncoder, 
+                          MissionsRepository missionsRepository) {
         this.usersRepository = usersRepository;
         this.quizRepository = quizRepository;
         this.questionsRepository = questionsRepository;
@@ -38,11 +44,12 @@ public class DatabaseLoader implements CommandLineRunner {
 
         logger.info("Test database population in progress...");
         
-        String criptedPassword = passwordEncoder.encode("0000");
+        String criptedPassword = passwordEncoder.encode(defaultPassword);
 
         Teacher teacher = new Teacher("Mario", "Rossi", "mario.rossi@unimib.it", criptedPassword);
         usersRepository.save(teacher);
 
+        // ... resto del codice identico ...
         Teacher teacher1 = new Teacher("Francesco", "Ferrari", "francesco.ferrari@unimib.it", criptedPassword);
         usersRepository.save(teacher1);
         
