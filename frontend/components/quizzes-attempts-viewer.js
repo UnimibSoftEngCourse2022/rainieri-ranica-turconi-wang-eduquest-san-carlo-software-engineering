@@ -25,8 +25,8 @@ export class QuizzesAttemptsViewer extends BaseComponent {
   render() {
     this.innerHTML = `
     <collapsible-panel title=" " open>
-      <input class="form-check-input" type="checkbox" value="1" id="show-only-in-progress-attempts">
-      <label class="form-check-label" for="show-only-in-progress-attempts" checked>
+      <input class="form-check-input" type="checkbox" value="1" id="show-only-in-progress-attempts" checked>
+      <label class="form-check-label" for="show-only-in-progress-attempts">
         Show only in progress attempts
       </label>
       <div id="quizzes-attempts" class="container">Loading...</div>

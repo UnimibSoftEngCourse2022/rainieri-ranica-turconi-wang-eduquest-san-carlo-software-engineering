@@ -17,7 +17,7 @@ export class ChallengesViewer extends BaseComponent {
   render() {
     this.innerHTML = `
     <collapsible-panel title=" " open>
-      <input class="form-check-input" type="checkbox" value="1" id="show-only-active-challenges">
+      <input class="form-check-input" type="checkbox" value="1" id="show-only-active-challenges" checked>
       <label class="form-check-label" for="show-only-active-challenges" checked>
         Show only in progress challenges
       </label>

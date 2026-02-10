@@ -85,7 +85,6 @@ export class TestItem extends BaseComponent {
           const myAttempts = await this.testsService.getMyAttempts(this._testData.id);
           
           if (myAttempts && Array.isArray(myAttempts) && myAttempts.length > 0) {
-              
               const count = myAttempts.length;
               const sumScore = myAttempts.reduce((acc, curr) => acc + (curr.score || 0), 0);
               const avg = sumScore / count;
@@ -93,7 +92,15 @@ export class TestItem extends BaseComponent {
               const statsEl = this.querySelector(`#stats-test-${this._testData.id}`);
               if (statsEl) {
                   statsEl.innerHTML = `Average score: ${avg.toFixed(2)} | Total attempts: ${count}`;
-                  }
+              }
+
+              if (myAttempts.length >= this._testData.maxTries) {
+                const runButton = this.querySelector(`#btn-test-${this._testData.id}`);
+                runButton.innerHTML = `No attempts left`;
+                runButton.disabled = true;
+              } else {
+                runButton.disabled = false;
+              }
           }
       } catch (e) {
           console.error(e);

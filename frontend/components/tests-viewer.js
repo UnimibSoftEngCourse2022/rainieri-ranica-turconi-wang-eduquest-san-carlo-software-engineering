@@ -24,6 +24,8 @@ export class TestsViewer extends BaseComponent {
         this.loadData();
     });
 
+    this.addEventListenerWithTracking("#show-only-tests-with-attempts-left", "click", () => this.loadData());
+
     const searchInput = this.querySelector("#search-input");
     if (searchInput) {
         searchInput.addEventListener("input", (e) => {
@@ -49,6 +51,10 @@ export class TestsViewer extends BaseComponent {
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
+            <input class="form-check-input" type="checkbox" value="1" id="show-only-tests-with-attempts-left" checked>
+            <label class="form-check-label" for="show-only-tests-with-attempts-left" checked>
+                Show only tests with attempts left
+            </label>
             <div id="message-container"></div>
             <div class="row g-4 justify-content-center" id="tests-container"></div>
         </div>
@@ -62,15 +68,18 @@ export class TestsViewer extends BaseComponent {
     
     try {
         const tests = await this.fetchTests();
-        this.allTests = tests || [];
+        this.allTests = tests;
 
         if (loader) loader.style.display = "none";
         if (messageContainer) messageContainer.innerHTML = "";
 
+        const showOnlyTestsWithAttemptsLeft = this.querySelector("#show-only-tests-with-attempts-left").checked;
+        const testsToDisplay = this.allTests.filter(test => !showOnlyTestsWithAttemptsLeft || test.testTotalAttempts < test.maxTries);
+
         if (this.allTests.length === 0) {
             this.showEmptyState(messageContainer);
         } else {
-            this.displayTests(this.allTests);
+            this.displayTests(testsToDisplay);
         }
     } catch (e) {
         console.error(e);
