@@ -1,6 +1,4 @@
-const EMAIL_INPUT_TAG_ID = "email-input";
-const PASSWORD_INPUT_TAG_ID = "password-input";
-const LOGIN_RESULT_TAG_ID = "login-result";
+import { UsersService } from "../services/users-service.js";
 
 const LOGIN_ENDPOINT_URL = "http://localhost:8080/api/auth/login";
 
@@ -10,39 +8,35 @@ const LOGIN_ERROR_DIV =
 const STUDENT_ROLE = "STUDENT";
 const TEACHER_ROLE = "TEACHER";
 
+const usersService = new UsersService();
+
+const loginForm = document.querySelector("#login-form");
+loginForm.addEventListener("submit", (event) => handleLoginSubmit(event));
+
 const handleLoginSubmit = async (event) => {
   event.preventDefault();
 
-  const email = document.getElementById(EMAIL_INPUT_TAG_ID).value;
-  const password = document.getElementById(PASSWORD_INPUT_TAG_ID).value;
+  const email = document.getElementById("email-input").value;
+  const password = document.getElementById("password-input").value;
 
-  const requestBody = { email: email, password: password };
-  const response = await fetch(LOGIN_ENDPOINT_URL, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestBody),
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    const jwtToken = data.token;
+  try {
+    const response = await usersService.login(email, password);
+    const jwtToken = response.token;
     globalThis.localStorage.setItem("token", jwtToken);
 
     let destination;
-    if (data.role == STUDENT_ROLE) {
+    if (response.role == STUDENT_ROLE) {
       destination = "../student-dashboard/";
-    } else if (data.role == TEACHER_ROLE) {
+    } else if (response.role == TEACHER_ROLE) {
       destination = "../teacher-dashboard/";
     }
     globalThis.location = destination;
-  } else {
-      const resultDiv = document.getElementById(LOGIN_RESULT_TAG_ID);
-      resultDiv.innerHTML = LOGIN_ERROR_DIV;
-      setTimeout(() => {
-          resultDiv.innerHTML = "";
-      }, 3000);
+  } catch (e) {
+    console.error(e);
+    const resultDiv = document.getElementById("login-result");
+    resultDiv.innerHTML = LOGIN_ERROR_DIV;
+    setTimeout(() => {
+        resultDiv.innerHTML = "";
+    }, 3000);
   }
 };

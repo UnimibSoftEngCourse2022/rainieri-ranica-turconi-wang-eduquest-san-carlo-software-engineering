@@ -1,6 +1,6 @@
 app:
   default:
-    password: "password123"
+    password: "0000"
     username: "test_student"
 
 spring:

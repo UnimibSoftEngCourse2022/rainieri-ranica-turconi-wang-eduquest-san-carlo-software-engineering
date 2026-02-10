@@ -42,4 +42,19 @@ export class UsersService {
             throw new Error(e);
         }
     }
+
+    async login(email, password) {
+        try {
+            const requestBody = { email: email, password: password };
+            const response = await callApi(`${endpoints.auth.login}`, "POST", requestBody);
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(errorBody);
+            }
+            const responseData = await response.json();
+            return responseData;
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
 }
