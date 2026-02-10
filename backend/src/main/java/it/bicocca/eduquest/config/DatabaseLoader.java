@@ -1,5 +1,7 @@
 package it.bicocca.eduquest.config;
 
+import java.time.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value; 
@@ -22,6 +24,7 @@ public class DatabaseLoader implements CommandLineRunner {
     private final QuizRepository quizRepository;
     private final QuestionsRepository questionsRepository;
     private final MissionsRepository missionsRepository;
+    private final TestRepository testRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.default.password}")
@@ -29,12 +32,13 @@ public class DatabaseLoader implements CommandLineRunner {
 
     public DatabaseLoader(UsersRepository usersRepository, QuizRepository quizRepository, 
                           QuestionsRepository questionsRepository, PasswordEncoder passwordEncoder, 
-                          MissionsRepository missionsRepository) {
+                          MissionsRepository missionsRepository, TestRepository testRepository) {
         this.usersRepository = usersRepository;
         this.quizRepository = quizRepository;
         this.questionsRepository = questionsRepository;
         this.passwordEncoder = passwordEncoder;
         this.missionsRepository = missionsRepository;
+        this.testRepository = testRepository;
     }
 
     @Override
@@ -49,7 +53,6 @@ public class DatabaseLoader implements CommandLineRunner {
         Teacher teacher = new Teacher("Mario", "Rossi", "mario.rossi@unimib.it", criptedPassword);
         usersRepository.save(teacher);
 
-        // ... resto del codice identico ...
         Teacher teacher1 = new Teacher("Francesco", "Ferrari", "francesco.ferrari@unimib.it", criptedPassword);
         usersRepository.save(teacher1);
         
@@ -77,22 +80,120 @@ public class DatabaseLoader implements CommandLineRunner {
         q3.addAnswer(new OpenQuestionAcceptedAnswer("Dante Alighieri"));
         q3.addAnswer(new OpenQuestionAcceptedAnswer("Alighieri"));
         questionsRepository.save(q3);
+        
+        ClosedQuestion q4 = new ClosedQuestion("Qual è il simbolo chimico dell'Ossigeno?", "Chimica", teacher, Difficulty.EASY);
+        q4.addOption(new ClosedQuestionOption("O", true));
+        q4.addOption(new ClosedQuestionOption("Ox", false));
+        q4.addOption(new ClosedQuestionOption("Os", false));
+        questionsRepository.save(q4);
+
+        OpenQuestion q5 = new OpenQuestion("In che anno è stata scoperta l'America?", "Storia", teacher, Difficulty.MEDIUM);
+        q5.addAnswer(new OpenQuestionAcceptedAnswer("1492"));
+        questionsRepository.save(q5);
+
+        ClosedQuestion q6 = new ClosedQuestion("Quale pianeta è noto come il Pianeta Rosso?", "Astronomia", teacher, Difficulty.EASY);
+        q6.addOption(new ClosedQuestionOption("Marte", true));
+        q6.addOption(new ClosedQuestionOption("Giove", false));
+        q6.addOption(new ClosedQuestionOption("Venere", false));
+        questionsRepository.save(q6);
+
+        OpenQuestion q7 = new OpenQuestion("Qual è il fiume più lungo d'Italia?", "Geografia", teacher1, Difficulty.MEDIUM);
+        q7.addAnswer(new OpenQuestionAcceptedAnswer("Po"));
+        q7.addAnswer(new OpenQuestionAcceptedAnswer("Il Po"));
+        questionsRepository.save(q7);
+
+        ClosedQuestion q8 = new ClosedQuestion("Qual è la formulazione corretta della Seconda Legge della Dinamica?", "Fisica", teacher1, Difficulty.HARD);
+        q8.addOption(new ClosedQuestionOption("F = m * a", true));
+        q8.addOption(new ClosedQuestionOption("F = m / a", false));
+        q8.addOption(new ClosedQuestionOption("F = m * v", false));
+        q8.addOption(new ClosedQuestionOption("F = m * a^2", false));
+        questionsRepository.save(q8);
+
+        OpenQuestion q9 = new OpenQuestion("Chi ha dipinto la Gioconda?", "Arte", teacher1, Difficulty.MEDIUM);
+        q9.addAnswer(new OpenQuestionAcceptedAnswer("Leonardo"));
+        q9.addAnswer(new OpenQuestionAcceptedAnswer("Leonardo da Vinci"));
+        q9.addAnswer(new OpenQuestionAcceptedAnswer("Da Vinci"));
+        questionsRepository.save(q9);
+
+        ClosedQuestion q10 = new ClosedQuestion("Qual è il participio passato di 'Go'?", "Inglese", teacher1, Difficulty.EASY);
+        q10.addOption(new ClosedQuestionOption("Went", false));
+        q10.addOption(new ClosedQuestionOption("Gone", true));
+        q10.addOption(new ClosedQuestionOption("Goed", false));
+        questionsRepository.save(q10);
+
+        OpenQuestion q11 = new OpenQuestion("Qual è la formula chimica dell'acqua?", "Chimica", teacher1, Difficulty.EASY);
+        q11.addAnswer(new OpenQuestionAcceptedAnswer("H2O"));
+        q11.addAnswer(new OpenQuestionAcceptedAnswer("h2o"));
+        questionsRepository.save(q11);
+
+        ClosedQuestion q12 = new ClosedQuestion("Chi ha scolpito la famosa statua del David?", "Arte", student1, Difficulty.EASY);
+        q12.addOption(new ClosedQuestionOption("Michelangelo Buonarroti", true));
+        q12.addOption(new ClosedQuestionOption("Donatello", false));
+        q12.addOption(new ClosedQuestionOption("Leonardo da Vinci", false));
+        questionsRepository.save(q12);
+
+        OpenQuestion q13 = new OpenQuestion("Chi è soprannominato il Re del Pop?", "Musica", student1, Difficulty.MEDIUM);
+        q13.addAnswer(new OpenQuestionAcceptedAnswer("Michael Jackson"));
+        q13.addAnswer(new OpenQuestionAcceptedAnswer("Jackson"));
+        questionsRepository.save(q13);
+        
+        ClosedQuestion q14 = new ClosedQuestion("Quanti giocatori ci sono in una squadra di calcio in campo?", "Sport", student, Difficulty.EASY);
+        q14.addOption(new ClosedQuestionOption("11", true));
+        q14.addOption(new ClosedQuestionOption("7", false));
+        q14.addOption(new ClosedQuestionOption("5", false));
+        questionsRepository.save(q14);
 
         logger.info("Questions created.");
 
-        Quiz quiz1 = new Quiz("General knowledge Test", "Simple quiz for beginners", teacher);
+        Quiz quiz1 = new Quiz("General Knowledge Quiz", "Test yourself with questions about culture.", teacher);
         quiz1 = quizRepository.save(quiz1);
-        
-        quiz1.addQuestion(q1);
-        quiz1.addQuestion(q2);
+        quiz1.addQuestion(q1); 
         quiz1.addQuestion(q3); 
+        quiz1.addQuestion(q5); 
+        quiz1.addQuestion(q7); 
+        quiz1.addQuestion(q9); 
+        quiz1.addQuestion(q10); 
+        quiz1.addQuestion(q12); 
+        quiz1.addQuestion(q13); 
         quizRepository.save(quiz1);
 
-        Quiz quiz2 = new Quiz("Maths Test", "Only for true experts", teacher);
+        Quiz quiz2 = new Quiz("Science Quiz", "Challenge your scientific knowledge.", teacher1);
         quiz2 = quizRepository.save(quiz2);
-        
-        quiz2.addQuestion(q2);
+        quiz2.addQuestion(q2); 
+        quiz2.addQuestion(q4); 
+        quiz2.addQuestion(q6); 
+        quiz2.addQuestion(q8); 
+        quiz2.addQuestion(q11); 
         quizRepository.save(quiz2);
+        
+        Quiz quiz3 = new Quiz("10 Question Test", "Mixed test.", teacher);
+        quiz3 = quizRepository.save(quiz3);
+        quiz3.addQuestion(q14);
+        quiz3.addQuestion(q1);
+        quiz3.addQuestion(q2);
+        quiz3.addQuestion(q3);
+        quiz3.addQuestion(q4);
+        quiz3.addQuestion(q5);
+        quiz3.addQuestion(q6);
+        quiz3.addQuestion(q7);
+        quiz3.addQuestion(q8);
+        quiz3.addQuestion(q9);
+        quizRepository.save(quiz3);
+        
+        Quiz quiz4 = new Quiz("Short General Quiz", "A quick 5-question challenge.", teacher1);
+        quiz4 = quizRepository.save(quiz4);
+        quiz4.addQuestion(q7);
+        quiz4.addQuestion(q9);
+        quiz4.addQuestion(q10);
+        quiz4.addQuestion(q12);
+        quiz4.addQuestion(q13);
+        quizRepository.save(quiz4);
+        
+        Test test1 = new Test();
+        test1.setQuiz(quiz3);
+        test1.setMaxDuration(Duration.ofMinutes(10));
+        test1.setMaxTries(3);
+        testRepository.save(test1);
         
         Mission mission1 = new QuizzesNumberMission(1);
         missionsRepository.save(mission1);
