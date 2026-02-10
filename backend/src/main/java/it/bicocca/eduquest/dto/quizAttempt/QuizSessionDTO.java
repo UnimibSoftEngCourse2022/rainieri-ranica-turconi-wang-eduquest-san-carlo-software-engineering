@@ -7,6 +7,7 @@ public class QuizSessionDTO {
 	private Long attemptId;
 	private String quizTitle;
 	private String quizDescription;
+	private boolean isResumed;
     private List<QuestionDTO> questions; // "Sanitazed" questions
     
     private List<AnswerDTO> existingAnswers; // Already given answers (empty at first)
@@ -15,12 +16,12 @@ public class QuizSessionDTO {
 		
 	}
 
-	public QuizSessionDTO(Long attemptId, String quizTitle, String quizDescription, List<QuestionDTO> questions,
+	public QuizSessionDTO(Long attemptId, String quizTitle, String quizDescription, boolean isResumed, List<QuestionDTO> questions,
 			List<AnswerDTO> existingAnswers) {
-		super();
 		this.attemptId = attemptId;
 		this.quizTitle = quizTitle;
 		this.quizDescription = quizDescription;
+		this.isResumed = isResumed;
 		this.questions = questions;
 		this.existingAnswers = existingAnswers;
 	}
@@ -63,6 +64,14 @@ public class QuizSessionDTO {
 
 	public void setExistingAnswers(List<AnswerDTO> existingAnswers) {
 		this.existingAnswers = existingAnswers;
+	}
+
+	public boolean isResumed() {
+		return isResumed;
+	}
+
+	public void setResumed(boolean isResumed) {
+		this.isResumed = isResumed;
 	}
     
 }

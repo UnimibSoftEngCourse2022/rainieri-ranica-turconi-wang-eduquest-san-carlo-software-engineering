@@ -121,11 +121,7 @@ export class TestItem extends BaseComponent {
                 if (sessionData.testId && sessionData.testId !== this._testData.id) {
                      throw new Error("You have another Test/Quiz in progress.");
                 }
-                const isResuming = 
-                    (this._testData.attemptStatus === "STARTED") || 
-                    (this._testData.status === "STARTED") ||
-                    (sessionData.existingAnswers && sessionData.existingAnswers.length > 0);
-                if (isResuming) {
+                if (sessionData.resumed) {
                     if (cardBody) {
                         cardBody.insertAdjacentHTML('beforeend', `
                         <alert-component type="danger" message="This test has already started! Resume it from the Dashboard." timeout="3000"></alert-component>`);
