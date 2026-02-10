@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.bicocca.eduquest.domain.quiz.ClosedQuestion;
 import it.bicocca.eduquest.domain.quiz.ClosedQuestionOption;
@@ -17,6 +18,7 @@ import it.bicocca.eduquest.domain.quiz.Quiz;
 import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.domain.users.Teacher;
 import it.bicocca.eduquest.domain.users.User;
+import it.bicocca.eduquest.domain.answers.QuizAttempt;
 import it.bicocca.eduquest.dto.quiz.ClosedQuestionOptionDTO;
 import it.bicocca.eduquest.dto.quiz.QuestionAddDTO;
 import it.bicocca.eduquest.dto.quiz.QuestionDTO;
@@ -113,8 +115,16 @@ public class QuizServices {
 		return new QuizDTO(savedQuiz.getId(), savedQuiz.getTitle(), savedQuiz.getDescription(), savedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO, quiz.getDifficulty(), savedQuiz.isPublic());
 	}
 	
+	@Transactional
 	public QuizDTO editQuiz(long quizId, QuizEditDTO quizEditDTO, long userIdFromRequest) {
 		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
+		
+		if (quiz.isPublic() && !quizEditDTO.isPublic()) {
+            List<QuizAttempt> attempts = quizAttemptsRepository.findByQuiz(quiz);
+            if (!attempts.isEmpty()) {
+                quizAttemptsRepository.deleteAll(attempts);
+            }
+        }
 		
 		if (!quiz.getAuthor().getId().equals(userIdFromRequest)) {
 			throw new IllegalStateException("You cannot edit quiz from another author!");
