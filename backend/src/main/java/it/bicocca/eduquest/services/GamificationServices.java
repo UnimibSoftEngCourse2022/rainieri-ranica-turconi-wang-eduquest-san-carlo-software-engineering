@@ -1,26 +1,28 @@
 package it.bicocca.eduquest.services;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.bicocca.eduquest.domain.answers.QuizAttempt;
+import it.bicocca.eduquest.domain.gamification.Badge;
+import it.bicocca.eduquest.domain.gamification.ChallengeNumberMission;
 import it.bicocca.eduquest.domain.gamification.Mission;
 import it.bicocca.eduquest.domain.gamification.MissionProgress;
 import it.bicocca.eduquest.domain.users.Student;
-import it.bicocca.eduquest.dto.gamification.*;
+import it.bicocca.eduquest.dto.gamification.BadgeDTO;
+import it.bicocca.eduquest.dto.gamification.MissionDTO;
+import it.bicocca.eduquest.dto.gamification.MissionProgressDTO;
+import it.bicocca.eduquest.repository.BadgeRepository;
 import it.bicocca.eduquest.repository.MissionsProgressesRepository;
 import it.bicocca.eduquest.repository.MissionsRepository;
-import it.bicocca.eduquest.repository.BadgeRepository;
-import it.bicocca.eduquest.domain.gamification.ChallengeNumberMission;
-import it.bicocca.eduquest.domain.gamification.Badge;
 
 @Service
 public class GamificationServices {
