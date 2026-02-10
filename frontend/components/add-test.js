@@ -106,6 +106,9 @@ export class AddTest extends BaseComponent {
         this.addTestResult.innerHTML = `
         <alert-component type="success" message="Test created successfully" timeout="2000"></alert-component>
         `
+        this.querySelector("#test-quiz-select").value = "";
+        this.querySelector("#test-time-input").value = "";
+        this.querySelector("#test-attempts-input").value = "";
         this.dispatchCustomEvent("test-created");
     } catch (e) {
         console.error(e);
