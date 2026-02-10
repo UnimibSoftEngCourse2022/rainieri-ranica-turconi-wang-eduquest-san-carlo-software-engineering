@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,12 +20,16 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import it.bicocca.eduquest.domain.multimedia.MultimediaType; 
 import it.bicocca.eduquest.domain.multimedia.ImageSupport;
+import it.bicocca.eduquest.domain.multimedia.VideoSupport;
 import it.bicocca.eduquest.domain.quiz.Difficulty;
 import it.bicocca.eduquest.domain.quiz.ClosedQuestion;
 import it.bicocca.eduquest.domain.quiz.ClosedQuestionOption;
 import it.bicocca.eduquest.domain.quiz.OpenQuestion;
+import it.bicocca.eduquest.domain.quiz.OpenQuestionAcceptedAnswer;
 import it.bicocca.eduquest.domain.quiz.Question;
+import it.bicocca.eduquest.domain.quiz.QuestionStats;
 import it.bicocca.eduquest.domain.quiz.Quiz;
+import it.bicocca.eduquest.domain.quiz.QuizStats;
 import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.domain.users.Teacher;
 import it.bicocca.eduquest.dto.quiz.ClosedQuestionOptionDTO;
@@ -124,15 +130,36 @@ class QuizServicesTest {
 
     @Test
     void getQuizByIdReturnDtoWithStats() {
-        when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
-        when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quiz)).thenReturn(8.5);
-        when(quizAttemptsRepository.countByQuizAndTestIsNull(quiz)).thenReturn(10L);
+        QuizStats quizStats = mock(QuizStats.class);
+        Map<Long, QuestionStats> statsMap = new HashMap<>();
+        
+        QuestionStats qStats = mock(QuestionStats.class);
+        when(qStats.getAverageSuccess()).thenReturn(0.8);
+        when(qStats.getTotalAnswers()).thenReturn(50);
+        when(qStats.getCorrectAnswer()).thenReturn(40);
+        
+        statsMap.put(100L, qStats);
+        when(quizStats.getStatsPerQuestion()).thenReturn(statsMap);
+        
+        Quiz quizWithStats = mock(Quiz.class);
+        when(quizWithStats.getId()).thenReturn(10L);
+        when(quizWithStats.getTitle()).thenReturn("Title");
+        when(quizWithStats.getDescription()).thenReturn("Desc");
+        when(quizWithStats.getAuthor()).thenReturn(teacher);
+        when(quizWithStats.getDifficulty()).thenReturn(Difficulty.EASY);
+        when(quizWithStats.getStats()).thenReturn(quizStats);
+        when(quizWithStats.getQuestions()).thenReturn(new ArrayList<>());
+
+        when(quizRepository.findById(10L)).thenReturn(Optional.of(quizWithStats));
+        when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quizWithStats)).thenReturn(8.5);
+        when(quizAttemptsRepository.countByQuizAndTestIsNull(quizWithStats)).thenReturn(10L);
 
         QuizDTO result = quizServices.getQuizById(10L);
 
         assertNotNull(result);
         assertEquals(10L, result.getId());
         assertEquals(8.5, result.getQuizStats().getAverageScore());
+        assertTrue(result.getQuizStats().getStatsPerQuestion().containsKey(100L));
     }
 
     @Test
@@ -594,6 +621,34 @@ class QuizServicesTest {
     }
 
     @Test
+    void getQuizForStudentWithMultimediaAndOpenQuestion() {
+        OpenQuestion q = new OpenQuestion("QOpen", "Topic", teacher, Difficulty.EASY);
+        q.setId(300L);
+        q.addAnswer(new OpenQuestionAcceptedAnswer("Answer"));
+        
+        VideoSupport vid = new VideoSupport();
+        vid.setUrl("link");
+        vid.setIsYoutube(true);
+        q.setMultimedia(vid);
+        
+        quiz.addQuestion(q);
+
+        when(usersRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(quizRepository.findById(10L)).thenReturn(Optional.of(quiz));
+        when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(any())).thenReturn(0.0);
+        when(quizAttemptsRepository.countByQuizAndTestIsNull(any())).thenReturn(0L);
+
+        QuizDTO result = quizServices.getQuizForStudent(10L, 2L);
+
+        assertNotNull(result);
+        assertEquals(1, result.getQuestions().size());
+        QuestionDTO qDto = result.getQuestions().get(0);
+        assertEquals(QuestionType.OPENED, qDto.getQuestionType());
+        assertNotNull(qDto.getMultimedia());
+        assertTrue(qDto.getMultimedia().getIsYoutube());
+    }
+
+    @Test
     void getQuizForStudentNotStudent() {
         when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
         assertThrows(IllegalArgumentException.class, () -> quizServices.getQuizForStudent(10L, 1L));
@@ -642,18 +697,32 @@ class QuizServicesTest {
     }
 
     @Test
-    void getAllQuestionsReturnAll() {
+    void getAllQuestionsReturnAllWithDetails() {
         when(usersRepository.findById(1L)).thenReturn(Optional.of(teacher));
         
-        Question q = new OpenQuestion("Q1", "T", teacher, Difficulty.EASY);
-        q.setId(10L);
-        when(questionsRepository.findAll()).thenReturn(List.of(q));
+        OpenQuestion q1 = new OpenQuestion("Q1", "T", teacher, Difficulty.EASY);
+        q1.setId(10L);
+        q1.setQuestionType(QuestionType.OPENED);
+        q1.addAnswer(new OpenQuestionAcceptedAnswer("Ans1"));
+        
+        ClosedQuestion q2 = new ClosedQuestion("Q2", "T", teacher, Difficulty.MEDIUM);
+        q2.setId(20L);
+        q2.setQuestionType(QuestionType.CLOSED);
+        q2.addOption(new ClosedQuestionOption("Opt1", true));
+        
+        when(questionsRepository.findAll()).thenReturn(List.of(q1, q2));
 
         List<QuestionDTO> result = quizServices.getAllQuestions(1L);
 
-        assertEquals(1, result.size());
-        verify(questionsRepository).findAll();
-        verify(questionsRepository, never()).findByAuthorId(anyLong());
+        assertEquals(2, result.size());
+        
+        QuestionDTO dto1 = result.stream().filter(d -> d.getId() == 10L).findFirst().get();
+        assertFalse(dto1.getValidAnswersOpenQuestion().isEmpty());
+        assertEquals("Ans1", dto1.getValidAnswersOpenQuestion().get(0));
+        
+        QuestionDTO dto2 = result.stream().filter(d -> d.getId() == 20L).findFirst().get();
+        assertFalse(dto2.getClosedQuestionOptions().isEmpty());
+        assertEquals("Opt1", dto2.getClosedQuestionOptions().get(0).getText());
     }
 
     @Test
