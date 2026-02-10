@@ -34,7 +34,10 @@ export class Quiz extends BaseComponent {
     <div class="card my-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e0e0e0; background-color: #fcfcfc;">
         <div class="card-body d-flex flex-column align-items-center p-3">
             
-            <h3 class="card-title mb-3 fw-normal">${this._quizData.title}</h3>
+            <h3 class="card-title mb-3 fw-normal">
+                ${this._quizData.title}
+                <span class="text-muted" style="font-size: 0.6em; vertical-align: middle;">#${this._quizData.id}</span>
+            </h3>
             
             <div class="mb-4 text-center text-muted">
                 ${this._quizData.description || "No description available"}
@@ -43,7 +46,6 @@ export class Quiz extends BaseComponent {
             <div class="mb-2">
                 <button id="${btnId}" class="btn btn-primary px-4">${buttonText}</button>
             </div>
-            
             <div style="border-top: 1px solid rgba(0,0,0,0.1); width: 100%; margin-top: 20px; padding-top: 15px;">
                 <div class="text-muted small text-center" style="white-space: nowrap;">
                     Average score: ${Number(avgScore).toFixed(2)} | Total attempts: ${totalAttempts}
