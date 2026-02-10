@@ -82,7 +82,7 @@ public class GamificationController {
     }
 	
 	@GetMapping("/ranking")
-	public ResponseEntity<Object> getRankingNumberOfQuizzesCompleted(@RequestParam String rankingType, Authentication authentication) {
+	public ResponseEntity<Object> getRanking(@RequestParam String rankingType, Authentication authentication) {
 		try {
             return ResponseEntity.ok(rankingServices.getRanking(rankingType));
         } catch (StrategyNotFoundException e) {
