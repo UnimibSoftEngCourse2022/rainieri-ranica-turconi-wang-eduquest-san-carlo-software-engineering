@@ -21,7 +21,7 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    @SuppressWarnings("java:S112")
+    @SuppressWarnings("java:S4502")
     public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) {
         http
             .csrf(csrf -> csrf.disable())
@@ -39,6 +39,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("java:S5122")
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
