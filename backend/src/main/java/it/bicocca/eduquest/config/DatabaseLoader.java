@@ -65,7 +65,6 @@ public class DatabaseLoader implements CommandLineRunner {
         
         String criptedPassword = passwordEncoder.encode(defaultPassword);
 
-        // --- UTENTI ---
         Teacher teacher = new Teacher("Mario", "Rossi", "mario.rossi@unimib.it", criptedPassword);
         usersRepository.save(teacher);
 
@@ -78,11 +77,9 @@ public class DatabaseLoader implements CommandLineRunner {
         Student student1 = new Student("Francesco", "Brembilla", "f.brembilla@campus.unimib.it", criptedPassword);
         usersRepository.save(student1);
         
-        // NUOVO STUDENTE (Student2)
         Student student2 = new Student("Anna", "Verdi", "a.verdi@campus.unimib.it", criptedPassword);
         usersRepository.save(student2);
         
-        // --- DOMANDE ---
         ClosedQuestion q1 = new ClosedQuestion("Qual è la capitale d'Italia?", "Geografia", teacher, Difficulty.EASY);
         ClosedQuestionOption q1OptCorrect = new ClosedQuestionOption("Roma", true);
         q1.addOption(new ClosedQuestionOption("Milano", false));
@@ -172,9 +169,8 @@ public class DatabaseLoader implements CommandLineRunner {
 
         logger.info("Questions created.");
 
-        // --- QUIZ ---
         Quiz quiz1 = new Quiz("General Knowledge Quiz", "Test yourself with questions about culture.", teacher);
-        quiz1.setPublic(true); // SET PUBLIC
+        quiz1.setPublic(true);
         quiz1 = quizRepository.save(quiz1);
         quiz1.addQuestion(q1); 
         quiz1.addQuestion(q3); 
@@ -187,7 +183,7 @@ public class DatabaseLoader implements CommandLineRunner {
         quizRepository.save(quiz1);
 
         Quiz quiz2 = new Quiz("Science Quiz", "Challenge your scientific knowledge.", teacher1);
-        quiz2.setPublic(true); // SET PUBLIC
+        quiz2.setPublic(true);
         quiz2 = quizRepository.save(quiz2);
         quiz2.addQuestion(q2); 
         quiz2.addQuestion(q4); 
@@ -197,7 +193,6 @@ public class DatabaseLoader implements CommandLineRunner {
         quizRepository.save(quiz2);
         
         Quiz quiz3 = new Quiz("10 Question Test", "Mixed test.", teacher);
-        // quiz3 rimane privato o come default per il test vincolato
         quiz3 = quizRepository.save(quiz3);
         quiz3.addQuestion(q14);
         quiz3.addQuestion(q1);
@@ -212,7 +207,7 @@ public class DatabaseLoader implements CommandLineRunner {
         quizRepository.save(quiz3);
         
         Quiz quiz4 = new Quiz("Short General Quiz", "A quick 5-question challenge.", teacher1);
-        quiz4.setPublic(true); // SET PUBLIC
+        quiz4.setPublic(true);
         quiz4 = quizRepository.save(quiz4);
         quiz4.addQuestion(q7);
         quiz4.addQuestion(q9);
@@ -227,8 +222,6 @@ public class DatabaseLoader implements CommandLineRunner {
         test1.setMaxTries(3);
         testRepository.save(test1);
         
-        // --- ATTEMPTS ---
-        // 1. Student su Quiz1
         QuizAttempt attempt1 = new QuizAttempt(student, quiz1);
         attempt1.setStatus(QuizAttemptStatus.COMPLETED);
         attempt1.setStartedAt(LocalDateTime.now().minusHours(2));
@@ -249,7 +242,6 @@ public class DatabaseLoader implements CommandLineRunner {
         
         updateStudentStats(student, 6, 8, 6);
 
-        // 2. Student su Quiz2
         QuizAttempt attempt2 = new QuizAttempt(student, quiz2);
         attempt2.setStatus(QuizAttemptStatus.COMPLETED);
         attempt2.setStartedAt(LocalDateTime.now().minusDays(1));
@@ -267,7 +259,6 @@ public class DatabaseLoader implements CommandLineRunner {
 
         updateStudentStats(student, 5, 5, 5);
 
-        // 3. Student su Quiz4
         QuizAttempt attempt3 = new QuizAttempt(student, quiz4);
         attempt3.setStatus(QuizAttemptStatus.COMPLETED);
         attempt3.setStartedAt(LocalDateTime.now().minusDays(2));
@@ -285,7 +276,6 @@ public class DatabaseLoader implements CommandLineRunner {
 
         updateStudentStats(student, 4, 5, 4);
 
-        // 4. Student1 su Quiz1
         QuizAttempt attempt4 = new QuizAttempt(student1, quiz1);
         attempt4.setStatus(QuizAttemptStatus.COMPLETED);
         attempt4.setStartedAt(LocalDateTime.now().minusHours(5));
@@ -306,7 +296,6 @@ public class DatabaseLoader implements CommandLineRunner {
 
         updateStudentStats(student1, 5, 8, 5);
 
-        // 5. Student1 su Quiz4
         QuizAttempt attempt5 = new QuizAttempt(student1, quiz4);
         attempt5.setStatus(QuizAttemptStatus.COMPLETED);
         attempt5.setStartedAt(LocalDateTime.now().minusDays(3));
@@ -324,9 +313,6 @@ public class DatabaseLoader implements CommandLineRunner {
 
         updateStudentStats(student1, 5, 5, 5);
         
-        // --- STUDENT 2 (ANNA) - TUTTO GIUSTO ---
-        
-        // Student2 su Quiz1 (TUTTO GIUSTO: 8/8)
         QuizAttempt attempt6 = new QuizAttempt(student2, quiz1);
         attempt6.setStatus(QuizAttemptStatus.COMPLETED);
         attempt6.setStartedAt(LocalDateTime.now().minusDays(5));
@@ -346,9 +332,8 @@ public class DatabaseLoader implements CommandLineRunner {
         attempt6.setMaxScore(8);
         quizAttemptsRepository.save(attempt6);
         
-        updateStudentStats(student2, 8, 8, 8); // +8 punti, +8 domande, +8 giuste
+        updateStudentStats(student2, 8, 8, 8);
 
-        // Student2 su Quiz2 (TUTTO GIUSTO: 5/5)
         QuizAttempt attempt7 = new QuizAttempt(student2, quiz2);
         attempt7.setStatus(QuizAttemptStatus.COMPLETED);
         attempt7.setStartedAt(LocalDateTime.now().minusDays(4));
@@ -365,9 +350,8 @@ public class DatabaseLoader implements CommandLineRunner {
         attempt7.setMaxScore(5);
         quizAttemptsRepository.save(attempt7);
         
-        updateStudentStats(student2, 5, 5, 5); // +5 punti, +5 domande, +5 giuste
+        updateStudentStats(student2, 5, 5, 5);
 
-        // Student2 su Quiz4 (TUTTO GIUSTO: 5/5)
         QuizAttempt attempt8 = new QuizAttempt(student2, quiz4);
         attempt8.setStatus(QuizAttemptStatus.COMPLETED);
         attempt8.setStartedAt(LocalDateTime.now().minusDays(4).plusHours(2));
@@ -384,9 +368,8 @@ public class DatabaseLoader implements CommandLineRunner {
         attempt8.setMaxScore(5);
         quizAttemptsRepository.save(attempt8);
         
-        updateStudentStats(student2, 5, 5, 5); // +5 punti, +5 domande, +5 giuste
+        updateStudentStats(student2, 5, 5, 5);
 
-        // --- MISSIONI (Definizione) ---
         Mission m1 = new QuizzesNumberMission(1); missionsRepository.save(m1);
         Mission m2 = new QuizzesNumberMission(5); missionsRepository.save(m2);
         Mission m3 = new NoErrorQuizMission(1); missionsRepository.save(m3);
@@ -396,7 +379,6 @@ public class DatabaseLoader implements CommandLineRunner {
         Mission m7 = new CorrectedAnswerNumberMission(5); missionsRepository.save(m7);
         Mission m8 = new CorrectedAnswerNumberMission(25); missionsRepository.save(m8);
 
-        // --- AGGIORNAMENTO MISSIONI & BADGES (Student) ---
         createMissionProgress(student, m1, 1, true); assignBadge(student, m1);
         createMissionProgress(student, m2, 3, false);
         createMissionProgress(student, m3, 1, true); assignBadge(student, m3);
@@ -404,7 +386,6 @@ public class DatabaseLoader implements CommandLineRunner {
         createMissionProgress(student, m7, 15, true); assignBadge(student, m7);
         createMissionProgress(student, m8, 15, false);
 
-        // --- AGGIORNAMENTO MISSIONI & BADGES (Student1) ---
         createMissionProgress(student1, m1, 2, true); assignBadge(student1, m1);
         createMissionProgress(student1, m2, 2, false);
         createMissionProgress(student1, m3, 1, true); assignBadge(student1, m3);
@@ -412,24 +393,16 @@ public class DatabaseLoader implements CommandLineRunner {
         createMissionProgress(student1, m7, 10, true); assignBadge(student1, m7);
         createMissionProgress(student1, m8, 10, false);
         
-        // --- AGGIORNAMENTO MISSIONI & BADGES (Student2 - Anna) ---
-        // Ha completato 3 quiz -> M1 completata, M2 (3/5)
         createMissionProgress(student2, m1, 3, true); assignBadge(student2, m1);
         createMissionProgress(student2, m2, 3, false);
-        
-        // Ha fatto 3 quiz perfetti -> M3 completata, M4 (3/5)
         createMissionProgress(student2, m3, 1, true); assignBadge(student2, m3);
         createMissionProgress(student2, m4, 3, false);
-        
-        // Ha fatto 8+5+5 = 18 risposte giuste -> M7 completata, M8 (18/25)
         createMissionProgress(student2, m7, 18, true); assignBadge(student2, m7);
         createMissionProgress(student2, m8, 18, false);
         
         logger.info("Quizzes, Tests, Attempts, Missions and Badges created and populated!");
         logger.info("The database is ready!");
     }
-
-    // --- METODI HELPER ---
 
     private void saveAnswer(QuizAttempt attempt, Question question, Answer answer, boolean isCorrect) {
         answer = answersRepository.save(answer);
