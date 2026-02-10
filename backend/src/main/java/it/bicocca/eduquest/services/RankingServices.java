@@ -11,7 +11,8 @@ import it.bicocca.eduquest.dto.gamification.*;
 
 enum RankingType {
 	QUIZZES_NUMBER,
-	AVERAGE_SCORE
+	AVERAGE_SCORE,
+	CORRECT_ANSWERS
 }
 
 @Service
@@ -32,6 +33,11 @@ public class RankingServices {
 		List<Student> sortedStudents = studentsRepository.getRankingByAverageScore();
 		return buildRankingDTO(sortedStudents, RankingType.AVERAGE_SCORE);
 	}
+
+	public List<StudentInfoForRankingDTO> getRankingByCorrectAnswers() {
+		List<Student> sortedStudents = studentsRepository.getRankingByCorrectAnswers();
+		return buildRankingDTO(sortedStudents, RankingType.CORRECT_ANSWERS);
+	}
 	
 	public List<StudentInfoForRankingDTO> buildRankingDTO(List<Student> students, RankingType rankingType) {
 		List<StudentInfoForRankingDTO> ranking = new ArrayList<>();
@@ -46,6 +52,10 @@ public class RankingServices {
 				value = student.getStats().getQuizzesCompleted();
 			} else if (rankingType == RankingType.AVERAGE_SCORE) {
 				value = student.getStats().getAverageQuizzesScore();
+			} else if (rankingType == RankingType.CORRECT_ANSWERS) {
+				value = student.getStats().getTotalCorrectAnswers();
+			} else {
+				throw new RuntimeException("Sorting type " + rankingType + " is not supported");
 			}
 
 			StudentInfoForRankingDTO userInfo = new StudentInfoForRankingDTO(student.getId(), student.getName(), student.getSurname(), value);

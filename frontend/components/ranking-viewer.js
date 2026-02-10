@@ -43,12 +43,21 @@ export class RankingViewer extends BaseComponent {
       } else if (this._rankingType === "average-score") {
         try {
           ranking = await this.gamificationService.getRankingByAverageScore();
+          rankingTitleHTML = `<h4>Average score</h4>`;
         } catch {
           rankingTable.innerHTML = `
           <alert-component type="danger" message="Error getting ranking"></alert-component>
           `;
         }
-        rankingTitleHTML = `<h4>Average score</h4>`;
+      } else if (this._rankingType == "correct-answers") {
+        try {
+          ranking = await this.gamificationService.getRankingByCorrectAnswers();
+          rankingTitleHTML = `<h4>Correct answers</h4>`
+        } catch {
+          rankingTable.innerHTML = `
+          <alert-component type="danger" message="Error getting ranking"></alert-component>
+          `;
+        }
       } else {
         rankingTitle.innerHTML = ``;
         rankingTable.innerHTML = ``;

@@ -57,6 +57,20 @@ export class GamificationService {
         }
     }
 
+    async getRankingByCorrectAnswers() {
+        try {
+            const response = await callApi(endpoints.rankings.byCorrectAnswers, "GET");
+            if (!response.ok) {
+                const responseBody = await response.text();
+                throw new Error(responseBody);
+            }
+            const attempts = await response.json();
+            return attempts;
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+
     async getMyChallenges() {
         try {
             const response = await callApi(endpoints.challenges, "GET");

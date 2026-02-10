@@ -15,4 +15,7 @@ public interface StudentsRepository extends JpaRepository<Student, Long> {
 	
 	@Query("SELECT s FROM Student s ORDER BY s.stats.averageQuizzesScore DESC")
     List<Student> getRankingByAverageScore();
+	
+	@Query("SELECT s FROM Student s ORDER BY s.stats.totalCorrectAnswers DESC")
+	List<Student> getRankingByCorrectAnswers();
 }

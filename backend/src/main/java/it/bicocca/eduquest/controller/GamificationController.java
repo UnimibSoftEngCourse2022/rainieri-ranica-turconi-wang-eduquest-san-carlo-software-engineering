@@ -98,6 +98,15 @@ public class GamificationController {
         }
 	}
 	
+	@GetMapping("/ranking/correctAnswers")
+	public ResponseEntity<Object> getRankingByCorrectAnswers(Authentication authentication) {
+		try {
+			return ResponseEntity.ok(rankingServices.getRankingByCorrectAnswers());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(internalServerError);
+		}
+	}
+	
 	@GetMapping("/challenges")
 	public ResponseEntity<Object> getChallengesByUserId(Authentication authentication) {
 		try {
