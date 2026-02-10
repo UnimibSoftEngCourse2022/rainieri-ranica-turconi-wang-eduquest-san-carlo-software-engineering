@@ -1,6 +1,5 @@
 package it.bicocca.eduquest.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequestMapping("/api/auth/debug")
 public class DebugController {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    public DebugController(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @PostMapping("/expire-missions")
     @Transactional

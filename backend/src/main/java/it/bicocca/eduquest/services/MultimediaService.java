@@ -19,26 +19,28 @@ public class MultimediaService {
     public MultimediaService(Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
     }
-
-    /**
-     * Upload a file (image, video, or audio) to Cloudinary.
-     * @param file The file received from the frontend (MultipartFile)
-     * @param folderName The destination folder on Cloudinary
-     * @return String The public URL of the uploaded resource
-     */
     public String uploadMedia(MultipartFile file, String folderName) {
         try {
-            Map params = ObjectUtils.asMap(
+            Map<String, Object> params = ObjectUtils.asMap(
                 "folder", folderName,
                 "resource_type", "auto"
             );
 
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
 
             return (String) uploadResult.get("secure_url");
 
         } catch (IOException e) {
-            throw new RuntimeException("Error while uploading the media file to Cloudinary", e);
+            throw new MediaUploadException("Error while uploading the media file to Cloudinary", e);
+        }
+    }
+
+    public static class MediaUploadException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        public MediaUploadException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }
