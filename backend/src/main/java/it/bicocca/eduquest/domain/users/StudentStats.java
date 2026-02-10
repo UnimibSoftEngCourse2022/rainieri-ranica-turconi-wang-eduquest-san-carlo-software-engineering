@@ -14,10 +14,14 @@ public class StudentStats {
 	}
 	
 	public void updateStats(double newQuizScore, int answersGiven, int correctAnswers) {
-		this.quizzesCompleted++;
 		this.totalAnswerGiven += answersGiven;
 		this.totalCorrectAnswers += correctAnswers;
-		this.averageQuizzesScore = ((this.averageQuizzesScore * this.quizzesCompleted) + newQuizScore) / this.quizzesCompleted;
+		
+		double totalOldScore = this.averageQuizzesScore * this.quizzesCompleted;
+
+		this.quizzesCompleted++;
+		
+		this.averageQuizzesScore = (totalOldScore + newQuizScore) / this.quizzesCompleted;
 	}
 
 	public int getQuizzesCompleted() {
@@ -51,5 +55,4 @@ public class StudentStats {
 	public void setAverageQuizzesScore(double averageQuizzesScore) {
 		this.averageQuizzesScore = averageQuizzesScore;
 	}
-
 }

@@ -33,12 +33,10 @@ public class StudentStatsListener {
             score = 0.0;
         }
   
-        int answersInThisQuiz = 0;
+        int answersInThisQuiz = attempt.getQuiz().getQuestions().size();
         int correctInThisQuiz = 0;
 
         if (attempt.getAnswers() != null) {
-            answersInThisQuiz = attempt.getAnswers().size();
-
             for (Answer ans : attempt.getAnswers()) {
                 if (ans.isCorrect()) { 
                     correctInThisQuiz++;
