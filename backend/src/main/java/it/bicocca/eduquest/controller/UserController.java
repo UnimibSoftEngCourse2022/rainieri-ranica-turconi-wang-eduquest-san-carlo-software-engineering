@@ -34,7 +34,7 @@ public class UserController {
     		return ResponseEntity.ok(users);
     	} catch (RuntimeException e){
     		// 500 internal error -> list recovery fails
-    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore interno nel recupero utenti: " + e.getMessage());
+    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal error while retrieving users: " + e.getMessage());
     	}
     		
     }
