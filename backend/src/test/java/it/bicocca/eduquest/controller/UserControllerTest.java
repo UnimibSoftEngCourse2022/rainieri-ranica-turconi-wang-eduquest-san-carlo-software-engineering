@@ -73,7 +73,7 @@ class UserControllerTest {
         mockMvc.perform(get("/api/users")
                 .principal(authentication))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Errore interno nel recupero utenti: DB Error"));
+                .andExpect(content().string("Internal error while retrieving users: DB Error"));
     }
 
     @Test
