@@ -6,47 +6,50 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GamificationDomainTest {
 
-	//TODO refactor this two tests
-    /*@Test
+    @Test
     void testBadgeInitialization() {
-        Badge badge = new Badge("Master Quiz", "http://icon.url");
+        Student student = new Student();
+        student.setId(1L);
+        student.setName("Test Student");
+
+        Badge badge = new Badge("Master Quiz", student);
         badge.setId(1L);
+        badge.setDescription("Awarded for mastery");
 
         assertEquals(1L, badge.getId());
         assertEquals("Master Quiz", badge.getName());
-        assertEquals("http://icon.url", badge.getIconUrl());
+        assertEquals("Awarded for mastery", badge.getDescription());
+        assertEquals(student, badge.getStudent());
+        assertNotNull(badge.getObtainedDate());
 
-        Badge emptyBadge = new Badge();
-        emptyBadge.setName("Novice");
-        emptyBadge.setIconUrl("novice.png");
+        Badge manualBadge = new Badge();
+        manualBadge.setName("Novice");
+        manualBadge.setStudent(student);
 
-        assertEquals("Novice", emptyBadge.getName());
-        assertEquals("novice.png", emptyBadge.getIconUrl());
+        assertEquals("Novice", manualBadge.getName());
+        assertEquals(student, manualBadge.getStudent());
     }
 
     @Test
     void testMissionInheritanceAndLogic() {
-        ChallengeNumberMission mission = new ChallengeNumberMission();
+        ChallengeNumberMission mission = new ChallengeNumberMission(5);
         mission.setId(10L);
         mission.setTitle("Sfida Accettata");
         mission.setDescription("Completa 5 sfide");
         
-        Badge badge = new Badge("Challenger", "challenger.png");
-        mission.setBadge(badge);
-
         assertEquals(10L, mission.getId());
         assertEquals("Sfida Accettata", mission.getTitle());
         assertEquals("Completa 5 sfide", mission.getDescription());
-        assertEquals(badge, mission.getBadge());
-        assertEquals("Challenger", mission.getBadge().getName());
-    }*/
+        
+        assertEquals(5, mission.getGoal());
+    }
 
     @Test
     void testMissionProgress() {
         MissionProgress progress = new MissionProgress();
         progress.setId(50L);
         
-        ChallengeNumberMission mission = new ChallengeNumberMission();
+        ChallengeNumberMission mission = new ChallengeNumberMission(10);
         mission.setTitle("Target Mission");
         progress.setMission(mission);
 
@@ -54,7 +57,7 @@ class GamificationDomainTest {
         student.setName("Marco");
         progress.setStudent(student);
 
-        progress.setGoal(10);
+        progress.setGoal(mission.getGoal());
         progress.setCurrentCount(3);
         progress.setCompleted(false);
 
