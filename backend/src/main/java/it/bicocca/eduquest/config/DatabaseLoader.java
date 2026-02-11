@@ -2,7 +2,6 @@ package it.bicocca.eduquest.config;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +35,11 @@ public class DatabaseLoader implements CommandLineRunner {
 
     @Value("${app.default.password}")
     private String defaultPassword;
+    
+    private String answerDante = "Dante Alighieri";
+    private String answerLeonardo = "Leonardo";
+    private String answerDaVinci = "Leonardo da Vinci";
+    private String answerJackson = "Michael Jackson";
 
     public DatabaseLoader(UsersRepository usersRepository, QuizRepository quizRepository, 
                           QuestionsRepository questionsRepository, PasswordEncoder passwordEncoder, 
@@ -95,7 +99,7 @@ public class DatabaseLoader implements CommandLineRunner {
 
         OpenQuestion q3 = new OpenQuestion("Chi ha scritto la Divina Commedia?", "Letteratura", student, Difficulty.MEDIUM);
         q3.addAnswer(new OpenQuestionAcceptedAnswer("Dante"));
-        q3.addAnswer(new OpenQuestionAcceptedAnswer("Dante Alighieri"));
+        q3.addAnswer(new OpenQuestionAcceptedAnswer(answerDante));
         q3.addAnswer(new OpenQuestionAcceptedAnswer("Alighieri"));
         questionsRepository.save(q3);
         
@@ -131,8 +135,8 @@ public class DatabaseLoader implements CommandLineRunner {
         questionsRepository.save(q8);
 
         OpenQuestion q9 = new OpenQuestion("Chi ha dipinto la Gioconda?", "Arte", teacher1, Difficulty.MEDIUM);
-        q9.addAnswer(new OpenQuestionAcceptedAnswer("Leonardo"));
-        q9.addAnswer(new OpenQuestionAcceptedAnswer("Leonardo da Vinci"));
+        q9.addAnswer(new OpenQuestionAcceptedAnswer(answerLeonardo));
+        q9.addAnswer(new OpenQuestionAcceptedAnswer(answerDaVinci));
         q9.addAnswer(new OpenQuestionAcceptedAnswer("Da Vinci"));
         questionsRepository.save(q9);
 
@@ -152,11 +156,11 @@ public class DatabaseLoader implements CommandLineRunner {
         ClosedQuestionOption q12OptCorrect = new ClosedQuestionOption("Michelangelo Buonarroti", true);
         q12.addOption(q12OptCorrect);
         q12.addOption(new ClosedQuestionOption("Donatello", false));
-        q12.addOption(new ClosedQuestionOption("Leonardo da Vinci", false));
+        q12.addOption(new ClosedQuestionOption(answerDaVinci, false));
         questionsRepository.save(q12);
 
         OpenQuestion q13 = new OpenQuestion("Chi è soprannominato il Re del Pop?", "Musica", student1, Difficulty.MEDIUM);
-        q13.addAnswer(new OpenQuestionAcceptedAnswer("Michael Jackson"));
+        q13.addAnswer(new OpenQuestionAcceptedAnswer(answerJackson));
         q13.addAnswer(new OpenQuestionAcceptedAnswer("Jackson"));
         questionsRepository.save(q13);
         
@@ -233,10 +237,10 @@ public class DatabaseLoader implements CommandLineRunner {
         attempt1 = quizAttemptsRepository.save(attempt1);
         
         saveAnswer(attempt1, q1, new ClosedAnswer(attempt1, q1, q1OptCorrect), true);
-        saveAnswer(attempt1, q3, new OpenAnswer(attempt1, q3, "Dante Alighieri"), true);
+        saveAnswer(attempt1, q3, new OpenAnswer(attempt1, q3, answerDante), true);
         saveAnswer(attempt1, q5, new OpenAnswer(attempt1, q5, "1492"), true);
         saveAnswer(attempt1, q7, new OpenAnswer(attempt1, q7, "Po"), true);
-        saveAnswer(attempt1, q9, new OpenAnswer(attempt1, q9, "Leonardo da Vinci"), true);
+        saveAnswer(attempt1, q9, new OpenAnswer(attempt1, q9, answerDaVinci), true);
         saveAnswer(attempt1, q12, new ClosedAnswer(attempt1, q12, q12OptCorrect), true);
         saveAnswer(attempt1, q10, new ClosedAnswer(attempt1, q10, q10.getOptions().get(0)), false);
         saveAnswer(attempt1, q13, new OpenAnswer(attempt1, q13, "Elvis Presley"), false);
@@ -270,7 +274,7 @@ public class DatabaseLoader implements CommandLineRunner {
         attempt3 = quizAttemptsRepository.save(attempt3);
         
         saveAnswer(attempt3, q7, new OpenAnswer(attempt3, q7, "Po"), true);
-        saveAnswer(attempt3, q9, new OpenAnswer(attempt3, q9, "Leonardo"), true);
+        saveAnswer(attempt3, q9, new OpenAnswer(attempt3, q9, answerLeonardo), true);
         saveAnswer(attempt3, q10, new ClosedAnswer(attempt3, q10, q10OptCorrect), true);
         saveAnswer(attempt3, q12, new ClosedAnswer(attempt3, q12, q12OptCorrect), true);
         saveAnswer(attempt3, q13, new OpenAnswer(attempt3, q13, "Madonna"), false);
@@ -290,7 +294,7 @@ public class DatabaseLoader implements CommandLineRunner {
         saveAnswer(attempt4, q3, new OpenAnswer(attempt4, q3, "Dante"), true);
         saveAnswer(attempt4, q7, new OpenAnswer(attempt4, q7, "Il Po"), true);
         saveAnswer(attempt4, q10, new ClosedAnswer(attempt4, q10, q10OptCorrect), true);
-        saveAnswer(attempt4, q13, new OpenAnswer(attempt4, q13, "Michael Jackson"), true);
+        saveAnswer(attempt4, q13, new OpenAnswer(attempt4, q13, answerJackson), true);
         saveAnswer(attempt4, q5, new OpenAnswer(attempt4, q5, "1942"), false);
         saveAnswer(attempt4, q9, new OpenAnswer(attempt4, q9, "Raffaello"), false);
         saveAnswer(attempt4, q12, new ClosedAnswer(attempt4, q12, q12.getOptions().get(1)), false);
@@ -324,13 +328,13 @@ public class DatabaseLoader implements CommandLineRunner {
         attempt6 = quizAttemptsRepository.save(attempt6);
         
         saveAnswer(attempt6, q1, new ClosedAnswer(attempt6, q1, q1OptCorrect), true);
-        saveAnswer(attempt6, q3, new OpenAnswer(attempt6, q3, "Dante Alighieri"), true);
+        saveAnswer(attempt6, q3, new OpenAnswer(attempt6, q3, answerDante), true);
         saveAnswer(attempt6, q5, new OpenAnswer(attempt6, q5, "1492"), true);
         saveAnswer(attempt6, q7, new OpenAnswer(attempt6, q7, "Po"), true);
-        saveAnswer(attempt6, q9, new OpenAnswer(attempt6, q9, "Leonardo da Vinci"), true);
+        saveAnswer(attempt6, q9, new OpenAnswer(attempt6, q9, answerDaVinci), true);
         saveAnswer(attempt6, q10, new ClosedAnswer(attempt6, q10, q10OptCorrect), true);
         saveAnswer(attempt6, q12, new ClosedAnswer(attempt6, q12, q12OptCorrect), true);
-        saveAnswer(attempt6, q13, new OpenAnswer(attempt6, q13, "Michael Jackson"), true);
+        saveAnswer(attempt6, q13, new OpenAnswer(attempt6, q13, answerJackson), true);
         
         attempt6.setScore(8);
         attempt6.setMaxScore(8);
@@ -363,10 +367,10 @@ public class DatabaseLoader implements CommandLineRunner {
         attempt8 = quizAttemptsRepository.save(attempt8);
         
         saveAnswer(attempt8, q7, new OpenAnswer(attempt8, q7, "Po"), true);
-        saveAnswer(attempt8, q9, new OpenAnswer(attempt8, q9, "Leonardo"), true); 
+        saveAnswer(attempt8, q9, new OpenAnswer(attempt8, q9, answerLeonardo), true); 
         saveAnswer(attempt8, q10, new ClosedAnswer(attempt8, q10, q10OptCorrect), true);
         saveAnswer(attempt8, q12, new ClosedAnswer(attempt8, q12, q12OptCorrect), true);
-        saveAnswer(attempt8, q13, new OpenAnswer(attempt8, q13, "Michael Jackson"), true);
+        saveAnswer(attempt8, q13, new OpenAnswer(attempt8, q13, answerJackson), true);
         
         attempt8.setScore(5);
         attempt8.setMaxScore(5);

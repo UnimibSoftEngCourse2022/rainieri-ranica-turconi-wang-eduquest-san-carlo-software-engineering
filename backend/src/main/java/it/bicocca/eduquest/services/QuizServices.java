@@ -128,7 +128,6 @@ public class QuizServices {
             			quizAttemptsRepository.delete(qa);
             		}
             	}
-                //quizAttemptsRepository.deleteAll(attempts);
             }
         }
 		
