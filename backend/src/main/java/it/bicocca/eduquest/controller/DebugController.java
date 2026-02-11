@@ -27,4 +27,16 @@ public class DebugController {
         
         return "Done!";
     }
+    
+    @PostMapping("/expire-challenges")
+    @Transactional
+    public String expireChallenges() {
+        try {
+            jdbcTemplate.update("UPDATE challenges SET expires_at = '2020-01-01 00:00:00' WHERE status = 'ACTIVE'");
+        } catch (Exception e) {
+            jdbcTemplate.update("UPDATE CHALLENGES SET EXPIRES_AT = '2020-01-01 00:00:00' WHERE STATUS = 'ACTIVE'");
+        }
+        
+        return "Challenges expiration dates forced to past!";
+    }
 }

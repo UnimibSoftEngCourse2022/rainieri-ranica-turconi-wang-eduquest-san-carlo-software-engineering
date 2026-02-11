@@ -28,6 +28,7 @@ public class ChallengeServices {
 	}
 	
 	public List<ChallengeDTO> getChallengesByUserId(Long studentId) {
+		markExpiredChallenges();
 		List<Challenge> challenges = challengesRepository.findAll();
 		
 		List<ChallengeDTO> challengesDTO = new ArrayList<>();
