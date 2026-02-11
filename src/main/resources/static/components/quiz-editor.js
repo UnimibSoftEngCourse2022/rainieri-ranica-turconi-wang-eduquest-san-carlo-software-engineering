@@ -34,7 +34,7 @@ export class QuizEditor extends BaseComponent {
     this.innerHTML = `
     <div class="container my-5 text-center">
         <div class="d-flex justify-content-start mb-3">
-            <a href="../teacher-dashboard/" class="btn btn-outline-secondary">
+            <a href="../teacher-dashboard/index.html" class="btn btn-outline-secondary">
                 ← Back to Dashboard
             </a>
         </div>

@@ -66,7 +66,7 @@ export class Quiz extends BaseComponent {
 
   async handleQuizButtonClick() {
     if (this._role === "TEACHER") {
-        globalThis.location = `../quiz-editor/?id=${this._quizData.id}`;
+        globalThis.location = `../quiz-editor/index.html?id=${this._quizData.id}`;
         return;
     } 
     
