@@ -84,6 +84,12 @@ export class AddTest extends BaseComponent {
         this.addTestResult.innerHTML = `<alert-component type="danger" message="Please fill in all fields" timeout="2000"></alert-component>`;
         return;
     }
+
+    const selectedQuiz = this.quizzes.find(q => q.id == quizId);
+    if (!selectedQuiz.questions || selectedQuiz.questions.length == 0) {
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="You cannot create a test from a quiz with no questions!" timeout="2500"></alert-component>`;
+        return;
+    }
     
     if (timeLimit < 1 || maxAttempts < 1) {
         this.addTestResult.innerHTML = `<alert-component type="danger" message="Time limit and Max attempt values must be positive" timeout="2500"></alert-component>`;
