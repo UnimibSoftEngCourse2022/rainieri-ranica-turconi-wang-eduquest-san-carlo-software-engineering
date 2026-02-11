@@ -116,7 +116,9 @@ export class ChallengesViewer extends BaseComponent {
 
             </div>
 
-            ${challenge.status == "COMPLETED" ? `<h4>Winner: ${challenge.winnerName} ${challenge.winnerSurname}` : ``}
+            ${challenge.status == "COMPLETED" ? (
+              challenge.winnerName ? `<h4>Winner: ${challenge.winnerName} ${challenge.winnerSurname}` :`<h4>Draw</h4>`
+            ) : ``}
         </div>
         `
         this.challengesContainer.appendChild(challengeElement);

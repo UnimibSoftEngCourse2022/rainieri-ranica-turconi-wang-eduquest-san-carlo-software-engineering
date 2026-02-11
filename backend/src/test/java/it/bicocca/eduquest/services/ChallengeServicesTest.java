@@ -96,11 +96,12 @@ class ChallengeServicesTest {
         Challenge c3 = createChallengeMock(otherId, strangerId);
         c3.setId(103L);
 
-        when(challengeRepository.findAll()).thenReturn(List.of(c1, c2, c3));
+        when(challengeRepository.findAllByUserIdOrderByCreatedAtDesc(myId))
+        .thenReturn(List.of(c1, c2));
 
         List<ChallengeDTO> results = challengeServices.getChallengesByUserId(myId);
 
-        assertEquals(2, results.size(), "Dovrei trovare solo 2 sfide");
+        assertEquals(2, results.size(), "I should only find 2 challenges");
         
         assertTrue(results.stream().anyMatch(dto -> dto.getId().equals(101L)));
         assertTrue(results.stream().anyMatch(dto -> dto.getId().equals(102L)));

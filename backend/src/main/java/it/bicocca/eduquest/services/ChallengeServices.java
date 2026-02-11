@@ -29,13 +29,11 @@ public class ChallengeServices {
 	
 	public List<ChallengeDTO> getChallengesByUserId(Long studentId) {
 		markExpiredChallenges();
-		List<Challenge> challenges = challengesRepository.findAll();
+		List<Challenge> challenges = challengesRepository.findAllByUserIdOrderByCreatedAtDesc(studentId);
 		
 		List<ChallengeDTO> challengesDTO = new ArrayList<>();
 		for (Challenge c : challenges) {
-			if (c.getChallenger().getId().equals(studentId) || c.getOpponent().getId().equals(studentId)) {
 				challengesDTO.add(convertChallengeToDTO(c));
-			}
 		}
 		
 		return challengesDTO;

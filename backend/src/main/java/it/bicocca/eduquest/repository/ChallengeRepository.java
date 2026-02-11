@@ -14,4 +14,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 	// Find challenges that are still ACTIVE but whose expiry date has passed
 	@Query("SELECT c FROM Challenge c WHERE c.status = 'ACTIVE' AND c.expiresAt < :now")
 	List<Challenge> findExpiredActiveChallenges(@Param("now") LocalDateTime now);
+	
+	@Query("SELECT c FROM Challenge c WHERE c.challenger.id = :userId OR c.opponent.id = :userId ORDER BY c.createdAt DESC")
+	List<Challenge> findAllByUserIdOrderByCreatedAtDesc(@Param("userId") Long userId);
 }
