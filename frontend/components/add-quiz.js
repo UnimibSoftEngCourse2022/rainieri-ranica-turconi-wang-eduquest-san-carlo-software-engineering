@@ -77,7 +77,7 @@ export class AddQuiz extends BaseComponent {
     } catch (e) {
       console.error(e);
       this.addQuizResult.innerHTML = `
-      <alert-component type="danger" message="Error during the quiz creation" timeout="4000"></alert-component>
+      <alert-component type="danger" message="You must fill in all fields!" timeout="2000"></alert-component>
       `
     }
   }

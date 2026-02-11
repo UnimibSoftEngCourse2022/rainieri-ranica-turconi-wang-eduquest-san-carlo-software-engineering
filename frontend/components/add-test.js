@@ -81,12 +81,19 @@ export class AddTest extends BaseComponent {
     const maxAttempts = this.maxAttemptsInput.value;
     
     if (!quizId || timeLimit === "" || maxAttempts === "") {
-        this.addTestResult.innerHTML = `<alert-component type="danger" message="Please fill all fields" timeout="2000"></alert-component>`;
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="Please fill in all fields" timeout="2000"></alert-component>`;
         return;
     }
     
-    if (timeLimit <= 0 || maxAttempts < 1) {
-        this.addTestResult.innerHTML = `<alert-component type="danger" message="Time limit and Max attempt values must be positive" timeout="3000"></alert-component>`;
+    if (timeLimit < 1 || maxAttempts < 1) {
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="Time limit and Max attempt values must be positive" timeout="2500"></alert-component>`;
+        return;
+    }
+
+    const timeNum = Number(timeLimit);
+    const attemptsNum = Number(maxAttempts);
+    if (!Number.isInteger(timeNum) || !Number.isInteger(attemptsNum)) {
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="Time limit and Max attempt values must be integer values" timeout="2500"></alert-component>`;
         return;
     }
 
@@ -114,7 +121,7 @@ export class AddTest extends BaseComponent {
     } catch (e) {
         console.error(e);
         this.addTestResult.innerHTML = `
-        <alert-component type="danger" message="Error during test creation" timeout="3000"></alert-component>
+        <alert-component type="danger" message="You must fill in all fields" timeout="2000"></alert-component>
         `
     }
   }
