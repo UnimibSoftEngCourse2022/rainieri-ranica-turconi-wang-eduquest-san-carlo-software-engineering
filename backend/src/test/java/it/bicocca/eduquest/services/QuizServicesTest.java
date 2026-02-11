@@ -679,14 +679,13 @@ class QuizServicesTest {
         assertEquals("Math Quiz", results.get(0).getTitle());
     }
 
-    //TODO refactor this test
-    /*@Test
+    @Test
     void getQuizzesByAuthorIdFilterCorrectly() {
-        Quiz quiz2 = new Quiz("Other", "Desc", new Teacher());
-        quiz2.setId(11L);
-        quiz2.getAuthor().setId(99L); 
+        Teacher author1 = new Teacher();
+        author1.setId(1L);
+        quiz.setAuthor(author1);
 
-        when(quizRepository.findAll()).thenReturn(List.of(quiz, quiz2));
+        when(quizRepository.findByAuthorId(1L)).thenReturn(List.of(quiz));
         
         when(quizAttemptsRepository.getAverageScoreByQuizAndTestIsNull(quiz)).thenReturn(0.0);
         when(quizAttemptsRepository.countByQuizAndTestIsNull(quiz)).thenReturn(0L);
@@ -694,8 +693,8 @@ class QuizServicesTest {
         List<QuizDTO> results = quizServices.getQuizzesByAuthorId(1L);
 
         assertEquals(1, results.size());
-        assertEquals(10L, results.get(0).getId());
-    }*/
+        assertEquals(quiz.getId(), results.get(0).getId());
+    }
 
     @Test
     void getAllQuestionsReturnAllWithDetails() {
