@@ -145,13 +145,23 @@ export class QuizEditor extends BaseComponent {
   async handleSaveQuizGeneralInfo() {
     const title = this.querySelector("#title-input").value;
     const description = this.querySelector("#description-input").value;
-    const isPublic = this.querySelector("#is-public-input").checked;
+    const isPublicInput = this.querySelector("#is-public-input");
+    const isPublic = isPublicInput.checked;
+    const questionsCount = this.querySelectorAll("question-item").length; 
+    const resultDiv = this.querySelector("#quiz-general-info-result");
+
+    if (isPublic && questionsCount == 0) {
+        isPublicInput.checked = false; 
+        resultDiv.innerHTML = `
+        <alert-component type="danger" message="You cannot make a quiz public without any questions." timeout="2500"></alert-component>
+        `;
+        return; 
+    }
 
     const quizData = {
         title, description, isPublic
     };
     
-    const resultDiv = this.querySelector("#quiz-general-info-result");
     try {
         await this.quizService.modifyQuiz(this.quizId, quizData);
         resultDiv.innerHTML = `
@@ -160,7 +170,7 @@ export class QuizEditor extends BaseComponent {
     } catch (e) {
         console.error(e);
         resultDiv.innerHTML = `
-        <alert-component type="danger" message="Error modifying quiz" timeout="3000"></alert-component>
+        <alert-component type="danger" message="Title and description cannot be empty!" timeout="2500"></alert-component>
         `;
     }
   }

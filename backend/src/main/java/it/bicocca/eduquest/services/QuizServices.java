@@ -120,6 +120,10 @@ public class QuizServices {
 	public QuizDTO editQuiz(long quizId, QuizEditDTO quizEditDTO, long userIdFromRequest) {
 		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
 		
+		boolean finalIsPublic = quizEditDTO.isPublic();
+		if (quiz.getQuestions().isEmpty()) {
+			finalIsPublic = false;
+		}
 		if (quiz.isPublic() && !quizEditDTO.isPublic()) {
             List<QuizAttempt> attempts = quizAttemptsRepository.findByQuiz(quiz);
             if (!attempts.isEmpty()) {
@@ -144,7 +148,7 @@ public class QuizServices {
 		
 		quiz.setTitle(quizEditDTO.getTitle());
 		quiz.setDescription(quizEditDTO.getDescription());
-		quiz.setPublic(quizEditDTO.isPublic());
+		quiz.setPublic(finalIsPublic);
 		
 		Quiz updatedQuiz = quizRepository.save(quiz);
 		
@@ -291,6 +295,9 @@ public class QuizServices {
 		
 		quiz.removeQuestion(question);
 		quiz.recalculateDifficulty();
+		if (quiz.getQuestions().isEmpty() && quiz.isPublic()) {
+		    quiz.setPublic(false);
+		}
 		quizRepository.save(quiz);
 		
 		QuizStatsDTO statsDTO = calculateQuizOnlyStats(quiz);
