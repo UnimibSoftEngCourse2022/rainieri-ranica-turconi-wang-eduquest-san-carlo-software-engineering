@@ -39,6 +39,8 @@ export class Quiz extends BaseComponent {
                 <span class="text-muted" style="font-size: 0.6em; vertical-align: middle;">#${this._quizData.id}</span>
             </h3>
             
+            <span class="badge text-bg-secondary">${this._quizData.difficulty}</span></h6>
+
             <div class="mb-4 text-center text-muted">
                 ${this._quizData.description || "No description available"}
             </div>

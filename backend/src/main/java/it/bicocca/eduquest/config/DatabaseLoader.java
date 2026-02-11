@@ -180,6 +180,7 @@ public class DatabaseLoader implements CommandLineRunner {
         quiz1.addQuestion(q10); 
         quiz1.addQuestion(q12); 
         quiz1.addQuestion(q13); 
+        quiz1.recalculateDifficulty();
         quizRepository.save(quiz1);
 
         Quiz quiz2 = new Quiz("Science Quiz", "Challenge your scientific knowledge.", teacher1);
@@ -190,6 +191,7 @@ public class DatabaseLoader implements CommandLineRunner {
         quiz2.addQuestion(q6); 
         quiz2.addQuestion(q8); 
         quiz2.addQuestion(q11); 
+        quiz2.recalculateDifficulty();
         quizRepository.save(quiz2);
         
         Quiz quiz3 = new Quiz("10 Question Test", "Mixed test.", teacher);
@@ -204,6 +206,7 @@ public class DatabaseLoader implements CommandLineRunner {
         quiz3.addQuestion(q7);
         quiz3.addQuestion(q8);
         quiz3.addQuestion(q9);
+        quiz3.recalculateDifficulty();
         quizRepository.save(quiz3);
         
         Quiz quiz4 = new Quiz("Short General Quiz", "A quick 5-question challenge.", teacher1);
@@ -214,6 +217,7 @@ public class DatabaseLoader implements CommandLineRunner {
         quiz4.addQuestion(q10);
         quiz4.addQuestion(q12);
         quiz4.addQuestion(q13);
+        quiz4.recalculateDifficulty();
         quizRepository.save(quiz4);
         
         Test test1 = new Test();
