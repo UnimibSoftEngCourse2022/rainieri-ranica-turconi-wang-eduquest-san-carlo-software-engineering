@@ -86,11 +86,10 @@ export class Quiz extends BaseComponent {
         const cardBody = this.querySelector(".card-body");
         try {
             const sessionData = await this.attemptsService.addAttempt(this._quizData.id, studentId, null);
-            if (sessionData.resumed) {
-                if (cardBody) {
-                    cardBody.insertAdjacentHTML('beforeend', `
-                    <alert-component type="danger" message="This quiz has already started! Resume it from the Dashboard." timeout="3000"></alert-component>`);
-                }
+            if (sessionData.resumed && cardBody) {
+                cardBody.insertAdjacentHTML('beforeend', `
+                <alert-component type="danger" message="This quiz has already started! Resume it from the Dashboard." timeout="3000"></alert-component>`);
+                return;
             } else {
                  if (cardBody) {
                     cardBody.insertAdjacentHTML('beforeend', `
