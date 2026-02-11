@@ -409,6 +409,7 @@ public class DatabaseLoader implements CommandLineRunner {
     }
 
     private void saveAnswer(QuizAttempt attempt, Question question, Answer answer, boolean isCorrect) {
+    	answer.setCorrect(isCorrect);
         answer = answersRepository.save(answer);
         attempt.addAnswer(answer); 
         QuestionStats stats = question.getStats();

@@ -113,7 +113,7 @@ export class QuizEditor extends BaseComponent {
         let questionRelativeStatsHTML = ``;
         if (questionRelativeStats) {
             const questionRelativePercentage = questionRelativeStats.totalAnswers ? questionRelativeStats.correctAnswer / questionRelativeStats.totalAnswers : 0;
-            const questionRelativeStatsColor = questionRelativePercentage > 0.6 ? `success` : `danger`;
+            const questionRelativeStatsColor = questionRelativePercentage >= 0.6 ? `success` : `danger`;
             questionRelativeStatsHTML = `
             <span class="badge text-bg-${questionRelativeStatsColor}">
             ${questionRelativeStats.correctAnswer} correct answer, ${questionRelativeStats.totalAnswers}

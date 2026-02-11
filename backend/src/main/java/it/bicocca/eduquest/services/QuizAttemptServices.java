@@ -263,7 +263,8 @@ public class QuizAttemptServices {
 		answerDTO.setId(answer.getId());
 		answerDTO.setQuizAttemptId(answer.getQuizAttempt().getId());
 		answerDTO.setQuestionId(answer.getQuestion().getId());
-
+		answerDTO.setCorrect(answer.isCorrect());
+		
 		if (answer instanceof OpenAnswer openAnswer) {
 			answerDTO.setQuestionType(QuestionType.OPENED);
 			answerDTO.setTextOpenAnswer(openAnswer.getText());
@@ -277,8 +278,6 @@ public class QuizAttemptServices {
 		
 		return answerDTO;
 	}
-
-	
 	
 	private QuizAttempt getValidQuizAttempt(long quizAttemptId) {
 		// FIX: RuntimeException -> IllegalArgumentException

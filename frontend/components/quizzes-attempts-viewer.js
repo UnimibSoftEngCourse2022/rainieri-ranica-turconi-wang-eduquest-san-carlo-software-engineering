@@ -7,6 +7,7 @@ export class QuizzesAttemptsViewer extends BaseComponent {
   setupComponent() {
     this.userId = this.getAttribute("user-id");
     this.attemptsService = new AttemptsService();
+    this.filteredAttempts = [];
     this.render();
     this.loadData();
   }
@@ -16,11 +17,24 @@ export class QuizzesAttemptsViewer extends BaseComponent {
         this.loadData();
     });
     this.addEventListenerWithTracking("#show-only-in-progress-attempts", "click", () => this.loadData());
+
+    const attemptsContainer = document.querySelector('#quizzes-attempts');
+    attemptsContainer.addEventListener('click', async (event) => this.updateQuizAttemptDetails(event));
   }
 
-  get quizzesAttempts() {
-    return this.querySelector("#quizzes-attempts");
+  async updateQuizAttemptDetails(event) {
+    const item = event.target.closest('.list-group-item');
+      
+    if (!item) {
+      return;
+    }
+    const attemptId = item.id.replace('attempt-', '');
+    const details = this.quizAttemptDetails;
+    details.innerHTML = await this.getQuizAttemptDetails(attemptId);
   }
+
+  get quizzesAttempts() { return this.querySelector("#quizzes-attempts"); }
+  get quizAttemptDetails() { return this.querySelector("#quiz-attempt-details"); }
 
   render() {
     this.innerHTML = `
@@ -31,6 +45,25 @@ export class QuizzesAttemptsViewer extends BaseComponent {
       </label>
       <div id="quizzes-attempts" class="container">Loading...</div>
     </collapsible-panel>
+
+    ${this.getQuizAttemptDetailsModal()}
+    `;
+  }
+
+  getQuizAttemptDetailsModal() {
+    return `
+    <div class="modal fade" id="quiz-attempt-details-modal" tabindex="-1" aria-labelledby="quiz-attempt-details-modal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="quiz-attempt-details-modal">Attempt viewer</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="quiz-attempt-details">
+          </div>
+        </div>
+      </div>
+    </div>
     `;
   }
 
@@ -42,16 +75,15 @@ export class QuizzesAttemptsViewer extends BaseComponent {
     const showOnlyInProgressAttempts = this.querySelector("#show-only-in-progress-attempts").checked;
     try {
         const attempts = await this.attemptsService.getAttemptsByStudentId(this.userId);
-        const filteredAttempts = attempts.filter((attempt => !showOnlyInProgressAttempts || attempt.status == "STARTED"));
+        this.filteredAttempts = attempts.filter((attempt => !showOnlyInProgressAttempts || attempt.status == "STARTED"));
 
-        if (!filteredAttempts || filteredAttempts.length === 0) {
+        if (!this.filteredAttempts || this.filteredAttempts.length === 0) {
             this.quizzesAttempts.innerHTML = `<alert-component type="primary" message="No attempts to show"></alert-component>`;
         } else {
-            filteredAttempts.sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
-            
+            this.filteredAttempts.sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
             const listHtml = `
                 <div class="list-group">
-                    ${filteredAttempts.map(attempt => this.getQuizAttemptRow(attempt)).join('')}
+                    ${this.filteredAttempts.map(attempt => this.getQuizAttemptRow(attempt)).join('')}
                 </div>`;
             this.quizzesAttempts.innerHTML = listHtml;
         }
@@ -64,9 +96,9 @@ export class QuizzesAttemptsViewer extends BaseComponent {
   getQuizAttemptRow(attempt) {
     if (attempt.status === "COMPLETED") {
         const pct = attempt.score && attempt.maxScore ? (attempt.score / attempt.maxScore) : 0;
-        const color = pct > 0.6 ? "success" : "danger";
+        const color = pct >= 0.6 ? "success" : "danger";
         return `
-        <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="list-group-item d-flex justify-content-between align-items-center" id="attempt-${attempt.id}" data-bs-toggle="modal" data-bs-target="#quiz-attempt-details-modal">
             ${attempt.quizTitle}
             <span class="badge text-bg-${color}">${attempt.status} (${(pct * 100).toFixed(0)}%)</span>
         </div>`;
@@ -80,6 +112,28 @@ export class QuizzesAttemptsViewer extends BaseComponent {
             <span class="badge text-bg-secondary">${attempt.status}</span>
         </a>`;
     }
+  }
+
+  async getQuizAttemptDetails(attemptId) {
+    const quizAttemptSession = await this.attemptsService.getAttemptSessionById(attemptId);
+    let quizAttemptDetailsHTML = ``;
+    quizAttemptSession.questions.forEach(question => {
+      const answerObject = quizAttemptSession.existingAnswers.find(a => a.questionId == question.id);
+      let answerText;
+      if (answerObject) {
+        answerText = question.questionType == "OPENED" ? answerObject.textOpenAnswer : answerObject.selectedOptionText;
+      } else {
+        answerText = `None`;
+      }
+      const answerTextClass = answerObject?.correct ? `text-success` : `text-danger`;
+
+      quizAttemptDetailsHTML += `
+      <p>Question: "${question.text}</p>
+      <p class="${answerTextClass}">Your answer: ${answerText}</p>
+      <hr>
+      `
+    })
+    return quizAttemptDetailsHTML;  
   }
 }
 
