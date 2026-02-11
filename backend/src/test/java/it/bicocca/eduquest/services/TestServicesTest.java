@@ -2,7 +2,6 @@ package it.bicocca.eduquest.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import java.time.Duration;
@@ -194,22 +193,27 @@ class TestServicesTest {
         assertEquals(1, result.size());
         assertEquals(100L, result.get(0).getId());
     }
-//TODO refactor this 2 tests
-    /*
+    
     @Test
-    void testDeleteTest_Success() {
-        when(testRepository.existsById(100L)).thenReturn(true);
+    void deleteTest_Success() {
+        Long testId = 100L;
+        it.bicocca.eduquest.domain.quiz.Test mockTest = new it.bicocca.eduquest.domain.quiz.Test();
+        mockTest.setId(testId);
+
+        when(testRepository.findById(testId)).thenReturn(Optional.of(mockTest));
         
-        testServices.deleteTest(100L);
+        testServices.deleteTest(testId);
         
-        verify(testRepository).deleteById(100L);
+        verify(testRepository).deleteById(testId);
     }
 
     @Test
-    void testDeleteTest_NotFound() {
-        when(testRepository.existsById(999L)).thenReturn(false);
+    void deleteTest_NotFound() {
+        Long testId = 999L;
+        when(testRepository.findById(testId)).thenReturn(Optional.empty());
         
-        assertThrows(IllegalArgumentException.class, () -> testServices.deleteTest(999L));
+        assertThrows(IllegalArgumentException.class, () -> testServices.deleteTest(testId));
+        
         verify(testRepository, never()).deleteById(anyLong());
-    }*/
+    }
 }

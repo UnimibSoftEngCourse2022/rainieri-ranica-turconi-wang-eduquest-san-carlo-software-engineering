@@ -144,7 +144,6 @@ public class TestServices {
         			quizAttemptsRepository.delete(qa);
         		}
         	}
-        	//quizAttemptsRepository.deleteAll(attempts);
         }
         testRepository.deleteById(testId);
     }

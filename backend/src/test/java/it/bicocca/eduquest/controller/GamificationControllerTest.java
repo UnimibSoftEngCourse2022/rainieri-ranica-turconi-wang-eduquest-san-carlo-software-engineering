@@ -8,6 +8,7 @@ import it.bicocca.eduquest.services.ChallengeServices;
 import it.bicocca.eduquest.services.GamificationServices;
 import it.bicocca.eduquest.services.MissionsServices;
 import it.bicocca.eduquest.services.RankingServices;
+import it.bicocca.eduquest.services.ranking.StrategyNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +21,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @ExtendWith(MockitoExtension.class)
 class GamificationControllerTest {
@@ -138,7 +141,58 @@ class GamificationControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
-    // TODO test ranking with different strategies
+    @Test
+    void getRankingTotalScoreSuccess() throws Exception {
+        String strategy = "total_score";
+        when(rankingServices.getRanking(strategy)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/gamification/ranking")
+                        .param("rankingType", strategy)
+                        .principal(auth))
+                .andExpect(status().isOk());
+        
+        verify(rankingServices).getRanking(strategy);
+    }
+
+    @Test
+    void getRankingAverageScoreSuccess() throws Exception {
+        String strategy = "average_score";
+        when(rankingServices.getRanking(strategy)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/gamification/ranking")
+                        .param("rankingType", strategy)
+                        .principal(auth))
+                .andExpect(status().isOk());
+        
+        verify(rankingServices).getRanking(strategy);
+    }
+
+    @Test
+    void getRankingStrategyNotFound() throws Exception {
+        String invalidStrategy = "invalid_strategy";
+        String errorMessage = "Strategy not found";
+        
+        when(rankingServices.getRanking(invalidStrategy))
+                .thenThrow(new StrategyNotFoundException(errorMessage));
+
+        mockMvc.perform(get("/api/gamification/ranking")
+                        .param("rankingType", invalidStrategy)
+                        .principal(auth))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(errorMessage));
+    }
+
+    @Test
+    void getRankingInternalServerError() throws Exception {
+        when(rankingServices.getRanking(anyString()))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        mockMvc.perform(get("/api/gamification/ranking")
+                        .param("rankingType", "total_score")
+                        .principal(auth))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Internal server error"));
+    }
 
     @Test
     void getChallengesByUserIdSuccess() throws Exception {
