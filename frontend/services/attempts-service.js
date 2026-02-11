@@ -10,7 +10,7 @@ export class AttemptsService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -23,7 +23,7 @@ export class AttemptsService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -36,7 +36,7 @@ export class AttemptsService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -55,7 +55,7 @@ export class AttemptsService {
             }
             return await response.json();
         } catch(e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -68,7 +68,7 @@ export class AttemptsService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -81,7 +81,7 @@ export class AttemptsService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 }

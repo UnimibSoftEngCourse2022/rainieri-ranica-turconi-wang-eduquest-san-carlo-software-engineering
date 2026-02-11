@@ -111,7 +111,8 @@ export class UserSearch extends BaseComponent {
             let badges = [];
             try {
                 badges = await this.gamificationService.getUserBadges(this._userData.id);
-            } catch {
+            } catch (e) {
+                console.error(e);
                 badgesContainer.innerHTML = `
                 <alert-component type="danger" message="Error loading badges"></alert-component>
                 `;

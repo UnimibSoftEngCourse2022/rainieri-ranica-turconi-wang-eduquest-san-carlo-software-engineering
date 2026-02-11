@@ -11,7 +11,7 @@ export class QuestionsService {
             const questions = await response.json();
             return questions;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -25,7 +25,7 @@ export class QuestionsService {
             const quizzes = await response.json();
             return quizzes;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -48,7 +48,7 @@ export class QuestionsService {
 
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 }

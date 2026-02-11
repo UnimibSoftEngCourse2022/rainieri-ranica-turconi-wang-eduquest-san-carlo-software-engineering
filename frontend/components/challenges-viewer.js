@@ -36,7 +36,8 @@ export class ChallengesViewer extends BaseComponent {
   async loadData() {
     try {
       this.userData = await this.usersService.getMyUserInfo();
-    } catch {
+    } catch (e) {
+      console.error(e);
       this.innerHTML = `
       <alert-component type="danger" message="Error loading challenges"></alert-component>
       `;
@@ -47,7 +48,8 @@ export class ChallengesViewer extends BaseComponent {
     let challenges;
     try {
       challenges = await this.gamificationService.getMyChallenges();
-    } catch {
+    } catch (e) {
+      console.error(e);
       this.challengesContainer.innerHTML = `
       <alert-component type="danger" message="Error loading your challenges, please try again later"></alert-component>
       `;

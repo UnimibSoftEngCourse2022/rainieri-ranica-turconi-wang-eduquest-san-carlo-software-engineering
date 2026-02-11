@@ -11,7 +11,7 @@ export class GamificationService {
             const attempts = await response.json();
             return attempts;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -25,7 +25,7 @@ export class GamificationService {
             const completedMissions = await response.json();
             return completedMissions;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -39,7 +39,7 @@ export class GamificationService {
             const attempts = await response.json();
             return attempts;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -53,7 +53,7 @@ export class GamificationService {
             const attempts = await response.json();
             return attempts;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -67,7 +67,7 @@ export class GamificationService {
             const attempts = await response.json();
             return attempts;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -81,7 +81,7 @@ export class GamificationService {
             const challenges = await response.json();
             return challenges;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -96,7 +96,7 @@ export class GamificationService {
             const challenges = await response.json();
             return challenges;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 

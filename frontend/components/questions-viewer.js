@@ -60,7 +60,8 @@ export class QuestionsViewer extends BaseComponent {
       }      
       this.allQuestions = questions || [];
       this.showQuestions(questions)
-    } catch {
+    } catch (e) {
+      console.error(e);
       this.questions.innerHTML = `
       <alert-component type="danger" message="Cannot get questions, please try again"></alert-component>
       `;

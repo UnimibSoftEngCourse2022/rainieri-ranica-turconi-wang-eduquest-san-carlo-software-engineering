@@ -11,7 +11,7 @@ export class QuizService {
             const quizzes = await response.json();
             return quizzes;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -25,7 +25,7 @@ export class QuizService {
             const quizzes = await response.json();
             return quizzes;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -39,7 +39,7 @@ export class QuizService {
             const quiz = await response.json();
             return quiz;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -55,7 +55,7 @@ export class QuizService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -68,7 +68,7 @@ export class QuizService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -81,7 +81,7 @@ export class QuizService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -94,7 +94,7 @@ export class QuizService {
             }
             return await response.json();
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 }

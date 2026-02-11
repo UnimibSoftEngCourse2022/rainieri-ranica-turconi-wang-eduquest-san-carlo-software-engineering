@@ -11,7 +11,8 @@ export class Navbar extends BaseComponent {
       let user;
       try {
         user = await this.usersService.getMyUserInfo();
-      } catch {
+      } catch (e) {
+        console.error(e);
         globalThis.location = `../`;
         return;
       }

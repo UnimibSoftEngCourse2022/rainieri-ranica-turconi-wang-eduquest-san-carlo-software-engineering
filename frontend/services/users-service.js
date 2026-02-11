@@ -11,7 +11,7 @@ export class UsersService {
             const userData = await response.json();
             return userData;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -25,7 +25,7 @@ export class UsersService {
             const userData = await response.json();
             return userData;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -39,7 +39,7 @@ export class UsersService {
             const responseData = await response.json();
             return responseData;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -54,7 +54,7 @@ export class UsersService {
             const responseData = await response.json();
             return responseData;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 }

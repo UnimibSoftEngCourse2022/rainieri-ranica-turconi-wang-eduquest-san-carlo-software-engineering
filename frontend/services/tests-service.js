@@ -11,7 +11,7 @@ export class TestsService {
             const tests = await response.json();
             return tests;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -25,7 +25,7 @@ export class TestsService {
             const tests = await response.json();
             return tests;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -52,7 +52,7 @@ export class TestsService {
             }
             return response.ok;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -65,7 +65,7 @@ export class TestsService {
             }
             return response.ok;
         } catch (e) {
-            throw new Error(e);
+            throw e;
         }
     }
 
@@ -79,7 +79,7 @@ export class TestsService {
             return await response.json();
         } catch (e) {
             console.error("Errore fetching tentativi test:", e);
-            throw new Error(e);
+            throw e;
         }
     }
 }

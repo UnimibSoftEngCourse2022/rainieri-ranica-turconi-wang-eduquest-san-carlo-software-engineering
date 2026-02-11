@@ -25,7 +25,8 @@ window.onload = async () => {
     const profileViewer = document.createElement("profile-viewer");
     pageDiv.appendChild(profileViewer);
     profileViewer.userData =  searchedUserData;
-  } catch {
+  } catch (e) {
+    console.error(e);
     const alert = document.createElement("alert-component");
     alert.setAttribute("type", "danger text-center");
     alert.setAttribute("message", `Cannot find an user with ID '${searchedUserId}'`);

@@ -13,7 +13,8 @@ export class MissionsViewer extends BaseComponent {
         let missionsProgresses;
         try {
             missionsProgresses = await this.GamificationService.getUserMissionsProgresses();
-        } catch {
+        } catch (e) {
+            console.error(e);
             this.innerHTML = `<alert-component type="danger" message="Error getting missions progresses"></alert-component>`
             return;
         }
