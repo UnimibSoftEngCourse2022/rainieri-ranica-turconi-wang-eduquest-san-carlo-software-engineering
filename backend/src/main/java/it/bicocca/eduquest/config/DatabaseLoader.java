@@ -2,6 +2,7 @@ package it.bicocca.eduquest.config;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -378,6 +379,24 @@ public class DatabaseLoader implements CommandLineRunner {
         
         updateStudentStats(student2, 5, 5, 5);
 
+        QuizAttempt attempt9 = new QuizAttempt(student, quiz4);
+        attempt9.setStatus(QuizAttemptStatus.COMPLETED);
+        attempt9.setStartedAt(LocalDateTime.now().minusMinutes(45));
+        attempt9.setFinishedAt(LocalDateTime.now().minusMinutes(30));
+        attempt9 = quizAttemptsRepository.save(attempt9);
+        
+        saveAnswer(attempt9, q7, new OpenAnswer(attempt9, q7, "Tevere"), false);
+        saveAnswer(attempt9, q9, new OpenAnswer(attempt9, q9, "Raffaello"), false);
+        saveAnswer(attempt9, q10, new ClosedAnswer(attempt9, q10, q10.getOptions().get(0)), false);
+        saveAnswer(attempt9, q12, new ClosedAnswer(attempt9, q12, q12OptCorrect), true);
+        saveAnswer(attempt9, q13, new OpenAnswer(attempt9, q13, answerJackson), true);
+        
+        attempt9.setScore(2);
+        attempt9.setMaxScore(5);
+        quizAttemptsRepository.save(attempt9);
+        
+        updateStudentStats(student, 2, 5, 2);
+
         Mission m1 = new QuizzesNumberMission(1); missionsRepository.save(m1);
         Mission m2 = new QuizzesNumberMission(5); missionsRepository.save(m2);
         Mission m3 = new NoErrorQuizMission(1); missionsRepository.save(m3);
@@ -388,11 +407,11 @@ public class DatabaseLoader implements CommandLineRunner {
         Mission m8 = new CorrectedAnswerNumberMission(25); missionsRepository.save(m8);
 
         createMissionProgress(student, m1, 1, true); assignBadge(student, m1);
-        createMissionProgress(student, m2, 3, false);
+        createMissionProgress(student, m2, 4, false);
         createMissionProgress(student, m3, 1, true); assignBadge(student, m3);
         createMissionProgress(student, m4, 1, false);
         createMissionProgress(student, m7, 15, true); assignBadge(student, m7);
-        createMissionProgress(student, m8, 15, false);
+        createMissionProgress(student, m8, 17, false);
 
         createMissionProgress(student1, m1, 2, true); assignBadge(student1, m1);
         createMissionProgress(student1, m2, 2, false);
@@ -413,13 +432,42 @@ public class DatabaseLoader implements CommandLineRunner {
     }
 
     private void saveAnswer(QuizAttempt attempt, Question question, Answer answer, boolean isCorrect) {
+        answer.setQuizAttempt(attempt); 
+        answer.setQuestion(question);
+        
+        if (answer instanceof ClosedAnswer) {
+             ((ClosedAnswer) answer).setCorrect(isCorrect);
+        } else if (answer instanceof OpenAnswer) {
+             ((OpenAnswer) answer).setCorrect(isCorrect);
+        }
+        
         answer = answersRepository.save(answer);
         attempt.addAnswer(answer); 
-        QuestionStats stats = question.getStats();
-        if (stats != null) {
-            stats.updateStats(isCorrect);
-            questionsRepository.save(question);
+        
+        QuestionStats globalStats = question.getStats();
+        if (globalStats == null) {
+            globalStats = new QuestionStats();
+            question.setStats(globalStats);
         }
+        globalStats.updateStats(isCorrect);
+        questionsRepository.save(question);
+
+        Quiz quiz = attempt.getQuiz();
+        QuizStats quizStats = quiz.getStats();
+        if (quizStats == null) {
+            quizStats = new QuizStats();
+            quiz.setStats(quizStats);
+        }
+        Map<Long, QuestionStats> statsPerQuestionMap = quizStats.getStatsPerQuestion();
+        
+        QuestionStats specificStats = statsPerQuestionMap.get(question.getId());
+        if (specificStats == null) {
+            specificStats = new QuestionStats();
+            statsPerQuestionMap.put(question.getId(), specificStats);
+        }
+        
+        specificStats.updateStats(isCorrect);
+        quizRepository.save(quiz); 
     }
     
     private void updateStudentStats(User user, double score, int totalQuestions, int correctAnswers) {
