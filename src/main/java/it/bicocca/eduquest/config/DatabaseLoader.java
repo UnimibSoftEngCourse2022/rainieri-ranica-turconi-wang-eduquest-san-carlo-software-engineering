@@ -397,29 +397,29 @@ public class DatabaseLoader implements CommandLineRunner {
         
         updateStudentStats(student, 2, 5, 2);
 
-        Mission m1 = new QuizzesNumberMission(1); missionsRepository.save(m1);
+        Mission m1 = new QuizzesNumberMission(2); missionsRepository.save(m1);
         Mission m2 = new QuizzesNumberMission(5); missionsRepository.save(m2);
-        Mission m3 = new NoErrorQuizMission(1); missionsRepository.save(m3);
+        Mission m3 = new NoErrorQuizMission(2); missionsRepository.save(m3);
         Mission m4 = new NoErrorQuizMission(5); missionsRepository.save(m4);
-        Mission m5 = new ChallengeNumberMission(1); missionsRepository.save(m5);
+        Mission m5 = new ChallengeNumberMission(2); missionsRepository.save(m5);
         Mission m6 = new ChallengeNumberMission(5); missionsRepository.save(m6);
         Mission m7 = new CorrectedAnswerNumberMission(5); missionsRepository.save(m7);
         Mission m8 = new CorrectedAnswerNumberMission(25); missionsRepository.save(m8);
 
-        createMissionProgress(student, m1, 1, true); assignBadge(student, m1);
+        createMissionProgress(student, m1, 2, true); assignBadge(student, m1);
         createMissionProgress(student, m4, 1, false);
-        createMissionProgress(student, m7, 15, true); assignBadge(student, m7);
+        createMissionProgress(student, m7, 5, true); assignBadge(student, m7);
         createMissionProgress(student, m8, 17, false);
 
-        createMissionProgress(student1, m1, 2, true); assignBadge(student1, m1);
+        createMissionProgress(student1, m1, 1, true); assignBadge(student1, m1);
         createMissionProgress(student1, m2, 2, false);
-        createMissionProgress(student1, m3, 1, true); assignBadge(student1, m3);
+        createMissionProgress(student1, m3, 2, true); assignBadge(student1, m3);
         createMissionProgress(student1, m8, 10, false);
         
         createMissionProgress(student2, m2, 3, false);
         createMissionProgress(student2, m3, 1, true); assignBadge(student2, m3);
         createMissionProgress(student2, m4, 3, false);
-        createMissionProgress(student2, m7, 18, true); assignBadge(student2, m7);
+        createMissionProgress(student2, m7, 5, true); assignBadge(student2, m7);
         
         logger.info("Quizzes, Tests, Attempts, Missions and Badges created and populated!");
         logger.info("The database is ready!");
