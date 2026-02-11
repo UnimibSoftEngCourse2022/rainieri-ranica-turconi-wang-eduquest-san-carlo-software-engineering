@@ -407,8 +407,6 @@ public class DatabaseLoader implements CommandLineRunner {
         Mission m8 = new CorrectedAnswerNumberMission(25); missionsRepository.save(m8);
 
         createMissionProgress(student, m1, 1, true); assignBadge(student, m1);
-        createMissionProgress(student, m2, 4, false);
-        createMissionProgress(student, m3, 1, true); assignBadge(student, m3);
         createMissionProgress(student, m4, 1, false);
         createMissionProgress(student, m7, 15, true); assignBadge(student, m7);
         createMissionProgress(student, m8, 17, false);
@@ -416,16 +414,12 @@ public class DatabaseLoader implements CommandLineRunner {
         createMissionProgress(student1, m1, 2, true); assignBadge(student1, m1);
         createMissionProgress(student1, m2, 2, false);
         createMissionProgress(student1, m3, 1, true); assignBadge(student1, m3);
-        createMissionProgress(student1, m4, 1, false);
-        createMissionProgress(student1, m7, 10, true); assignBadge(student1, m7);
         createMissionProgress(student1, m8, 10, false);
         
-        createMissionProgress(student2, m1, 3, true); assignBadge(student2, m1);
         createMissionProgress(student2, m2, 3, false);
         createMissionProgress(student2, m3, 1, true); assignBadge(student2, m3);
         createMissionProgress(student2, m4, 3, false);
         createMissionProgress(student2, m7, 18, true); assignBadge(student2, m7);
-        createMissionProgress(student2, m8, 18, false);
         
         logger.info("Quizzes, Tests, Attempts, Missions and Badges created and populated!");
         logger.info("The database is ready!");
