@@ -137,11 +137,10 @@ export class TestItem extends BaseComponent {
                 if (sessionData.testId && sessionData.testId !== this._testData.id) {
                      throw new Error("You have another Test/Quiz in progress.");
                 }
-                if (sessionData.resumed) {
-                    if (cardBody) {
-                        cardBody.insertAdjacentHTML('beforeend', `
-                        <alert-component type="danger" message="This test has already started! Resume it from the Dashboard." timeout="3000"></alert-component>`);
-                    }
+                if (sessionData.resumed && cardBody) {
+                    cardBody.insertAdjacentHTML('beforeend', `
+                    <alert-component type="danger" message="This test has already started! Resume it from the Dashboard." timeout="3000"></alert-component>`);
+                    return;
                 } else {
                     if (cardBody) {
                         cardBody.insertAdjacentHTML('beforeend', `
@@ -154,9 +153,12 @@ export class TestItem extends BaseComponent {
                 localStorage.setItem("currentTestId", this._testData.id);
                 
                 this.dispatchEvent(new CustomEvent("attempt-created", { 
-                bubbles: true, 
-                composed: true 
+                    bubbles: true, 
+                    composed: true 
                 }));
+
+                sessionStorage.setItem('currentTestId', this._testData.id); 
+                globalThis.location.hash = '#quiz-runner';
             } catch (e) {
                 console.error(e);
                 let msg = e.message || "Unknown error";

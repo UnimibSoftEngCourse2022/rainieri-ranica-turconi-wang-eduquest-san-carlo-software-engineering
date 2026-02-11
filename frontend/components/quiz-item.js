@@ -107,7 +107,8 @@ export class Quiz extends BaseComponent {
                 composed: true 
             }));
 
-
+            sessionStorage.setItem('currentQuizId', this._quizData.id); 
+            globalThis.location.hash = '#quiz-runner';
         } catch (e) {
             console.error(e);
             let msg = e.message || "Unknown error";
