@@ -1,4 +1,4 @@
-import { UsersService } from "../services/users-service.js";
+import { UsersService } from "../../services/users-service.js";
 
 const LOGIN_ENDPOINT_URL = "http://localhost:8080/api/auth/login";
 

@@ -1,6 +1,6 @@
-import "../components/quiz-editor.js";
-import { verifyUser } from "../js/auth.js";
-import { UsersService } from "../services/users-service.js";
+import "../../components/quiz-editor.js";
+import { verifyUser } from "../../js/auth.js";
+import { UsersService } from "../../services/users-service.js";
 
 const LOGIN_PAGE = "../login/";
 

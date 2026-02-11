@@ -94,8 +94,8 @@ export class TestItem extends BaseComponent {
                   statsEl.innerHTML = `Average score: ${avg.toFixed(2)} | Total attempts: ${count}`;
               }
 
+              const runButton = this.querySelector(`#btn-test-${this._testData.id}`);
               if (myAttempts.length >= this._testData.maxTries) {
-                const runButton = this.querySelector(`#btn-test-${this._testData.id}`);
                 runButton.innerHTML = `No attempts left`;
                 runButton.disabled = true;
               } else {

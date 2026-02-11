@@ -1,5 +1,5 @@
-import { UsersService } from "../services/users-service.js";
-import "../components/shared/alert.js";
+import { UsersService } from "../../services/users-service.js";
+import "../../components/shared/alert.js";
 
 const NAME_INPUT_TAG_ID = "name-input";
 const SURNAME_INPUT_TAG_ID = "surname-input";

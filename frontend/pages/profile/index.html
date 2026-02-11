@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Register | EduQuest</title>
+        <title>Profile viewer | EduQuest</title>
 
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -14,14 +14,7 @@
     </head>
     <body>
         <navbar-item></navbar-item>
-        <div id="page" class="container my-5 text-center">
-            <h1>Rankings</h1>
-            <div class="my-3">
-                <button class="btn btn-primary" id="button-quizzes-number">Quizzes number</button>
-                <button class="btn btn-primary" id="button-average-score">Average score</button>
-                <button class="btn btn-primary" id="button-correct-answers">Correct answers</button>
-            </div>
-            <ranking-viewer></ranking-viewer>
+        <div class="container my-5" id="page" style="display: none">
         </div>
 
         <script
@@ -29,8 +22,11 @@
             integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
             crossorigin="anonymous"
         ></script>
-        <script type="module" src="../components/shared/navbar.js"></script>
-        <script type="module" src="../components/ranking-viewer.js"></script>
         <script type="module" src="script.js"></script>
+        <script type="module" src="../../components/shared/navbar.js"></script>
+        <script type="module" src="../../components/shared/loading-spinner.js"></script>
+        <script type="module" src="../../components/user-search.js"></script>
+        <script type="module" src="../../components/profile-viewer.js"></script>
+        <script type="module" src="../../components/quiz-runner.js"></script>
     </body>
 </html>

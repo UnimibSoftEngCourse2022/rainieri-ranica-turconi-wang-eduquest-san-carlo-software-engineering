@@ -1,15 +1,15 @@
 // Analisi SonarCloud Trigger 
-import { verifyUser } from "../js/auth.js";
-import "../components/quizzes-viewer.js";
-import "../components/tests-viewer.js";
-import "../components/quiz-runner.js"; 
-import "../components/quizzes-attempts-viewer.js";
-import "../components/questions-viewer.js";
-import "../components/add-question.js";
-import "../components/missions-viewer.js";
-import "../components/challenges-viewer.js";  
-import "../components/add-challenge.js";  
-import "../components/shared/navbar.js";
+import { verifyUser } from "../../js/auth.js";
+import "../../components/quizzes-viewer.js";
+import "../../components/tests-viewer.js";
+import "../../components/quiz-runner.js"; 
+import "../../components/quizzes-attempts-viewer.js";
+import "../../components/questions-viewer.js";
+import "../../components/add-question.js";
+import "../../components/missions-viewer.js";
+import "../../components/challenges-viewer.js";  
+import "../../components/add-challenge.js";  
+import "../../components/shared/navbar.js";
 
 const LOGIN_PAGE = "../login/index.html";
 const STUDENT_ROLE = "STUDENT";

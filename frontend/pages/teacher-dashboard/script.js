@@ -1,9 +1,9 @@
-import { verifyUser } from "../js/auth.js";
-import "../components/quiz-item.js";
-import "../components/quizzes-viewer.js";
-import "../components/tests-viewer.js";
-import "../components/add-quiz.js";
-import "../components/add-test.js";
+import { verifyUser } from "../../js/auth.js";
+import "../../components/quiz-item.js";
+import "../../components/quizzes-viewer.js";
+import "../../components/tests-viewer.js";
+import "../../components/add-quiz.js";
+import "../../components/add-test.js";
 
 
 const LOGIN_PAGE = "../login/index.html";
