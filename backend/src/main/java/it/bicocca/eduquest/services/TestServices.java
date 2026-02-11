@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.bicocca.eduquest.domain.answers.QuizAttempt;
+import it.bicocca.eduquest.domain.answers.QuizAttemptStatus;
 import it.bicocca.eduquest.domain.quiz.Quiz;
 import it.bicocca.eduquest.domain.quiz.Test;
 import it.bicocca.eduquest.domain.users.Teacher;
@@ -138,7 +139,12 @@ public class TestServices {
     	Test test = testRepository.findById(testId).orElseThrow(() -> new IllegalArgumentException("Test not found"));
     	List<QuizAttempt> attempts = quizAttemptsRepository.findByTest(test);
         if (!attempts.isEmpty()) {
-        	quizAttemptsRepository.deleteAll(attempts);
+        	for (QuizAttempt qa : attempts) {
+        		if (qa.getStatus() == QuizAttemptStatus.STARTED) {
+        			quizAttemptsRepository.delete(qa);
+        		}
+        	}
+        	//quizAttemptsRepository.deleteAll(attempts);
         }
         testRepository.deleteById(testId);
     }

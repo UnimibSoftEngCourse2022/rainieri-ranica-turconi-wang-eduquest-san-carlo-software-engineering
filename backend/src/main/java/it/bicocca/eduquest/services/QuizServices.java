@@ -19,6 +19,7 @@ import it.bicocca.eduquest.domain.users.Student;
 import it.bicocca.eduquest.domain.users.Teacher;
 import it.bicocca.eduquest.domain.users.User;
 import it.bicocca.eduquest.domain.answers.QuizAttempt;
+import it.bicocca.eduquest.domain.answers.QuizAttemptStatus;
 import it.bicocca.eduquest.dto.quiz.ClosedQuestionOptionDTO;
 import it.bicocca.eduquest.dto.quiz.QuestionAddDTO;
 import it.bicocca.eduquest.dto.quiz.QuestionDTO;
@@ -122,7 +123,12 @@ public class QuizServices {
 		if (quiz.isPublic() && !quizEditDTO.isPublic()) {
             List<QuizAttempt> attempts = quizAttemptsRepository.findByQuiz(quiz);
             if (!attempts.isEmpty()) {
-                quizAttemptsRepository.deleteAll(attempts);
+            	for (QuizAttempt qa : attempts) {
+            		if (qa.getStatus() == QuizAttemptStatus.STARTED) {
+            			quizAttemptsRepository.delete(qa);
+            		}
+            	}
+                //quizAttemptsRepository.deleteAll(attempts);
             }
         }
 		
