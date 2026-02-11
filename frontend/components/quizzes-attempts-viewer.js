@@ -29,6 +29,9 @@ export class QuizzesAttemptsViewer extends BaseComponent {
       return;
     }
     const attemptId = item.id.replace('attempt-', '');
+    if (!attemptId) {
+      return;
+    }
     const details = this.quizAttemptDetails;
     details.innerHTML = await this.getQuizAttemptDetails(attemptId);
   }
@@ -98,10 +101,10 @@ export class QuizzesAttemptsViewer extends BaseComponent {
         const pct = attempt.score && attempt.maxScore ? (attempt.score / attempt.maxScore) : 0;
         const color = pct >= 0.6 ? "success" : "danger";
         return `
-        <button class="btn"><div class="list-group-item d-flex justify-content-between align-items-center" id="attempt-${attempt.id}" data-bs-toggle="modal" data-bs-target="#quiz-attempt-details-modal">
+        <a href="" class="list-group-item d-flex justify-content-between align-items-center" id="attempt-${attempt.id}" data-bs-toggle="modal" data-bs-target="#quiz-attempt-details-modal">
             ${attempt.quizTitle}
             <span class="badge text-bg-${color}">${attempt.status} (${(pct * 100).toFixed(0)}%)</span>
-        </div></button>`;
+        </a>`;
     } else {
         return `
         <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
