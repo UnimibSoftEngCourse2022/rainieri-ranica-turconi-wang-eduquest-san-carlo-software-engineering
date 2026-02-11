@@ -91,7 +91,7 @@ export class TestItem extends BaseComponent {
 
               const statsEl = this.querySelector(`#stats-test-${this._testData.id}`);
               if (statsEl) {
-                  statsEl.innerHTML = `Average score: ${avg.toFixed(2)} | Total attempts: ${count}`;
+                  statsEl.innerHTML = `Average score: ${avg.toFixed(2)} | Your attempts: ${count}`;
               }
 
               const runButton = this.querySelector(`#btn-test-${this._testData.id}`);

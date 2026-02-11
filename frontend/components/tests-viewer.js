@@ -24,7 +24,9 @@ export class TestsViewer extends BaseComponent {
         this.loadData();
     });
 
-    this.addEventListenerWithTracking("#show-only-tests-with-attempts-left", "click", () => this.loadData());
+    if (this.role == "STUDENT") {
+        this.addEventListenerWithTracking("#show-only-tests-with-attempts-left", "click", () => this.loadData());
+    }
 
     const searchInput = this.querySelector("#search-input");
     if (searchInput) {
@@ -51,10 +53,13 @@ export class TestsViewer extends BaseComponent {
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
+            ${this.role == "STUDENT" ? 
+            `
             <input class="form-check-input" type="checkbox" value="1" id="show-only-tests-with-attempts-left" checked>
             <label class="form-check-label" for="show-only-tests-with-attempts-left" checked>
                 Show only tests with attempts left
             </label>
+            ` : ``}
             <div id="message-container"></div>
             <div class="row g-4 justify-content-center" id="tests-container"></div>
         </div>
@@ -73,8 +78,7 @@ export class TestsViewer extends BaseComponent {
         if (loader) loader.style.display = "none";
         if (messageContainer) messageContainer.innerHTML = "";
 
-        const showOnlyTestsWithAttemptsLeft = this.querySelector("#show-only-tests-with-attempts-left").checked;
-        const testsToDisplay = this.allTests.filter(test => !showOnlyTestsWithAttemptsLeft || test.testTotalAttempts < test.maxTries);
+        const testsToDisplay = await this.getTestsToDisplay();
 
         if (this.allTests.length === 0) {
             this.showEmptyState(messageContainer);
@@ -95,6 +99,23 @@ export class TestsViewer extends BaseComponent {
         return await this.testsService.getTestsByAuthorId(this.userId);
     }
     return await this.testsService.getTests();
+  }
+
+  async getTestsToDisplay() {
+    let showOnlyTestsWithAttemptsLeft;
+    if (this.role == "STUDENT") {
+        showOnlyTestsWithAttemptsLeft = this.querySelector("#show-only-tests-with-attempts-left").checked;
+    } else {
+        showOnlyTestsWithAttemptsLeft = false;
+    }
+
+    const promises = this.allTests.map(async (test) => {
+        const testAttempts = await this.testsService.getMyAttempts(test.id);
+        const showTest = !showOnlyTestsWithAttemptsLeft || testAttempts.length < test.maxTries;
+        return showTest ? test : null;
+    });
+    const results = await Promise.all(promises);
+    return results.filter(test => test !== null);
   }
 
   showEmptyState(container) {
