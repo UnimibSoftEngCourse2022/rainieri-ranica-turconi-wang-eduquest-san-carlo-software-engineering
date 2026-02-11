@@ -2,116 +2,83 @@ import { callApi, endpoints } from "../js/api.js";
 
 export class GamificationService {
     async getUserMissionsProgresses() {
-        try {
-            const response = await callApi(endpoints.missionsProgresses, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            const attempts = await response.json();
-            return attempts;
-        } catch (e) {
-            throw e;
+        const response = await callApi(endpoints.missionsProgresses, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        const attempts = await response.json();
+        return attempts;
     }
 
     async getUserCompletedMissions(userId) {
-        try {
-            const response = await callApi(endpoints.missionsProgresses+`/${userId}?onlyCompleted=true`);
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            const completedMissions = await response.json();
-            return completedMissions;
-        } catch (e) {
-            throw e;
+        const response = await callApi(endpoints.missionsProgresses+`/${userId}?onlyCompleted=true`);
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        const completedMissions = await response.json();
+        return completedMissions;
     }
 
     async getRankingByCompletedQuizzes() {
-        try {
-            const response = await callApi(endpoints.rankings.byCompletedQuizzes, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            const attempts = await response.json();
-            return attempts;
-        } catch (e) {
-            throw e;
+        const response = await callApi(endpoints.rankings.byCompletedQuizzes, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        const attempts = await response.json();
+        return attempts;
     }
 
     async getRankingByAverageScore() {
-        try {
-            const response = await callApi(endpoints.rankings.byAverageScore, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            const attempts = await response.json();
-            return attempts;
-        } catch (e) {
-            throw e;
+        const response = await callApi(endpoints.rankings.byAverageScore, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        const attempts = await response.json();
+        return attempts;
     }
 
     async getRankingByCorrectAnswers() {
-        try {
-            const response = await callApi(endpoints.rankings.byCorrectAnswers, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            const attempts = await response.json();
-            return attempts;
-        } catch (e) {
-            throw e;
+        const response = await callApi(endpoints.rankings.byCorrectAnswers, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        const attempts = await response.json();
+        return attempts;
     }
 
     async getMyChallenges() {
-        try {
-            const response = await callApi(endpoints.challenges, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            const challenges = await response.json();
-            return challenges;
-        } catch (e) {
-            throw e;
+        const response = await callApi(endpoints.challenges, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        const challenges = await response.json();
+        return challenges;
     }
 
     async addChallenge(opponentId, quizId, durationInHours) {
-        try {
-            const requestBody = {opponentId, quizId, durationInHours};
-            const response = await callApi(endpoints.challenges, "POST", requestBody);
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            const challenges = await response.json();
-            return challenges;
-        } catch (e) {
-            throw e;
+        const requestBody = {opponentId, quizId, durationInHours};
+        const response = await callApi(endpoints.challenges, "POST", requestBody);
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        const challenges = await response.json();
+        return challenges;
     }
 
-        async getUserBadges(userId) {
-        try {
-            const url = `http://localhost:8080/api/gamification/badges/${userId}`;
-            const response = await callApi(url, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error("Errore badge:", error);
-            throw error; 
+    async getUserBadges(userId) {
+        const url = `${endpoints.badges}/${userId}`;
+        const response = await callApi(url, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        return await response.json();
     }
 }

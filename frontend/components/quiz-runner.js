@@ -161,7 +161,7 @@ export class QuizRunner extends BaseComponent {
     // 2. Fallback
     if (!maxDuration) {
         if (this.attemptData.maxDuration) maxDuration = this.attemptData.maxDuration;
-        else if (this.attemptData.test && this.attemptData.test.maxDuration) maxDuration = this.attemptData.test.maxDuration;
+        else if (this.attemptData.test?.maxDuration) maxDuration = this.attemptData.test.maxDuration;
     }
 
     this.quizTimer.style.display = 'block';
@@ -177,19 +177,21 @@ export class QuizRunner extends BaseComponent {
 
         this.updateTimerDisplay(endTime, maxDuration);
 
-        this.timerInterval = setInterval(() => {
-            const now = Date.now();
-            const distance = endTime - now;
-
-            if (distance < 0) {
-                clearInterval(this.timerInterval);
-                this.quizTimer.innerHTML = "TEMPO SCADUTO";
-                this.handleTimeExpired(); 
-            } else {
-                this.updateTimerDisplay(endTime, maxDuration);
-            }
-        }, 1000);
+        this.timerInterval = setInterval(() => this.handleTimerInterval(endTime, maxDuration), 1000);
     } 
+  }
+
+  handleTimerInterval(endTime, maxDuration) {
+    const now = Date.now();
+    const distance = endTime - now;
+
+    if (distance < 0) {
+        clearInterval(this.timerInterval);
+        this.quizTimer.innerHTML = "TEMPO SCADUTO";
+        this.handleTimeExpired(); 
+    } else {
+        this.updateTimerDisplay(endTime, maxDuration);
+    }
   }
 
   updateTimerDisplay(endTime, totalMinutes) {
@@ -242,7 +244,10 @@ export class QuizRunner extends BaseComponent {
     let dateStr = "";
     try {
         dateStr = new Date(this.attemptData.startedAt).toLocaleString();
-    } catch(e) { dateStr = this.attemptData.startedAt; }
+    } catch(e) {
+        console.error(e);
+        dateStr = this.attemptData.startedAt;
+    }
     this.quizHeader.textContent = this.attemptData.quizTitle || "Quiz";
     this.quizDate.textContent = `Inizio: ${dateStr}`;
   }
@@ -254,7 +259,7 @@ export class QuizRunner extends BaseComponent {
     this.questionRunner.question = currentQuestion;
     this.questionRunner.answer = null;
     
-    if (this.sessionData && this.sessionData.existingAnswers) {
+    if (this.sessionData?.existingAnswers) {
         const found = this.sessionData.existingAnswers.find(a => a.questionId == currentQuestion.id);
         if (found) {
              if (found.questionType == "OPENED") this.questionRunner.answer = found.textOpenAnswer;
@@ -292,7 +297,7 @@ export class QuizRunner extends BaseComponent {
     try {
         await this.attemptsService.saveAttemptAnswer(this.quizAttemptId, requestBody);
         
-        if (this.sessionData && this.sessionData.existingAnswers) {
+        if (this.sessionData?.existingAnswers) {
              this.sessionData.existingAnswers = this.sessionData.existingAnswers.filter(a => a.questionId != currentQuestion.id);
              this.sessionData.existingAnswers.push({...requestBody, questionType: currentQuestion.questionType});
         }
@@ -300,6 +305,7 @@ export class QuizRunner extends BaseComponent {
         this.quizError.innerHTML = "";
         return true;
     } catch(e) {
+        console.error(e);
         return false;
     }
   }
@@ -317,8 +323,9 @@ export class QuizRunner extends BaseComponent {
 
     try {
         await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
-        window.location.href = window.location.pathname; 
+        globalThis.location.href = window.location.pathname; 
     } catch(e) {
+        console.error(e);
         if (btn) { btn.disabled = false; btn.innerHTML = "Complete Quiz"; }
         this.quizError.innerHTML = `<alert-component type="danger" message="Errore completamento."></alert-component>`;
     }

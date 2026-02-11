@@ -18,7 +18,8 @@ export const endpoints = {
         byAverageScore: `${API_BASE}/gamification/ranking?rankingType=quizzesScore`,
         byCorrectAnswers: `${API_BASE}/gamification/ranking?rankingType=correctAnswers`
     },
-    challenges: `${API_BASE}/gamification/challenges`
+    challenges: `${API_BASE}/gamification/challenges`,
+    badges: `http://localhost:8080/api/gamification/badges`
 }
 
 export const callApi = async(url, method, body = null) => {

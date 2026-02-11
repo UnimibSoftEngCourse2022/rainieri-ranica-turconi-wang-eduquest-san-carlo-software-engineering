@@ -2,42 +2,30 @@ import { callApi, endpoints } from "../js/api.js";
 
 export class AttemptsService {
     async getAttemptById(quizAttemptId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}/${quizAttemptId}`, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            return await response.json();
-        } catch (e) {
-            throw e;
+        const response = await callApi(`${endpoints.attempts}/${quizAttemptId}`, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        return await response.json();
     }
 
     async getAttemptSessionById(quizAttemptId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}/${quizAttemptId}/session`, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            return await response.json();
-        } catch (e) {
-            throw e;
+        const response = await callApi(`${endpoints.attempts}/${quizAttemptId}/session`, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        return await response.json();
     }
 
     async getAttemptsByStudentId(studentId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}?studentId=${studentId}`, "GET");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            return await response.json();
-        } catch (e) {
-            throw e;
+        const response = await callApi(`${endpoints.attempts}?studentId=${studentId}`, "GET");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        return await response.json();
     }
 
     async addAttempt(quizId, userId, testId = null) {
@@ -47,41 +35,29 @@ export class AttemptsService {
             url += `&testId=${testId}`;
         }
 
-        try {
-            const response = await callApi(url, "POST");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            return await response.json();
-        } catch(e) {
-            throw e;
+        const response = await callApi(url, "POST");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        return await response.json();
     }
 
     async saveAttemptAnswer(attemptId, answer) {
-        try {
-            const response = await callApi(`${endpoints.attempts}/${attemptId}/answers`, "PUT", answer);
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            return await response.json();
-        } catch (e) {
-            throw e;
+        const response = await callApi(`${endpoints.attempts}/${attemptId}/answers`, "PUT", answer);
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        return await response.json();
     }
 
     async completeAttemptAnswer(attemptId) {
-        try {
-            const response = await callApi(`${endpoints.attempts}/${attemptId}/complete`, "POST");
-            if (!response.ok) {
-                const responseBody = await response.text();
-                throw new Error(responseBody);
-            }
-            return await response.json();
-        } catch (e) {
-            throw e;
+        const response = await callApi(`${endpoints.attempts}/${attemptId}/complete`, "POST");
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(responseBody);
         }
+        return await response.json();
     }
 }
