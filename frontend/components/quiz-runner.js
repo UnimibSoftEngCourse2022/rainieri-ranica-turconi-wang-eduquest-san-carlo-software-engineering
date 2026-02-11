@@ -152,7 +152,7 @@ export class QuizRunner extends BaseComponent {
     if (this.testId && this.testId !== "null" && this.testId !== "undefined") {
         try {
             const test = await this.testsService.getTestById(this.testId);
-            if (test && test.maxDuration) {
+            if (test?.maxDuration) {
                 maxDuration = test.maxDuration;
             }
         } catch (e) { console.error("Error fetching test details", e); }
@@ -228,7 +228,7 @@ export class QuizRunner extends BaseComponent {
       btns.forEach(b => b.disabled = true);
 
       if (!immediate) {
-          try { await this.handleSaveAnswerToCurrentQuestion(); } catch(e) {}
+          try { await this.handleSaveAnswerToCurrentQuestion(); } catch(e) { console.error(e); }
       }
       
       setTimeout(() => this.handleCompleteQuiz(), 1500);
@@ -317,13 +317,13 @@ export class QuizRunner extends BaseComponent {
 
     if (this.questionsContainer && this.questionsContainer.innerHTML !== "") {
         if (this.currentQuestionIndex == this.quizQuestions.length - 1) {
-            try { await this.handleSaveAnswerToCurrentQuestion(); } catch(e) {}
+            try { await this.handleSaveAnswerToCurrentQuestion(); } catch(e) { console.error(e); }
         }
     }
 
     try {
         await this.attemptsService.completeAttemptAnswer(this.quizAttemptId);
-        globalThis.location.href = window.location.pathname; 
+        globalThis.location.href = globalThis.location.pathname; 
     } catch(e) {
         console.error(e);
         if (btn) { btn.disabled = false; btn.innerHTML = "Complete Quiz"; }
