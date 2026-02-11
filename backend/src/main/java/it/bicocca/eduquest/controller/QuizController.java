@@ -133,7 +133,7 @@ public class QuizController {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
 			}
 			
-			// Other erros, for example "Question already included in the quiz!"
+			// Other errors, for example "Question already included in the quiz!"
 			return ResponseEntity.badRequest().body(msg);	
 		}
 	}
