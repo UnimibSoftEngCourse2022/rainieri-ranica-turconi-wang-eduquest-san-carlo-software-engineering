@@ -2,7 +2,7 @@ import "../../components/quiz-editor.js";
 import { verifyUser } from "../../js/auth.js";
 import { UsersService } from "../../services/users-service.js";
 
-const LOGIN_PAGE = "../login/";
+const LOGIN_PAGE = "../login/index.html";
 
 window.onload = async () => {
   const loggedUserData = await verifyUser();

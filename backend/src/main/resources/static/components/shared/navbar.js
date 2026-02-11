@@ -17,9 +17,9 @@ export class Navbar extends BaseComponent {
         return;
       }
 
-      const homeUrl = user.role == "TEACHER" ? `../teacher-dashboard` : `../student-dashboard`;
-      const profileUrl = `../profile/?id=${user.id}`
-      const rankingsUrl = `../rankings/`
+      const homeUrl = user.role == "TEACHER" ? `../teacher-dashboard` : `../student-dashboard/index.html`;
+      const profileUrl = `../profile/index.html?id=${user.id}`
+      const rankingsUrl = `../rankings/index.html`
 
       this.innerHTML = `
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -59,7 +59,7 @@ export class Navbar extends BaseComponent {
 
     handleLogout() {
       globalThis.localStorage.removeItem("token");
-      globalThis.location = `../`;
+      globalThis.location = `../index.html`;
     }
 }
 customElements.define('navbar-item', Navbar);

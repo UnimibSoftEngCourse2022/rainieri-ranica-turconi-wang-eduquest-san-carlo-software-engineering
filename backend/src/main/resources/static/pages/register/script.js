@@ -8,7 +8,7 @@ const PASSWORD_INPUT_TAG_ID = "password-input";
 const REGISTER_RESULT_TAG_ID = "register-result";
 
 const REGISTER_SUCCESS_DIV =
-  "<div class='alert alert-success' role='alert'>Registration has completed successfully! Now you can <a href='../login/'>login</a></div>";
+  "<div class='alert alert-success' role='alert'>Registration has completed successfully! Now you can <a href='../login/index.html'>login</a></div>";
 const REGISTER_CONNECTION_ERROR_DIV =
   "<div class='alert alert-danger' role='alert'>Connection to the server failed, please try again later</div>";
 

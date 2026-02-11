@@ -1,7 +1,7 @@
 import "../../components/quiz-editor.js";
 import { verifyUser } from "../../js/auth.js";
 
-const LOGIN_PAGE = "/login/";
+const LOGIN_PAGE = "/login/index.html";
 
 let userData = null;
 

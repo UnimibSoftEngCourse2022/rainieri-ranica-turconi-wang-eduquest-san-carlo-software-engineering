@@ -26,9 +26,9 @@ const handleLoginSubmit = async (event) => {
 
     let destination;
     if (response.role == STUDENT_ROLE) {
-      destination = "../student-dashboard/";
+      destination = "../student-dashboard/index.html";
     } else if (response.role == TEACHER_ROLE) {
-      destination = "../teacher-dashboard/";
+      destination = "../teacher-dashboard/index.html";
     }
     globalThis.location = destination;
   } catch (e) {
