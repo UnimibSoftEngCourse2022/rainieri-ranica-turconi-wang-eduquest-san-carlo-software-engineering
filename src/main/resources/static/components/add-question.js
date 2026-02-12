@@ -238,6 +238,9 @@ export class AddQuestion extends BaseComponent {
   }
 
   async submitData(formData) {
+	const submitBtn = this.querySelector("#add-question-button");
+	submitBtn.disabled = true;
+	submitBtn.textContent = "Uploading...";
     this.addQuestionResult.innerHTML = `<loading-spinner></loading-spinner>`;
     try {
         await this.questionsService.createQuestion(formData);
@@ -253,7 +256,10 @@ export class AddQuestion extends BaseComponent {
         this.addQuestionResult.innerHTML = `
         <alert-component type="danger" message="Error creating question" timeout="4000"></alert-component>
         `;
-    }
+    } finally {
+		submitBtn.disabled = false;
+		submitBtn.textContent = "Add question";
+	}
   }
 
   updateMediaFields() {
