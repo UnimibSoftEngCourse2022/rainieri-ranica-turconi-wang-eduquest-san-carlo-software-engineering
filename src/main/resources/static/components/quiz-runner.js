@@ -148,7 +148,6 @@ export class QuizRunner extends BaseComponent {
 
     let maxDuration = 0;
 
-    // 1. Chiamata API esplicita per ottenere la durata corretta
     if (this.testId && this.testId !== "null" && this.testId !== "undefined") {
         try {
             const test = await this.testsService.getTestById(this.testId);
@@ -158,7 +157,6 @@ export class QuizRunner extends BaseComponent {
         } catch (e) { console.error("Error fetching test details", e); }
     }
 
-    // 2. Fallback
     if (!maxDuration) {
         if (this.attemptData.maxDuration) maxDuration = this.attemptData.maxDuration;
         else if (this.attemptData.test?.maxDuration) maxDuration = this.attemptData.test.maxDuration;

@@ -1,4 +1,3 @@
-// Analisi SonarCloud Trigger 
 import { verifyUser } from "../../js/auth.js";
 import "../../components/quizzes-viewer.js";
 import "../../components/tests-viewer.js";

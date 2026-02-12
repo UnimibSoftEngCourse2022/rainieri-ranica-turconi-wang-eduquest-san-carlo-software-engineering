@@ -3,13 +3,6 @@ package it.bicocca.eduquest.domain.quiz;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/*
- * Classi testate in questo file:
- * - OpenQuestionAcceptedAnswer
- * - Difficulty
- * - QuizStats
- * - QuestionStats
- */
 class QuizSupportTest {
 
     @Test
