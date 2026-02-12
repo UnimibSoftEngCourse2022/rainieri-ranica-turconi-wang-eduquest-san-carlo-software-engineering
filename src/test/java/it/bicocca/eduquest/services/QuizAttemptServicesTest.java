@@ -21,7 +21,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import it.bicocca.eduquest.domain.answers.*;
 import it.bicocca.eduquest.domain.quiz.*;
 import it.bicocca.eduquest.domain.users.*;
-import it.bicocca.eduquest.dto.quiz.QuestionType;
 import it.bicocca.eduquest.dto.quizAttempt.AnswerDTO;
 import it.bicocca.eduquest.dto.quizAttempt.QuizAttemptDTO;
 import it.bicocca.eduquest.dto.quizAttempt.QuizSessionDTO;

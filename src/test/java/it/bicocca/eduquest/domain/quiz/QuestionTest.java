@@ -1,7 +1,7 @@
 package it.bicocca.eduquest.domain.quiz;
 
 import it.bicocca.eduquest.domain.users.Teacher;
-import it.bicocca.eduquest.dto.quiz.QuestionType;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

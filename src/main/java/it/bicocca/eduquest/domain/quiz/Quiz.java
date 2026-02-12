@@ -42,7 +42,6 @@ public class Quiz {
     @JoinColumn(name = "teacher_id") // Coloumn name in the DB
 	private Teacher author; // Quiz author
 	
-	// @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
 	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable( name = "quiz_questions", joinColumns = @JoinColumn(name = "quiz_id"), inverseJoinColumns = @JoinColumn(name = "question_id"))
     private List<Question> questions = new ArrayList<>();

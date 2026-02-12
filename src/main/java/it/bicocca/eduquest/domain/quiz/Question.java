@@ -1,7 +1,6 @@
 package it.bicocca.eduquest.domain.quiz;
 
 import it.bicocca.eduquest.domain.users.User;
-import it.bicocca.eduquest.dto.quiz.QuestionType;
 import jakarta.persistence.*;
 import it.bicocca.eduquest.domain.multimedia.*;
 

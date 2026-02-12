@@ -3,6 +3,7 @@ package it.bicocca.eduquest.dto.quiz;
 import java.util.List;
 import it.bicocca.eduquest.dto.multimedia.*;
 import it.bicocca.eduquest.domain.quiz.Difficulty;
+import it.bicocca.eduquest.domain.quiz.QuestionType;
 
 public class QuestionDTO {
 	private final long id;

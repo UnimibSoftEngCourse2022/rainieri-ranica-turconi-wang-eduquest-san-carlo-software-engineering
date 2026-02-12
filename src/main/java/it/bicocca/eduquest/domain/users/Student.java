@@ -18,7 +18,7 @@ public class Student extends User {
     public Student() {
         super();
         this.role = Role.STUDENT;
-        this.stats = new StudentStats(); // inizialize stats to null
+        this.stats = new StudentStats();
     }
 
     public Student(String name, String surname, String email, String password) {
@@ -27,8 +27,6 @@ public class Student extends User {
         this.role = Role.STUDENT;
         this.stats = new StudentStats();
     }   
-    
-    // getter e setter
 
     public double getScore() {
         return score;
@@ -45,8 +43,6 @@ public class Student extends User {
     public void setStats(StudentStats stats) {
         this.stats = stats;
     }
-    
-    // business logic
     
     public void updateTotalScore(double points) {
         this.score += points;

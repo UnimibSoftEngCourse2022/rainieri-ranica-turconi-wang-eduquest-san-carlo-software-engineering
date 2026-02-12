@@ -1,4 +1,4 @@
-package it.bicocca.eduquest.dto.quiz;
+package it.bicocca.eduquest.domain.quiz;
 
 public enum QuestionType {
 	OPENED,

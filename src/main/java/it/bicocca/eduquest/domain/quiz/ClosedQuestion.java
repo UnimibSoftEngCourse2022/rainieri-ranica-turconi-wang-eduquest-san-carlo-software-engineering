@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.bicocca.eduquest.domain.users.User;
-import it.bicocca.eduquest.dto.quiz.QuestionType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;

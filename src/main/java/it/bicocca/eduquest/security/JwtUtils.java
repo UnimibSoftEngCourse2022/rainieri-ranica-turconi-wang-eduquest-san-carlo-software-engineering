@@ -20,7 +20,6 @@ public class JwtUtils {
     @Value("${eduquest.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    // Helper for getting key
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }

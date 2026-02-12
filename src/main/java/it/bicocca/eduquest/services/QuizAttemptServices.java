@@ -82,7 +82,6 @@ public class QuizAttemptServices {
     }
 	
 	public QuizSessionDTO startQuiz(long quizId, long studentId, Long testId) {
-		// FIX: RuntimeException -> IllegalArgumentException
 		User user = usersRepository.findById(studentId).orElseThrow(() -> new IllegalArgumentException("Cannot find a student with the given ID"));
 		
 		if (!(user instanceof Student)) {
@@ -159,11 +158,9 @@ public class QuizAttemptServices {
 		QuizAttempt quizAttempt = getValidQuizAttempt(answerDTO.getQuizAttemptId());
 		
 		if (!quizAttempt.getStudent().getId().equals(requestUserId)) {
-			// FIX: RuntimeException -> IllegalStateException (Accesso negato/Stato non valido per questo utente)
 	        throw new IllegalStateException("This is not your attempt! You cannot edit it.");
 	    }
 		
-		// FIX: RuntimeException -> IllegalArgumentException
 		Question question = questionsRepository.findById(answerDTO.getQuestionId())
 				.orElseThrow(() -> new IllegalArgumentException("Cannot find a Question with the given ID"));
 		

@@ -1,6 +1,6 @@
 package it.bicocca.eduquest.dto.quizAttempt;
 
-import it.bicocca.eduquest.dto.quiz.QuestionType;
+import it.bicocca.eduquest.domain.quiz.QuestionType;
 
 public class AnswerDTO {
 	private Long id;

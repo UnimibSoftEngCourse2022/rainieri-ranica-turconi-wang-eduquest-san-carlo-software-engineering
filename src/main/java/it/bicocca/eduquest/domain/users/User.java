@@ -29,8 +29,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     protected Role role;
 
-    // constructor
-
     public User() {
     }
 
@@ -40,8 +38,6 @@ public class User {
         this.email = email;
         this.password = password;
     }
-
-    //getter and setter
 
     public Long getId() {
         return id;

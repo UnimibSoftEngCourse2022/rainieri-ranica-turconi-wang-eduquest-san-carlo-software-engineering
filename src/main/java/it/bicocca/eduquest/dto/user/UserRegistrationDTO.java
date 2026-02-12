@@ -12,10 +12,9 @@ public class UserRegistrationDTO {
 	
     private String email;
     private String password;
-    // Let front-end choose the role
+
     private Role role; 
 
-    // Getter e Setter 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     

@@ -28,7 +28,7 @@ public class ChallengeDTO {
 		this.expiresAt = expiresAt;
 		this.winnerName = winnerName;
 		this.winnerSurname = winnerSurname;
-	} // Should use pattern builder
+	}
 
 	public Long getId() {
 		return id;
