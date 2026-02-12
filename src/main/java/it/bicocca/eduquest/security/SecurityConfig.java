@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/tests/**").authenticated()
                 .requestMatchers("/", "/**/*.html", "/static/**", "/**/*.css", "/**/*js", "/assets/**").permitAll()
+                .requestMatchers("/favicon.ico", "/assets/**", "/*.js", "/*.css").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

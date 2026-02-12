@@ -61,6 +61,7 @@ public class QuizServices {
 		this.quizAttemptsRepository = quizAttemptsRepository;
 	}
 	
+	@Transactional(readOnly = true)
 	public QuizDTO getQuizById(long id) {
 		Quiz quiz = quizRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Cannot find quiz with ID " + id));
 		
@@ -120,6 +121,19 @@ public class QuizServices {
 	public QuizDTO editQuiz(long quizId, QuizEditDTO quizEditDTO, long userIdFromRequest) {
 		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
 		
+		// --- INIZIO DEBUG ---
+	    System.out.println("--------------------------------------------------");
+	    System.out.println("DEBUG: Stai modificando il Quiz ID: " + quizId);
+	    System.out.println("DEBUG: Domande trovate nel DB per questo quiz: " + quiz.getQuestions().size());
+	    if (quiz.getQuestions().size() > 0) {
+	        System.out.println("DEBUG: Esempio prima domanda: " + quiz.getQuestions().get(0).getText());
+	    } else {
+	        System.out.println("DEBUG: LA LISTA DOMANDE È VUOTA! Ecco perché non puoi metterlo pubblico.");
+	    }
+	    System.out.println("DEBUG: L'utente vuole metterlo pubblico? " + quizEditDTO.isPublic());
+	    System.out.println("--------------------------------------------------");
+	    // --- FINE DEBUG ---
+	    
 		boolean finalIsPublic = quizEditDTO.isPublic();
 		if (quiz.getQuestions().isEmpty()) {
 			finalIsPublic = false;
@@ -151,10 +165,10 @@ public class QuizServices {
 		quiz.setPublic(finalIsPublic);
 		
 		Quiz updatedQuiz = quizRepository.save(quiz);
-		
+		List<QuestionDTO> questionsDTO = convertQuestionsToDTOs(updatedQuiz.getQuestions());
 		QuizStatsDTO statsDTO = calculateQuizOnlyStats(updatedQuiz);
 		
-		return new QuizDTO(updatedQuiz.getId(), updatedQuiz.getTitle(), updatedQuiz.getDescription(), updatedQuiz.getAuthor().getId(), new ArrayList<>(), statsDTO, quiz.getDifficulty(), updatedQuiz.isPublic()); 
+		return new QuizDTO(updatedQuiz.getId(), updatedQuiz.getTitle(), updatedQuiz.getDescription(), updatedQuiz.getAuthor().getId(), questionsDTO, statsDTO, quiz.getDifficulty(), updatedQuiz.isPublic()); 
 	}
 	
 	public List<QuestionDTO> getAllQuestions(long requestUserId) {

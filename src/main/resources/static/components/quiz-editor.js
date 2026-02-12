@@ -147,7 +147,7 @@ export class QuizEditor extends BaseComponent {
     const description = this.querySelector("#description-input").value;
     const isPublicInput = this.querySelector("#is-public-input");
     const isPublic = isPublicInput.checked;
-    const questionsCount = this.querySelectorAll("question-item").length; 
+    const questionsCount = this.quizQuestions.querySelectorAll(".list-group-item").length;
     const resultDiv = this.querySelector("#quiz-general-info-result");
 
     if (isPublic && questionsCount == 0) {
