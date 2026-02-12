@@ -94,7 +94,10 @@ export class QuestionsViewer extends BaseComponent {
       question.closedQuestionOptions.forEach(option => answers.push(option.text))
     }
 
-    const questionSuccessRate = question.stats.correctAnswer / question.stats.totalAnswers
+	const rawRate = question.stats.totalAnswers > 0 
+	        ? (question.stats.correctAnswer / question.stats.totalAnswers) * 100 
+	        : 0;
+    const questionSuccessRate = rawRate.toFixed(2);
 
     const questionElement = document.createElement("div");
     questionElement.classList.add("card", "col-12", "col-md-6", "col-lg-4");
@@ -106,7 +109,7 @@ export class QuestionsViewer extends BaseComponent {
         ${this.userRole == "TEACHER" ? `<a href="#" class="btn btn-primary add-question-to-quiz-button" data-id="${question.id}">Add to quiz</a>` : ``}
         <div id="add-question-${question.id}-result"></div>
         <hr>
-        <p>Number of given answers: ${question.stats.totalAnswers} | Success rate: ${questionSuccessRate * 100}%</p>
+        <p>Number of given answers: ${question.stats.totalAnswers} | Success rate: ${questionSuccessRate}%</p>
     </div>
     `;
 

@@ -176,9 +176,10 @@ export class QuizEditor extends BaseComponent {
   }
 
   showQuizStats(quizStats) {
+	const avgScore = quizStats.averageScore ? Number(quizStats.averageScore).toFixed(2) : "0.00";
     const quizStatsMessage = `
     <h4>Quiz stats</h4>
-    Total attempts: ${quizStats.totalAttempts} | Average score: ${quizStats.averageScore} 
+    Total attempts: ${quizStats.totalAttempts} | Average score: ${avgScore} 
     `;
     this.quizStats.innerHTML = `
     <alert-component type="primary" message="${quizStatsMessage}"></alert-component>
