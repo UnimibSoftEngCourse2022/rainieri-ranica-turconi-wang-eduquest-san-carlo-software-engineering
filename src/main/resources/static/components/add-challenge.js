@@ -26,8 +26,8 @@ export class AddChallenge extends BaseComponent {
                 />
             </div>
             <div class="mb-3">
-                <label for="opponent-id-input" class="form-label">
-                    Quiz ID
+                <label for="quiz-id-input" class="form-label">
+                    Quiz
                 </label>
                 <select class="form-control" id="quiz-id-input" name="quiz-id-input">
                 </select>
