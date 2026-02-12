@@ -153,7 +153,7 @@ export class AddQuestion extends BaseComponent {
             <div class="input-group mb-3">
                 <input id="closed-option-${i}-text" type="text" class="form-control" placeholder="Option...">
                 <div class="input-group-text">
-                    <input class="form-check-input mt-0" type="checkbox" value="" id="closed-option-${i}-is-true">
+                    <input class="form-check-input mt-0" type="radio" name="correct-answer-group" value="" id="closed-option-${i}-is-true">
                 </div>
             </div>
             `;

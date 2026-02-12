@@ -120,19 +120,6 @@ public class QuizServices {
 	@Transactional
 	public QuizDTO editQuiz(long quizId, QuizEditDTO quizEditDTO, long userIdFromRequest) {
 		Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new IllegalArgumentException(CANNOT_FIND_QUIZ_MSG));
-		
-		// --- INIZIO DEBUG ---
-	    System.out.println("--------------------------------------------------");
-	    System.out.println("DEBUG: Stai modificando il Quiz ID: " + quizId);
-	    System.out.println("DEBUG: Domande trovate nel DB per questo quiz: " + quiz.getQuestions().size());
-	    if (quiz.getQuestions().size() > 0) {
-	        System.out.println("DEBUG: Esempio prima domanda: " + quiz.getQuestions().get(0).getText());
-	    } else {
-	        System.out.println("DEBUG: LA LISTA DOMANDE È VUOTA! Ecco perché non puoi metterlo pubblico.");
-	    }
-	    System.out.println("DEBUG: L'utente vuole metterlo pubblico? " + quizEditDTO.isPublic());
-	    System.out.println("--------------------------------------------------");
-	    // --- FINE DEBUG ---
 	    
 		boolean finalIsPublic = quizEditDTO.isPublic();
 		if (quiz.getQuestions().isEmpty()) {
@@ -443,18 +430,18 @@ public class QuizServices {
 		if (optionsCount > 4) {
 			throw new IllegalArgumentException("A closed question cannot have more than 4 options!");
 		}
-		boolean hasCorrectAnswer = false;
+		int correctAnswersCount = 0;
 		for (ClosedQuestionOptionDTO optionDTO  : dto.getClosedQuestionOptions()) {
 			if (optionDTO.getText() == null || optionDTO.getText().trim().isEmpty()) {
 				throw new IllegalArgumentException("The text of an option cannot be empty!");
 			}
 			question.addOption(new ClosedQuestionOption(optionDTO.getText(), optionDTO.isTrue()));
 			if (optionDTO.isTrue()) {
-				hasCorrectAnswer = true;
+				correctAnswersCount++;
 			}
 		} 
-		if (!hasCorrectAnswer) {
-			throw new IllegalArgumentException("You must select at least one correct answer for the closed question!");
+		if (correctAnswersCount == 0 || correctAnswersCount > 1) {
+			throw new IllegalArgumentException("You must select one correct answer for the closed question!");
 		}
 		return question;
 	}
