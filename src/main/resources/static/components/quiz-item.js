@@ -100,6 +100,7 @@ export class Quiz extends BaseComponent {
             }
             localStorage.setItem("currentQuizId", this._quizData.id);
             localStorage.removeItem("currentTestId"); 
+            sessionStorage.removeItem("currentTestId");
             
             this.dispatchEvent(new CustomEvent("attempt-created", { 
                 bubbles: true, 
