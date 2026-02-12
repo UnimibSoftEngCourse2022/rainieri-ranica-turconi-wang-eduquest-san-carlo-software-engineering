@@ -72,7 +72,7 @@ export class AddQuiz extends BaseComponent {
       <alert-component type="success" message="Quiz created successfully" timeout="2000"></alert-component>
       `;
       this.querySelector("#quiz-title-input").value = "";
-      this.querySelector("#quiz-description-input").value = "";
+      this.querySelector("#quiz-description-input").value = ""; 
       this.dispatchCustomEvent("quiz-created");
     } catch (e) {
       console.error(e);
