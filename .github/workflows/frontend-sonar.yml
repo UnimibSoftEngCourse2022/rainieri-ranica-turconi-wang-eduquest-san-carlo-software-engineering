@@ -3,7 +3,7 @@ on:
   push:
     branches: [ "main", "develop", "frontend-services-refactoring" ]
     paths:
-      - 'frontend/**'
+      - 'src/main/resources/static/**'
 
 jobs:
   sonarcloud-frontend:
