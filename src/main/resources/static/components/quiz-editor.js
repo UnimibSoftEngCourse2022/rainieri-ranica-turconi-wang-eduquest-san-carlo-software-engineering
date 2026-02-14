@@ -1,5 +1,6 @@
 import { QuizService } from "../services/quiz-service.js";
 import { BaseComponent } from "./base-component.js";
+import { roundWithTwoDecimals } from "../js/utils.js";
 import "./questions-viewer.js";
 import "./shared/alert.js";
 
@@ -112,7 +113,7 @@ export class QuizEditor extends BaseComponent {
         const questionRelativeStats = quizData.quizStats.statsPerQuestion[q.id];
         let questionRelativeStatsHTML = ``;
         if (questionRelativeStats) {
-            const questionRelativePercentage = questionRelativeStats.totalAnswers ? questionRelativeStats.correctAnswer / questionRelativeStats.totalAnswers : 0;
+            const questionRelativePercentage = questionRelativeStats.totalAnswers ? roundWithTwoDecimals(questionRelativeStats.correctAnswer / questionRelativeStats.totalAnswers) : 0;
             const questionRelativeStatsColor = questionRelativePercentage >= 0.6 ? `success` : `danger`;
             questionRelativeStatsHTML = `
             <span class="badge text-bg-${questionRelativeStatsColor}">
