@@ -5,15 +5,16 @@ This document shows how to install and start EduQuest on your PC.
 ## Prerequisites
 
 Before you begin the installation, ensure you have the following tools:
-- Java Developer Kit 21. You can check your Java version by running the following command; you must have at least 21.x.x
+- **Java Developer Kit 21**: You must have at least version 21.x.x installed. You can download it from [Adoptium (Eclipse Temurin)](https://adoptium.net/) or [Oracle](https://www.oracle.com/java/technologies/downloads/). You can check your Java version by running the following command:
 ``` bash
 java -version
 ```
-- Maven. You can check if it installed by performing the following command
+- **Maven**: Required for building the project. Download it from the [official Apache Maven website](https://maven.apache.org/).You can check if it installed by performing the following command
 ``` bash
 mvn -v
 ```
 - Google Chrome or another modern browser
+- **Database Setup**: No external database installation is required. The application uses an in-memory database (H2) and comes pre-configured. It runs completely out-of-the-box.
 
 ## Developer installation
 
