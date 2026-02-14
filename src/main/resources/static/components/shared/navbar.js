@@ -17,7 +17,7 @@ export class Navbar extends BaseComponent {
         return;
       }
 
-      const homeUrl = user.role == "TEACHER" ? `../teacher-dashboard` : `../student-dashboard/index.html`;
+      const homeUrl = user.role == "TEACHER" ? `../teacher-dashboard/index.html` : `../student-dashboard/index.html`;
       const profileUrl = `../profile/index.html?id=${user.id}`
       const rankingsUrl = `../rankings/index.html`
 

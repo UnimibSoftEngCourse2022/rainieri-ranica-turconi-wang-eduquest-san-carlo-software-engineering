@@ -8,7 +8,7 @@
 		<version>4.0.1</version> <relativePath/> </parent>
 	<groupId>it.bicocca</groupId>
 	<artifactId>eduquest</artifactId>
-	<version>0.1.0</version>
+	<version>1.0.0</version>
 	<name>EduQuest</name>
 	<description>Project for Software Engineering exam</description>
 	<url/>
