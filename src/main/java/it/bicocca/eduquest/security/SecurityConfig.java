@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()               
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/tests/**").authenticated()
-                .requestMatchers("/", "/**/*.html", "/static/**", "/**/*.css", "/**/*js", "/assets/**").permitAll()
+                .requestMatchers("/", "/**/*.html", "/static/**", "/**/*.css", "/**/*js", "/assets/**", "/favicon.ico").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
