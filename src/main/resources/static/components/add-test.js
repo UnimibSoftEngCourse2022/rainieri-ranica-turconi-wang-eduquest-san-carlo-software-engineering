@@ -1,0 +1,136 @@
+import { QuizService } from "../services/quiz-service.js";
+import { TestsService } from "../services/tests-service.js";
+import { UsersService } from "../services/users-service.js";
+import { BaseComponent } from "./base-component.js";
+import "./shared/alert.js";
+
+export class AddTest extends BaseComponent {
+  setupComponent() {
+    this.quizService = new QuizService();
+    this.testsService = new TestsService();
+    this.usersService = new UsersService();
+    this.quizzes = [];
+    this.render();
+    this.loadQuizzes(); 
+  }
+
+  async loadQuizzes() {
+    try {
+        const userData = await this.usersService.getMyUserInfo();
+        const userId = userData.id;
+        this.quizzes = await this.quizService.getQuizzesByAuthorId(userId) || [];
+        this.render();
+    } catch (e) {
+        console.error(e);
+        this.innerHTML = `
+        <alert-component type="danger" message="Error loading quizzes"></alert-component>
+        `
+    }
+  }
+
+  attachEventListeners() {
+    document.addEventListener("quiz-created", () => {
+        this.loadQuizzes();
+    });
+    this.addEventListenerWithTracking("#add-test-button", "click", (event) => this.handleAddTest(event));
+  }
+
+  get quizSelect() { return this.querySelector("#test-quiz-select"); }
+  get timeLimitInput() { return this.querySelector("#test-time-input"); }
+  get maxAttemptsInput() { return this.querySelector("#test-attempts-input"); }
+  get addTestResult() { return document.getElementById("add-test-result"); }
+
+  render() {
+    const options = this.quizzes.length > 0 
+        ? this.quizzes.map(q => `<option value="${q.id}">${q.title}</option>`).join('') 
+        : '<option disabled>No quizzes to show</option>';
+
+    this.innerHTML = `
+    <div class="mb-3">
+        <label for="test-quiz-select" class="form-label">Select Quiz</label>
+        <select class="form-select" id="test-quiz-select">
+            <option value="" disabled selected>Choose a quiz...</option>
+            ${options}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="test-time-input" class="form-label">Time Limit (minutes)</label>
+        <input type="number" class="form-control" id="test-time-input" min="1" placeholder="0" />
+    </div>
+
+    <div class="mb-3">
+        <label for="test-attempts-input" class="form-label">Max Attempts</label>
+        <input type="number" class="form-control" id="test-attempts-input" min="1" placeholder="0" />
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="add-test-button">Create Test</button>
+    </div>
+    <div id="add-test-result" class="container"></div>
+    `;
+    this.attachEventListeners();
+  }
+
+  async handleAddTest(event) {
+    event.preventDefault();
+
+    const quizId = this.quizSelect ? this.quizSelect.value : null;
+    const timeLimit = this.timeLimitInput.value;
+    const maxAttempts = this.maxAttemptsInput.value;
+    
+    if (!quizId || timeLimit === "" || maxAttempts === "") {
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="Please fill in all fields" timeout="2000"></alert-component>`;
+        return;
+    }
+
+    const selectedQuiz = this.quizzes.find(q => q.id == quizId);
+    if (!selectedQuiz.questions || selectedQuiz.questions.length == 0) {
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="You cannot create a test from a quiz with no questions!" timeout="2500"></alert-component>`;
+        return;
+    }
+    
+    if (timeLimit < 1 || maxAttempts < 1) {
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="Time limit and Max attempt values must be positive" timeout="2500"></alert-component>`;
+        return;
+    }
+
+    const timeNum = Number(timeLimit);
+    const attemptsNum = Number(maxAttempts);
+    if (!Number.isInteger(timeNum) || !Number.isInteger(attemptsNum)) {
+        this.addTestResult.innerHTML = `<alert-component type="danger" message="Time limit and Max attempt values must be integer values" timeout="2500"></alert-component>`;
+        return;
+    }
+
+
+    const requestBody = {
+        quizId: Number.parseInt(quizId),
+        maxDurationMinutes: Number.parseInt(timeLimit),
+        maxTries: Number.parseInt(maxAttempts)
+    };
+    
+    this.submitData(requestBody);
+  }
+
+  async submitData(requestBody) {
+    try {
+        await this.testsService.createTest(requestBody);
+
+        this.addTestResult.innerHTML = `
+        <alert-component type="success" message="Test created successfully" timeout="2000"></alert-component>
+        `
+        this.querySelector("#test-quiz-select").value = "";
+        this.querySelector("#test-time-input").value = "";
+        this.querySelector("#test-attempts-input").value = "";
+        this.dispatchCustomEvent("test-created");
+    } catch (e) {
+        console.error(e);
+        this.addTestResult.innerHTML = `
+        <alert-component type="danger" message="You must fill in all fields" timeout="2000"></alert-component>
+        `
+    }
+  }
+}
+
+customElements.define('add-test', AddTest);

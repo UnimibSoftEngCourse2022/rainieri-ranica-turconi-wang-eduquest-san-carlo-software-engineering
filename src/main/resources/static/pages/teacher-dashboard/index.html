@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Teacher Home | EduQuest</title>
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+
+    </head>
+    <body>
+        <navbar-item></navbar-item>
+        <div class="container my-5" id="page" style="display: none">
+            <h1 id="title">Teacher dashboard</h1>
+
+            <div class="text-center my-4">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-quiz-modal">
+                    Add quiz
+                </button>
+                
+                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#add-test-modal">
+                    Add test
+                </button>
+
+                <div class="modal fade" id="add-quiz-modal" tabindex="-1" aria-labelledby="addQuizLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addQuizLabel">Add quiz</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <add-quiz></add-quiz>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="add-test-modal" tabindex="-1" aria-labelledby="addTestLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addTestLabel">Create New Test</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <add-test></add-test>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#add-question-modal">
+                    Add question
+                </button>
+                <div class="modal fade" id="add-question-modal" tabindex="-1" aria-labelledby="addQuestionLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addQuestionLabel">Add question</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <add-question></add-question>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container my-5" id="quizzes-container">
+                    <h1>All quizzes</h1>
+                </div>
+
+                <div class="container my-5" id="tests-container">
+                    <h1>All tests</h1>
+                </div>
+            </div>
+        </div>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"
+        ></script>
+        
+        <script type="module" src="../../components/add-question.js"></script>
+        <script type="module" src="../../components/quizzes-viewer.js"></script>
+        <script type="module" src="../../components/tests-viewer.js"></script>
+        <script type="module" src="../../components/add-quiz.js"></script>
+        <script type="module" src="../../components/add-test.js"></script>
+        <script type="module" src="../../components/shared/navbar.js"></script>
+        <script type="module" src="script.js"></script>
+    </body>
+</html>
