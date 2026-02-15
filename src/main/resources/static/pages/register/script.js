@@ -39,11 +39,7 @@ registerForm.addEventListener("submit", async (event) => {
     resultContainer.innerHTML = REGISTER_SUCCESS_DIV;
   } catch (e) {
     resultContainer.innerHTML = `
-    <alert-component type="danger" message="${e}" timeout=5000></alert-component>
+    <alert-component type="danger" message="${e}" timeout=2000></alert-component>
     `;
-    setTimeout(() => {
-        resultContainer.innerHTML = "";
-    }, 5000);
-    registerForm.reset();
   }
 });

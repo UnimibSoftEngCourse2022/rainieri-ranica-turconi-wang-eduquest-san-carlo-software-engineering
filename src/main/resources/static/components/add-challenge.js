@@ -82,6 +82,12 @@ export class AddChallenge extends BaseComponent {
     const quizId = this.querySelector("#quiz-id-input").value;
     const duration = this.querySelector("#duration-input").value;
 
+	if (duration <= 0) {
+		this.addChallengeResult.innerHTML = `
+		<alert-component type="danger" message="Challenge duration must be a positive number" timeout="2000"></alert-component>
+		`;
+		return;
+	}
     try {
         await this.gamificationService.addChallenge(opponentId, quizId, duration);
         this.addChallengeResult.innerHTML = `
