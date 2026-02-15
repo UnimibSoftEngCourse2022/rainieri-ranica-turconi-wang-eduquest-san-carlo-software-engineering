@@ -9,7 +9,7 @@ Before you begin the installation, ensure you have the following tools:
 ``` bash
 java -version
 ```
-- **Maven**: Required for building the project. Download it from the [official Apache Maven website](https://maven.apache.org/).You can check if it installed by performing the following command
+- **Maven**: Required for building the project. Download it from the [official Apache Maven website](https://maven.apache.org/).You can check if it is installed by performing the following command
 ``` bash
 mvn -v
 ```
@@ -47,4 +47,4 @@ java -jar eduquest-x.y.z.jar
 
 ## Use the application
 
-After you installed and run the software, you can access the web application on your browser at the following address: `localhost:8080`.
+After installing and running the software, you can access the web application on your browser at the following address: `localhost:8080`.
